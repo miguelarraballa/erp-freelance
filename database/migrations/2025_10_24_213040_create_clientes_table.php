@@ -32,6 +32,10 @@ return new class extends Migration {
             $table->date('fecha_alta')->nullable();
             $table->date('fecha_baja')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete(); 
+            //Para mostrar al crear los selects
+            $table->string('mostrar')->virtualAs(
+                "CONCAT(COALESCE(razon_social, ''), IF(nombre IS NULL OR nombre = '', '', CONCAT(' (', nombre, ')')))"
+            );
             $table->timestamps();
         });
     }

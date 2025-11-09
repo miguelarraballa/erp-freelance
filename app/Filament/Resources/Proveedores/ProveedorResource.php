@@ -18,8 +18,9 @@ class ProveedorResource extends Resource
     protected static ?string $model = Cliente::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static \UnitEnum|string|null $navigationGroup = 'Proveedores';
     protected static ?string $navigationLabel = 'Proveedores';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 20;
 
     public static function form(Schema $schema): Schema
     {

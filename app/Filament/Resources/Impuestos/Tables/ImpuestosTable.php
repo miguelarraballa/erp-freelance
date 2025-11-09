@@ -1,29 +1,31 @@
 <?php
 
-namespace App\Filament\Resources\Clientes\Tables;
+namespace App\Filament\Resources\Impuestos\Tables;
 
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\{TextColumn, IconColumn};
-use App\Models\Cliente;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 
-class ClientesTable
+use App\Models\Impuestos;
+
+class ImpuestosTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('mostrar')->searchable()->sortable(),
-                TextColumn::make('nif')->label('NIF/CIF/NIE')->sortable(),
-                TextColumn::make('ciudad'),
-                IconColumn::make('cliente')->boolean(),
-                IconColumn::make('proveedor')->boolean(),
+                TextColumn::make('nombre')->searchable()->sortable(),
+                TextColumn::make('tipo')->searchable()->sortable(),
+                TextColumn::make('porcentaje')->searchable()->sortable(),
+                TextColumn::make('pais')->searchable()->sortable(),
                 IconColumn::make('activo')->boolean(),
             ])
-            ->filters([])
+            ->filters([
+                //
+            ])
             ->recordActions([
                 EditAction::make(),
             ])

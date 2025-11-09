@@ -14,6 +14,7 @@ class Cliente extends Model
         'razon_social',
         'nif',
         'direccion',
+        'datos_facturacion',
         'cp',
         'ciudad',
         'provincia',

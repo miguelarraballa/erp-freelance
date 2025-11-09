@@ -19,6 +19,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\NavigationGroup;
+use Filament\Support\Icons\Heroicon;
 
 class FacturacionPanelProvider extends PanelProvider
 {
@@ -56,6 +58,17 @@ class FacturacionPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('Facturación'),
+                    // ->icon(Heroicon::OutlinedDocumentText) // opcional
+
+                NavigationGroup::make()
+                    ->label('Proveedores')
+                    // ->icon(Heroicon::OutlinedUserGroup) // opcional
+
+            ])
+
             ->authMiddleware([
                 Authenticate::class,
             ]);
