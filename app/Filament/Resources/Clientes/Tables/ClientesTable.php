@@ -17,7 +17,7 @@ class ClientesTable
         return $table
             ->columns([
                 TextColumn::make('mostrar')->searchable()->sortable(),
-                TextColumn::make('nif')->label('NIF/CIF/NIE')->sortable(),
+                TextColumn::make('nif')->label('NIF/CIF/NIE')->searchable()->sortable(),
                 TextColumn::make('ciudad'),
                 IconColumn::make('cliente')->boolean(),
                 IconColumn::make('proveedor')->boolean(),

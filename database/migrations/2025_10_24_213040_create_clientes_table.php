@@ -27,6 +27,7 @@ return new class extends Migration {
             $table->string('email_facturacion')->nullable();
             $table->string('telefono_facturacion', 20)->nullable();
             $table->string('codigo_cliente')->unique()->nullable();
+            $table->string('codigo_proveedor')->unique()->nullable();
             $table->boolean('activo')->default(true);
             $table->text('observaciones')->nullable();
             $table->date('fecha_alta')->nullable();

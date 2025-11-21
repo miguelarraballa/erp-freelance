@@ -22,6 +22,9 @@ class ProveedorResource extends Resource
     protected static ?string $navigationLabel = 'Proveedores';
     protected static ?int $navigationSort = 20;
 
+    protected static ?string $modelLabel = 'Proveedor';
+    protected static ?string $pluralModelLabel = 'Proveedores';
+
     public static function form(Schema $schema): Schema
     {
         return ClienteForm::configure($schema);
