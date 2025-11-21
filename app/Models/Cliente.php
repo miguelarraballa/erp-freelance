@@ -29,6 +29,7 @@ class Cliente extends Model
         'email_facturacion',
         'telefono_facturacion',
         'codigo_cliente',
+        'codigo_proveedor',
         'activo',
         'observaciones',
         'fecha_alta',

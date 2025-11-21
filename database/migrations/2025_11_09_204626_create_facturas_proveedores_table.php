@@ -36,7 +36,7 @@ return new class extends Migration {
             $table->timestamps();
 
             // Evita duplicados por proveedor + serie + número del proveedor
-            $table->unique(['proveedor_id', 'serie_id', 'numero_proveedor'], 'fp_unique_prov_serie_num');
+            $table->unique(['cliente_id', 'serie_id', 'numero_proveedor'], 'fp_unique_prov_serie_num');
         });
     }
 
