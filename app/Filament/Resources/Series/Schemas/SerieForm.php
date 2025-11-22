@@ -13,6 +13,8 @@ use Filament\Forms\Components\{
     Placeholder,
     ToggleButtons,
 };
+use Illuminate\Support\Carbon;
+
 class SerieForm
 {
     public static function configure(Schema $schema): Schema
@@ -34,9 +36,24 @@ class SerieForm
                     ->label('Siguiente Número')
                     ->default(1)
                     ->columnSpan(2),
-                Toggle::make('por_defecto')->default(0),
-                Toggle::make('activo')->default(1),
-                
+       
+                Select::make('tipo')
+                    ->label("Serie para la factura tipo:")
+                    ->options([
+                        "null"            => "",
+                        "normal"          => "Normal",
+                        "rectificativa"   => "Rectificativa",
+                        "abono"           => "Abono" 
+                    ])
+                    ->default("null")
+                    ->columnSpan(3),
+                TextInput::make('ejercicio')
+                    ->label('Ejercicio')
+                    ->numeric()->minValue(2026)->maxValue(2100)
+                    ->default(fn () => (int) now()->year)
+                    ->required()
+                    ->columnSpan(3),
+                Toggle::make('por_defecto')->default(0)->columnSpan(2), 
             ]);
 
     }

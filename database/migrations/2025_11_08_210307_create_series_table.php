@@ -19,7 +19,16 @@ return new class extends Migration
             $table->unsignedBigInteger('siguiente_numero')->default(1);
             $table->boolean('por_defecto')->default(false);
             $table->boolean('activo')->default(true);
+            $table->enum('tipo', ['normal','rectificativa','abono'])->default('normal');
+            $table->unsignedSmallInteger('ejercicio')->default((int) date('Y'));
             $table->timestamps();
+
+             // clave solo cuando está activa; indexable → storedAs
+            $table->string('activo_key', 32)
+              ->nullable()
+              ->storedAs("CASE WHEN activo = 1 THEN CONCAT(tipo,'-',ejercicio) ELSE NULL END");
+
+            $table->unique('activo_key', 'series_activa_tipo_ejercicio_unique');
 
             $table->unique(
                 ['sufijo', 'codigo', 'prefijo'],

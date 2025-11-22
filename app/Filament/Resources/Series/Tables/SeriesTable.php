@@ -18,6 +18,8 @@ class SeriesTable
                 TextColumn::make('prefijo')->searchable()->sortable(),
                 TextColumn::make('codigo')->searchable()->sortable(),
                 TextColumn::make('sufijo')->searchable()->sortable(),
+                TextColumn::make('tipo')->searchable()->sortable(),
+                TextColumn::make('ejercicio')->searchable()->sortable(),
                 TextColumn::make('siguiente_numero')->searchable()->sortable(),
                 IconColumn::make('por_defecto')->boolean(),
                 IconColumn::make('activo')->boolean(),
