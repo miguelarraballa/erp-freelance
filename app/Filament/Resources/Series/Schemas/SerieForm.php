@@ -40,10 +40,10 @@ class SerieForm
                 Select::make('tipo')
                     ->label("Serie para la factura tipo:")
                     ->options([
-                        "null"            => "",
                         "normal"          => "Normal",
                         "rectificativa"   => "Rectificativa",
-                        "abono"           => "Abono" 
+                        "abono"           => "Abono",
+                        "proveedor"       => "Proveedor",
                     ])
                     ->default("null")
                     ->columnSpan(3),
