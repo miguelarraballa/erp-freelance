@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('siguiente_numero')->default(1);
             $table->boolean('por_defecto')->default(false);
             $table->boolean('activo')->default(true);
-            $table->enum('tipo', ['normal','rectificativa','abono'])->default('normal');
+            $table->enum('tipo', ['normal','rectificativa','abono','proveedor'])->default('normal');
             $table->unsignedSmallInteger('ejercicio')->default((int) date('Y'));
             $table->timestamps();
 
