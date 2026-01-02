@@ -2,12 +2,11 @@
 
 namespace App\Filament\Resources\Series\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Tables;
+use App\Filament\Resources\Series\SerieResource;
+use App\Models\Serie;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\{TextColumn, IconColumn};
+use Filament\Actions\{EditAction, DeleteAction, BulkAction, BulkActionGroup};
 
 class SeriesTable
 {
@@ -24,15 +23,28 @@ class SeriesTable
                 IconColumn::make('por_defecto')->boolean(),
                 IconColumn::make('activo')->boolean(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    // En recursos suele bastar con ->make() a secas. Si prefieres forzar URL:
+                    // ->url(fn (Serie $record) => SerieResource::getUrl('edit', ['record' => $record]))
+                    ->hidden(fn (Serie $record) => $record->facturas()->exists()),
+                DeleteAction::make()
+                    ->hidden(fn (Serie $record) => $record->facturas()->exists()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    BulkAction::make('delete')
+                        ->label('Eliminar seleccionados')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $records->each(function (Serie $serie) {
+                                if (! $serie->facturas()->exists()) {
+                                    $serie->delete();
+                                }
+                            });
+                        }),
                 ]),
             ]);
     }

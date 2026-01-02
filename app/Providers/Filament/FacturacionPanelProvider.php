@@ -60,6 +60,9 @@ class FacturacionPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
+                    ->label('Empresa'),
+                    // ->icon(Heroicon::OutlinedDocumentText) // opcional
+                NavigationGroup::make()
                     ->label('Facturación'),
                     // ->icon(Heroicon::OutlinedDocumentText) // opcional
 

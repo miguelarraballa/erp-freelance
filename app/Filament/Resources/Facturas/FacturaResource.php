@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class FacturaResource extends Resource
 {
@@ -47,5 +48,9 @@ class FacturaResource extends Resource
             'create' => CreateFactura::route('/create'),
             'edit' => EditFactura::route('/{record}/edit'),
         ];
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return $record->estado === 'borrador';
     }
 }
