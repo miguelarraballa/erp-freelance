@@ -21,5 +21,15 @@ class Serie extends Model
                     ->update(['activo' => false]);
             }
         });
+
+        static::deleting(function (self $serie) {
+            if ($serie->facturas()->exists()) {
+                throw new \DomainException('No se puede borrar: la serie ya está en uso por facturas.');
+            }
+        });
+
+        static::updating(function (self $serie) {
+            
+        });
     }
 }

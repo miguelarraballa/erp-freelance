@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('facturas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('serie_id')->constrained('series')->nullabel(); //Es nulo solo si el estado es borrador. 
+            $table->foreignId('serie_id')->nullable()->constrained('series')->restrictOnDelete(); //Es nulo solo si el estado es borrador. 
             $table->unsignedBigInteger('numero')->nullable(); // se asigna al emitir
             $table->string('numero_completo')->nullable()->unique(); // prefijo+numero+sufijo
             
-            $table->foreignId('cliente_id')->constrained('clientes'); // tu tabla clientes
+            $table->foreignId('cliente_id')->constrained('clientes')->restrictOnDelete(); 
             $table->text('datos_facturacion')->nullable();
 
             $table->date('fecha')->nullable();

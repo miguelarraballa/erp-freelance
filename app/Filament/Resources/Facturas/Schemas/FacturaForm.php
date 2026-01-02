@@ -17,14 +17,31 @@ use Filament\Schemas\Components\Utilities\{Get, Set};
 use App\Models\{Impuesto, Cliente, Factura};
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\HtmlString;
 
 class FacturaForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $lock        = fn (?Factura $record) => ! is_null($record?->numero);
+        $lockLinea   = fn (Get $get)         => filled($get('../../numero'));  
+
         return $schema
             ->columns(12)
             ->schema([
+                Placeholder::make('numero_factura')
+                    ->label('Número de factura')
+                    ->content(function (?Factura $record) {
+                        if (! $record?->numero) {
+                            return null;
+                        }
+
+                        $titulo = 'Factura ' . ($record->numero_completo ?? str_pad((string) $record->numero, 3, '0', STR_PAD_LEFT));
+                        // HtmlString evita el escape del HTML:
+                        return new HtmlString('<h2 class="text-xl font-semibold">'.$titulo.'</h2>');
+                    })
+                    ->visible(fn (?Factura $record) => filled($record?->numero))
+                    ->columnSpanFull(),
 
                 ToggleButtons::make('tipo')
                     ->label('Tipo')
@@ -42,32 +59,111 @@ class FacturaForm
                             $set('rectifica_id', null);
                         }
                     })
-                    ->columnSpan(4),
+                    ->columnSpan(4)
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
 
                 // Select self-relación (Factura -> rectifica)
                 Select::make('rectifica_id')
                     ->label('Rectifica a')
-                    ->relationship(
-                        name: 'rectifica',               
-                        titleAttribute: 'numero_completo', 
-                        modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $q) =>
-                            $q->orderByDesc('id')
-                    )
                     ->searchable()
+                    // resultados para el cuadro de búsqueda
+                    ->getSearchResultsUsing(function (Get $get, string $search) {
+                        $search = trim($search);
+
+                        return Factura::query()
+                            ->whereIn('estado', ['emitida', 'cobrada'])              
+                            ->when($get('id'), fn ($q, $id) =>             
+                                $q->whereKeyNot($id)
+                            )
+                            ->where(function ($q) use ($search) {        
+                                $q->where('numero_completo', 'like', "%{$search}%");
+
+                                if (ctype_digit($search)) {
+                                    $q->orWhere('id', (int) $search);
+                                }
+                            })
+                            ->orderByDesc('id')
+                            ->limit(50)
+                            ->get(['id', 'numero_completo'])
+                            ->pluck('numero_completo', 'id')
+                            ->toArray();
+                    })
+                    
+                    ->getOptionLabelUsing(fn ($value) =>
+                        optional(Factura::find($value))->numero_completo
+                    )
+                    ->live(onBlur: false)
+                    ->afterStateUpdated(function (Get $get, Set $set) {
+                        $id = (int) ($get('rectifica_id') ?? 0);
+                        if (! $id) {
+                            return;
+                        }
+
+                        // 1) Cargar factura padre con sus líneas (en orden)
+                        $padre = \App\Models\Factura::with(['lineas' => fn ($q) => $q->orderBy('id')])
+                            ->find($id);
+
+                        if (! $padre) {
+                            return;
+                        }
+
+                        // 2) Copiar cabecera
+                        $set('cliente_id',        $padre->cliente_id);
+                        $set('datos_facturacion', $padre->datos_facturacion);
+                        $set('moneda',            $padre->moneda ?? 'eur');
+
+                        // 3) Preparar líneas (solo campos editables)
+                        $items = [];
+                        foreach ($padre->lineas as $ln) {
+                            $items[] = [
+                                'producto'        => (int) $ln->producto,      // 0=servicio, 1=producto
+                                'concepto'        => $ln->concepto,
+                                'cantidad'        => (float) $ln->cantidad,
+                                'precio_unitario' => (float) $ln->precio_unitario,
+                                'descuento_pct'   => (float) ($ln->descuento_pct ?? 0),
+                                'impuesto_id'     => $ln->impuesto_id,
+                            ];
+                        }
+
+                        // 4) Forzar rehidratación del repeater y recalcular
+                        $set('lineas', []);           // <- reset para asegurar cambio de estado
+                        $set('lineas', $items);
+
+                        $lineas = $get('lineas') ?? [];
+                        if (is_array($lineas)) {
+                            foreach (array_keys($lineas) as $i) {
+                                self::recalcularLineaEn($get, $set, (int) $i);
+                            }
+                        }
+
+                        self::recalcularTotalesFactura($get, $set);
+                    })
                     ->visible(fn (Get $get) => in_array($get('tipo'), ['abono','rectificativa'], true))
                     ->required(fn (Get $get) => in_array($get('tipo'), ['abono','rectificativa'], true))
-                    ->columnSpan(8),
+                    ->columnSpan(8)
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
 
                 Select::make('estado')
                     ->label("Estado")
-                    ->options([
-                        "borrador"  => "Borrador",
-                        "emitida"   => "Emitida",
-                        "cobrada"   => "Cobrada",
-                        "anulada"   => "Anulada" 
-                    ])
+                    ->options(fn (?Factura $record) => ($record && $record->numero !== null)
+                        ? [
+                            'emitida' => 'Emitida',
+                            'cobrada' => 'Cobrada',
+                            'anulada' => 'Anulada',
+                        ]
+                        : [
+                            'borrador' => 'Borrador',
+                            'emitida'  => 'Emitida',
+                            'cobrada'  => 'Cobrada',
+                            'anulada'  => 'Anulada',
+                        ]
+                    )
                     ->required()
                     ->default("borrador")
+                    ->hiddenOn('create')
+                    ->visibleOn('edit') 
                     ->columnSpan(6),
 
                 Select::make('cliente_id')
@@ -111,16 +207,23 @@ class FacturaForm
                             }
                         }
                         self::recalcularTotalesFactura($get, $set);   
-                    }),
+                    })
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
                     
                 Textarea::make('datos_facturacion')
                     ->rows(5)
                     ->readonly()
-                    ->columnSpan(12),
+                    ->columnSpan(12)
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
+
                 DatePicker::make('fecha')
                     ->label('Fecha de emisión')
-                    ->default(fn () => now()->toDateString())   // hoy por defecto
-                    ->live(onBlur: false)                        // dispara en el change
+                    ->default(fn () => now()->toDateString())
+                    ->minDate(now()->toDateString())
+                    ->rule('after_or_equal:today')        
+                    ->live(onBlur: false)                        
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         if (!$state) {
                             $set('vencimiento', null);
@@ -130,18 +233,25 @@ class FacturaForm
                         $set('vencimiento', $base->copy()->addWeek()->toDateString()); // +7 días
                     })
                     ->required()
-                    ->columnSpan(4),
+                    ->columnSpan(4)
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
+
                 DatePicker::make('vencimiento')
                     ->label('Fecha de vencimiento')
-                    ->default(fn () => now()->addWeek()->toDateString()) // una semana desde hoy
+                    ->default(fn () => now()->addWeek()->toDateString())
+                    ->minDate(fn (Get $get) => ($get('fecha') ?: now()->toDateString()))
                     ->required()
-                    ->columnSpan(4),
+                    ->columnSpan(4)
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
 
                 Repeater::make('lineas')
                     ->label('Líneas')
                     ->relationship('lineas')      
                     ->defaultItems(1)
                     ->minItems(1)
+                    ->rules(['required','array','min:1'])
                     ->columnSpanFull()
                     ->columns(12)
                     ->afterStateHydrated(function (Get $get, Set $set, $state) {
@@ -156,6 +266,8 @@ class FacturaForm
                     ->afterStateUpdated(fn (Get $get, Set $set)
                         => self::recalcularTotalesFactura($get, $set)
                     )
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => blank($record?->numero))
                     ->schema([
 
                         ToggleButtons::make('producto')
@@ -167,27 +279,38 @@ class FacturaForm
                             ->default(0)
                             ->columnSpanFull()
                             ->live()
-                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set)),
+                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
+                            ->disabled($lockLinea)
+                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         Textarea::make('concepto')
                             ->label('Concepto')
                             ->required()
                             ->rows(6)
-                            ->columnSpan(6),
+                            ->columnSpan(6)
+                            ->disabled($lockLinea)
+                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         TextInput::make('cantidad')
-                            ->numeric()->minValue(1)->step('1')
+                            ->numeric()->minValue(0.1)->step('0.1')
+                            ->rules(['numeric','gt:0'])
                             ->default(1)
                             ->columnSpan(2)
+                            ->required()
                             ->live()
-                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set)),
+                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
+                            ->disabled($lockLinea)
+                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         TextInput::make('precio_unitario')
                             ->numeric()->minValue(0)->step('0.01')
                             ->label('Precio')
                             ->columnSpan(2)
+                            ->required()
                             ->live()
-                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set)),
+                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
+                            ->disabled($lockLinea)
+                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         TextInput::make('descuento_pct')
                             ->numeric()->minValue(0)->maxValue(100)->step('0.01')
@@ -195,7 +318,9 @@ class FacturaForm
                             ->default(0)
                             ->columnSpan(2)
                             ->live()
-                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set)),
+                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
+                            ->disabled($lockLinea)
+                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         Select::make('impuesto_id')
                             ->label('Impuesto')
@@ -211,7 +336,9 @@ class FacturaForm
                             ->columnSpan(4)
                             ->live()
                             ->afterStateHydrated(fn (Get $get, Set $set) => self::recalcularLineaYTotales($get, $set))
-                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set)),
+                            ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
+                            ->disabled($lockLinea)
+                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         // (Opcional) campos calculados persistidos; se recomiendan sólo lectura:
                         TextInput::make('base_linea')->readOnly()->numeric()->columnSpan(2),
@@ -235,8 +362,13 @@ class FacturaForm
                         "usd" => "USD"])
                     ->default('eur')
                     ->required()
-                    ->columnSpan(3),
-                Textarea::make('notas')->rows(3)->columnSpanFull(),
+                    ->columnSpan(3)
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
+                Textarea::make('notas')->rows(3)->columnSpanFull()
+                    ->disabled($lock)
+                    ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
+
                 TextInput::make('hash')->label("Verifactu")->readonly()->columnSpan(6),
             ]);
     }

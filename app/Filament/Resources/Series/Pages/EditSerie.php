@@ -5,9 +5,9 @@ namespace App\Filament\Resources\Series\Pages;
 use App\Filament\Resources\Series\SerieResource;
 use App\Models\Serie;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Actions; 
-use Illuminate\Support\Facades\DB;
+use Filament\Actions\{Action, DeleteAction}; 
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
 
 class EditSerie extends EditRecord
 {
@@ -15,8 +15,10 @@ class EditSerie extends EditRecord
 
     protected function getHeaderActions(): array
     {
+        $enUso = fn () => $this->record?->facturas()->exists() ?? false;
+
         return [
-            Actions\Action::make('activar')
+            Action::make('activar')
                 ->label('Activar serie')
                 ->icon('heroicon-o-bolt')
                 ->color('primary')
@@ -30,25 +32,20 @@ class EditSerie extends EditRecord
                         /** @var Serie $serie */
                         $serie = $this->record->refresh();
 
-                        // Desactiva hermanas del mismo tipo+ejercicio
                         Serie::where('tipo', $serie->tipo)
                             ->where('ejercicio', $serie->ejercicio)
                             ->whereKeyNot($serie->id)
                             ->update(['activo' => false]);
 
-                        // Activa la actual
-                        $serie->activo = true;
-                        $serie->save(); // tu hook saving volverá a desactivar si hiciera falta
+                        $serie->forceFill(['activo' => true])->save();
                     });
 
-                    Notification::make()
-                        ->title('Serie activada correctamente.')
-                        ->success()
-                        ->send();
+                    Notification::make()->title('Serie activada correctamente.')->success()->send();
+
                     $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record]));
                 }),
 
-            Actions\Action::make('desactivar')
+            Action::make('desactivar')
                 ->label('Desactivar serie')
                 ->icon('heroicon-o-pause-circle')
                 ->color('gray')
@@ -56,18 +53,16 @@ class EditSerie extends EditRecord
                 ->requiresConfirmation()
                 ->modalHeading('Desactivar esta serie')
                 ->modalDescription(fn (Serie $record) =>
-                    "Esta serie dejará de estar activa para “{$record->tipo} - {$record->ejercicio}”. No habrá serie activa hasta que actives otra.")
+                    "Esta serie dejará de estar activa para “{$record->tipo} - {$record->ejercicio}”.")
                 ->action(function () {
                     $this->record->forceFill(['activo' => false])->save();
-                    Notification::make()
-                        ->title('Serie desactivada.')
-                        ->success()
-                        ->send();
+
+                    Notification::make()->title('Serie desactivada.')->success()->send();
+
                     $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record]));
                 }),
 
-            // Acciones estándar
-            Actions\DeleteAction::make(),
+            DeleteAction::make()->hidden($enUso),
         ];
     }
 }
