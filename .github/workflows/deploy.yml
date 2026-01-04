@@ -1,4 +1,4 @@
-name: Deploy to cPanel via FTP
+name: "Deploy to cPanel via FTP"
 
 on:
   push:
