@@ -18,7 +18,7 @@ use App\Models\{Impuesto, Cliente, Factura};
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Route;
 
 class FacturaForm
 {
@@ -401,9 +401,12 @@ class FacturaForm
                                 : '-';
                             $importe = (float) $pago->importe;
                             $totalPagado += $importe;
-                            $justificanteUrl = $pago->justificante_path
-                                ? Storage::disk('public')->url($pago->justificante_path)
-                                : null;
+                            $justificanteUrl = null;
+                            if ($pago->justificante_path) {
+                                $justificanteUrl = Route::has('pagos.justificante')
+                                    ? route('pagos.justificante', $pago)
+                                    : url("/pagos/{$pago->id}/justificante");
+                            }
                             $rows .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-800">'
                                 . '<td class="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 whitespace-nowrap text-gray-700 dark:text-gray-200">' . e($fechaPago) . '</td>'
                                 . '<td class="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-right font-semibold text-gray-900 dark:text-gray-100">' . e(number_format($importe, 2, ',', '.')) . '</td>'
