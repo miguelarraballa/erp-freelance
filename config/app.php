@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'artisan_bridge_token' => env('ARTISAN_BRIDGE_TOKEN'),
+
 ];
