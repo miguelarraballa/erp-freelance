@@ -13,6 +13,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    env: 
+      BRIDGE_URL: ${{ secrets.BRIDGE_URL }}
+      BRIDGE_TOKEN: ${{ secrets.BRIDGE_TOKEN }}
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,7 +65,7 @@ jobs:
 
       # Sube por FTP (SamKirkland)
       - name: FTP Deploy
-        uses: SamKirkland/FTP-Deploy-Action@v4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.CPANEL_FTP_SERVER }}
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
@@ -82,10 +86,10 @@ jobs:
 
       # (Opcional) Ejecuta artisan vía tu bridge si lo tienes publicado
       - name: Warm caches via artisan-bridge (optional)
-        if: ${{ secrets.BRIDGE_URL != '' && secrets.BRIDGE_TOKEN != '' }}
+        if: ${{ env.BRIDGE_URL != '' && env.BRIDGE_TOKEN != '' }}
         run: |
-          curl -sS -X POST -d "token=${{ secrets.BRIDGE_TOKEN }}&cmd=optimize:clear" "${{ secrets.BRIDGE_URL }}"
-          curl -sS -X POST -d "token=${{ secrets.BRIDGE_TOKEN }}&cmd=filament:cache-components" "${{ secrets.BRIDGE_URL }}"
-          curl -sS -X POST -d "token=${{ secrets.BRIDGE_TOKEN }}&cmd=config:cache" "${{ secrets.BRIDGE_URL }}"
-          curl -sS -X POST -d "token=${{ secrets.BRIDGE_TOKEN }}&cmd=route:cache" "${{ secrets.BRIDGE_URL }}"
-          curl -sS -X POST -d "token=${{ secrets.BRIDGE_TOKEN }}&cmd=view:cache" "${{ secrets.BRIDGE_URL }}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=optimize:clear" "${BRIDGE_URL}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=filament:cache-components" "${BRIDGE_URL}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=config:cache" "${BRIDGE_URL}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=route:cache" "${BRIDGE_URL}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=view:cache" "${BRIDGE_URL}"
