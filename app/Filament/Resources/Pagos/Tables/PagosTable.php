@@ -14,11 +14,12 @@ class PagosTable
     {
         return $table
             ->columns([
-                TextColumn::make('factura_id')
-                    ->numeric()
+                TextColumn::make('numero_completo')
+                    ->label('Factura')
+                    ->getStateUsing(fn ($record) => $record->factura->numero_completo)
                     ->sortable(),
                 TextColumn::make('fecha_pago')
-                    ->date()
+                    ->date("d/m/Y")
                     ->sortable(),
                 TextColumn::make('importe')
                     ->numeric()
