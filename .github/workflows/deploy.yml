@@ -1,0 +1,92 @@
+name: "Deploy to cPanel via FTP"
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env: 
+      BRIDGE_URL: ${{ secrets.BRIDGE_URL }}
+      BRIDGE_TOKEN: ${{ secrets.BRIDGE_TOKEN }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # PHP para Composer (ajusta versión si procede)
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, gd, zip, xml, ctype, curl, dom, fileinfo, json, pdo_mysql
+          coverage: none
+
+      - name: Install Composer deps (no-dev)
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      # Node para compilar Vite
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Build assets
+        run: |
+          npm ci
+          npm run build
+      # Prepara un directorio con lo que se deploya
+      - name: Prepare deploy bundle
+        run: |
+          mkdir deploy
+          rsync -a ./ deploy/ \
+            --delete \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude "node_modules/" \
+            --exclude "tests/" \
+            --exclude ".env" \
+            --exclude ".env.*" \
+            --exclude "storage/" \
+            --exclude "docker/" \
+            --exclude ".vscode/" \
+            --exclude ".idea/" \
+            --exclude "**/.DS_Store"
+      # Sube por FTP (SamKirkland)
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./deploy/
+          server-dir: ${{ secrets.CPANEL_FTP_REMOTE_DIR }}
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+            **/tests/**
+            **/storage/**
+            **/.env
+            **/.env.*
+            **/.DS_Store
+      # (Opcional) Ejecuta artisan vía tu bridge si lo tienes publicado
+      - name: Warm caches via artisan-bridge (optional)
+        if: ${{ env.BRIDGE_URL != '' && env.BRIDGE_TOKEN != '' }}
+        run: |
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=optimize:clear" "${BRIDGE_URL}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=filament:cache-components" "${BRIDGE_URL}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=config:cache" "${BRIDGE_URL}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=route:cache" "${BRIDGE_URL}"
+          curl -sS -X POST -d "token=${BRIDGE_TOKEN}&cmd=view:cache" "${BRIDGE_URL}"
