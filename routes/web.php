@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FacturaPdfController;
 use App\Http\Controllers\PagoJustificanteController;
+use App\Http\Controllers\FacturaProveedorDocumentoController;
 use Filament\Http\Middleware\Authenticate as FilamentAuthenticate;
 
 Route::middleware(['web', FilamentAuthenticate::class]) // usa el login de Filament
@@ -11,6 +12,8 @@ Route::middleware(['web', FilamentAuthenticate::class]) // usa el login de Filam
             ->name('facturas.pdf');
         Route::get('/pagos/{pago}/justificante', [PagoJustificanteController::class, 'show'])
             ->name('pagos.justificante');
+        Route::get('/facturas-proveedores/{facturaProveedor}/documento', [FacturaProveedorDocumentoController::class, 'show'])
+            ->name('facturas-proveedores.documento');
     });
 
 Route::get('/', function () {
