@@ -1,77 +1,95 @@
 <?php
 /**
  * Artisan Bridge (cPanel, sin SSH)
- * - Colócalo junto a tu index público (public/ o public_html/).
- * - Protegido por token .env(ARTISAN_BRIDGE_TOKEN).
- * - SOLO ejecuta comandos en la whitelist.
+ * Protegido por token (.env: ARTISAN_BRIDGE_TOKEN).
+ * SOLO ejecuta comandos whitelisteados.
  */
-
 declare(strict_types=1);
 
-// ========= CONFIG BÁSICA =========
-// Ajusta si tu public_html NO está dentro del proyecto:
-$base = realpath(__DIR__ . '/..');            // p.ej. /home/USER/laravel-app
-// $base = '/home/USER/laravel-app';          // <-- si lo necesitas, usa ruta absoluta
-
+$base = realpath(__DIR__ . '/..'); // /home/USER/erp
 header('Content-Type: application/json; charset=utf-8');
 
-// Requiere POST
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
     echo json_encode(['ok' => false, 'error' => 'Use POST']); exit;
 }
 
-// Bootstrap Laravel sin pasar por el kernel HTTP
 require $base . '/vendor/autoload.php';
-$app = require $base . '/bootstrap/app.php';
 
-/** @var \Illuminate\Contracts\Console\Kernel $kernel */
-$kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+/** Cargar .env a $_ENV/$_SERVER aunque exista config:cache */
+if (file_exists($base.'/.env')) {
+    Dotenv\Dotenv::createImmutable($base)->safeLoad();
+}
 
-// Carga env y verifica token
-$tokenProvided = $_POST['token'] ?? $_SERVER['HTTP_X_BRIDGE_TOKEN'] ?? null;
-$tokenExpected = env('ARTISAN_BRIDGE_TOKEN'); // definido en .env de producción
+/** Token esperado: leer de superglobales, no usar config()/env() aqu��� */
+$tokenExpected = $_ENV['ARTISAN_BRIDGE_TOKEN']
+    ?? $_SERVER['ARTISAN_BRIDGE_TOKEN']
+    ?? null;
+
+/** Token recibido por POST o cabecera */
+$tokenProvided = $_POST['token'] ?? ($_SERVER['HTTP_X_BRIDGE_TOKEN'] ?? null);
 
 if (!$tokenExpected || !hash_equals((string)$tokenExpected, (string)$tokenProvided)) {
     http_response_code(403);
     echo json_encode(['ok' => false, 'error' => 'Forbidden']); exit;
 }
 
-// ========== WHITELIST de comandos ==========
+/** Bootstrap de la app y kernel de consola */
+$app = require $base . '/bootstrap/app.php';
+/** @var \Illuminate\Contracts\Console\Kernel $kernel */
+$kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+
+/** Whitelist de comandos */
 $allowed = [
-    // Caches / optimizaciones
-    'optimize:clear'                  => [],
-    'config:clear'                    => [],
-    'config:cache'                    => [],
-    'route:clear'                     => [],
-    'route:cache'                     => [],
-    'view:clear'                      => [],
-    // Filament
-    'filament:clear-cached-components'=> [],
-    'filament:cache-components'       => [],
-    // Storage symlink (puede fallar en hostings)
-    'storage:link'                    => [],
-    // Migraciones (SIEMPRE con --force)
-    'migrate'                         => ['--force' => true],
+    'optimize:clear' => [],
+    'config:clear'   => [],
+    'config:cache'   => [],
+    'route:clear'    => [],
+    'route:cache'    => [],
+    'view:clear'     => [],
+    'filament:clear-cached-components' => [],
+    'filament:cache-components'        => [],
+    'storage:link'   => [],
+    'migrate'        => ['--force' => true],
+     'db:seed'       => ['--force' => true],
 ];
 
-// Entrada: cmd = nombre exacto (clave del array anterior)
 $cmd = (string)($_POST['cmd'] ?? '');
 if (!array_key_exists($cmd, $allowed)) {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => 'Comando no permitido']); exit;
 }
 
-// Seguridad extra para migrate: requiere confirm explícita
 if ($cmd === 'migrate' && (($_POST['confirm'] ?? '') !== 'YES')) {
     http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'Para migrate añade confirm=YES']); exit;
+    echo json_encode(['ok' => false, 'error' => 'Para migrate a���ade confirm=YES']); exit;
 }
 
 try {
-    $params  = $allowed[$cmd];
-    $exit    = $kernel->call($cmd, $params);
-    $output  = $kernel->output();
+    
+    $params = $allowed[$cmd];
+
+    // Permitir clase del seeder (whitelist para seguridad)
+    if ($cmd === 'db:seed') {
+        $class = trim((string)($_POST['class'] ?? ''));
+        if ($class !== '') {
+            $whitelist = [
+                'Database\\Seeders\\DatabaseSeeder',
+                'Database\\Seeders\\ImpuestosSeeder',
+                'Database\\Seeders\\SeriesSeeder',
+                // a���ade aqu��� tus seeders permitidos
+            ];
+            if (! in_array($class, $whitelist, true)) {
+                http_response_code(400);
+                echo json_encode(['ok' => false, 'error' => 'Seeder no permitido']); exit;
+            }
+            $params['--class'] = $class;
+        }
+    }
+        
+    
+    $exit   = $kernel->call($cmd, $allowed[$cmd]);
+    $output = $kernel->output();
 
     echo json_encode([
         'ok'     => $exit === 0,
