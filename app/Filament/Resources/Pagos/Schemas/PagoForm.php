@@ -26,7 +26,7 @@ class PagoForm
                         name: 'factura',
                         titleAttribute: 'numero_completo',
                         modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $query) =>
-                            $query->whereIn('estado', ['emitida'])->orderByDesc('numero_completo'),
+                            $query->whereIn('estado', ['emitida','cobrada'])->orderByDesc('numero_completo'),
                     )
                     ->getOptionLabelFromRecordUsing(
                         fn (Factura $record): string => (string) $record->numero_completo
