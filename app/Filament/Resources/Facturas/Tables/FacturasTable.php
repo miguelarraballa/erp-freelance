@@ -3,7 +3,8 @@
 namespace App\Filament\Resources\Facturas\Tables;
 
 use Filament\Tables\Table;
-use Filament\Tables\Columns\{TextColumn, IconColumn};
+use Filament\Tables\Columns\TextColumn;
+use App\Models\Factura;
 use Filament\Actions\{EditAction, DeleteAction, BulkAction, BulkActionGroup, DeleteBulkAction};
 
 
@@ -25,7 +26,24 @@ class FacturasTable
                     'secondary' => 'enviada',
                     'success' => 'pagada',
                 ]),
-                IconColumn::make('pagada')->boolean(),
+                TextColumn::make('pagada')
+                    ->label('Pagada')
+                    ->getStateUsing(fn (Factura $record): float => (float) $record->pagos()->sum('importe'))
+                    ->money('EUR')
+                    ->color(function (Factura $record): string {
+                        $totalFactura = (float) $record->total;
+                        $totalPagado = (float) $record->pagos()->sum('importe');
+
+                        if ($totalPagado === $totalFactura) {
+                            return 'success';
+                        }
+
+                        if ($totalPagado < $totalFactura) {
+                            return 'danger';
+                        }
+
+                        return 'warning';
+                    }),
             ])
             ->filters([
                 //

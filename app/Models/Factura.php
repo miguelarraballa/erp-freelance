@@ -25,7 +25,7 @@ class Factura extends Model
     }
 
     public function pagos()  { 
-        return $this->hasMany(Pago::class)->orderBy('fecha'); 
+        return $this->hasMany(Pago::class)->orderBy('fecha_pago'); 
     }
     
     public function logs()    { 

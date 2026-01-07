@@ -7,8 +7,10 @@ use Filament\Forms\Components\{
     TextInput,
     DatePicker,
     Select,
+    FileUpload,
 };
 use Illuminate\Support\Carbon;
+use App\Models\Factura;
 
 
 class PagoForm
@@ -18,13 +20,16 @@ class PagoForm
         return $schema
             ->columns(12)
             ->schema([
-                 Select::make('factura_id')
+                Select::make('factura_id')
                     ->label('Factura')
                     ->relationship(
-                        name: 'factura',               
-                        titleAttribute: 'numero_completo', 
-                        modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $q) =>
-                            $q->where('estado','<>','cobrada')->orderByDesc('id')
+                        name: 'factura',
+                        titleAttribute: 'numero_completo',
+                        modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $query) =>
+                            $query->whereIn('estado', ['emitida'])->orderByDesc('numero_completo'),
+                    )
+                    ->getOptionLabelFromRecordUsing(
+                        fn (Factura $record): string => (string) $record->numero_completo
                     )
                     ->searchable()
                     ->required()
@@ -38,6 +43,12 @@ class PagoForm
                     ->required()
                     ->numeric()
                     ->columnSpan(2),
+                FileUpload::make('justificante_path')
+                    ->label('Justificante (PDF/JPG)')
+                    ->disk('public')
+                    ->directory('justificantes')
+                    ->acceptedFileTypes(['application/pdf', 'image/jpeg'])
+                    ->columnSpan(12),
             ]);
     }
 }
