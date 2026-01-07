@@ -41,14 +41,7 @@ class FacturaEmisionService
 
             $seq = (int) $serie->siguiente_numero;
 
-            // Renderizar el patrón de la serie: sustituir grupos de N por el secuencial con ceros
-            $pattern = (string) $serie->codigo; // p.ej. "NNNN", "FAC-NNN/{$ejercicio}"
-            $codigoRender = preg_replace_callback('/N+/', function ($m) use ($seq) {
-                $len = strlen($m[0]);
-                return str_pad((string) $seq, $len, '0', STR_PAD_LEFT);
-            }, $pattern);
-
-            $numeroCompleto = (string) (($serie->prefijo ?? '') . $codigoRender . ($serie->sufijo ?? ''));
+            $numeroCompleto = SerieNumeracionService::renderNumeroCompleto($serie, $seq);
 
             // Asignar datos en factura
             $factura->serie_id        = $serie->id;

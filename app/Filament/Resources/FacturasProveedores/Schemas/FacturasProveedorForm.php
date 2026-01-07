@@ -42,46 +42,57 @@ class FacturasProveedorForm {
                         $set('datos_proveedor', $snapshot);
                     })
                     ->required()
-                    ->columnSpan(6),
-
-                // Serie (usa tu tabla 'series')
-                Select::make('serie_id')
-                    ->label('Serie')
-                    ->relationship('serie', 'codigo')
-                    ->searchable()
-                    ->required()
-                    ->columnSpan(3),
-
-                // Nº del proveedor
-                TextInput::make('numero_proveedor')
-                    ->label('Nº proveedor')
-                    ->maxLength(100)
-                    ->required()
-                    ->columnSpan(3),
+                    ->columnSpan(12),
 
                 // Fecha de la factura del proveedor
                 DatePicker::make('fecha')
                     ->label('Fecha')
                     ->default(fn () => now()->toDateString())
                     ->required()
-                    ->columnSpan(3),
+                    ->columnSpan(6),
 
+                TextInput::make('numero_proveedor')
+                    ->label('Número de factura del proveedor')
+                    ->default('')
+                    ->required()
+                    ->columnSpan(6),
+
+                // Snapshot de datos del proveedor (solo lectura, se guarda)
+                Textarea::make('datos_proveedor')
+                    ->label('Datos del proveedor')
+                    ->rows(6)
+                    ->disabled()
+                    ->dehydrated(true)
+                    ->required()
+                    ->columnSpan(4),
+                
                 // Concepto libre (opcional)
                 Textarea::make('concepto')
                     ->label('Concepto')
-                    ->rows(3)
-                    ->columnSpan(9),
+                    ->rows(6)
+                    ->columnSpan(8),
 
+                Select::make('moneda')
+                    ->label("Moneda")
+                    ->options([
+                        "eur" => "EUR",
+                        "usd" => "USD"])
+                    ->default('eur')
+                    ->required()
+                    ->columnSpan(3),
+                
                 // Totales (introducidos manualmente)
                 TextInput::make('base')
                     ->label('Base')
                     ->numeric()->minValue(0)->step('0.01')
                     ->required()
+                    ->default(0)
                     ->columnSpan(3),
 
                 TextInput::make('iva_total')
                     ->label('IVA total')
                     ->numeric()->minValue(0)->step('0.01')
+                    ->default(0)
                     ->required()
                     ->columnSpan(3),
 
@@ -97,14 +108,7 @@ class FacturasProveedorForm {
                     ->required()
                     ->columnSpan(3),
 
-                // Snapshot de datos del proveedor (solo lectura, se guarda)
-                Textarea::make('datos_proveedor')
-                    ->label('Datos del proveedor')
-                    ->rows(5)
-                    ->disabled()
-                    ->dehydrated(true)
-                    ->required()
-                    ->columnSpan(6),
+                // Snapshot de datos del proveedor (solo lectura, se guarda
 
                 // PDF adjunto (opcional)
                 FileUpload::make('pdf_path')

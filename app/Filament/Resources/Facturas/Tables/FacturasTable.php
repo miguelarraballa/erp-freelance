@@ -6,6 +6,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use App\Models\Factura;
 use Filament\Actions\{EditAction, DeleteAction, BulkAction, BulkActionGroup, DeleteBulkAction};
+use Filament\Support\Icons\Heroicon;
 
 
 class FacturasTable
@@ -44,6 +45,16 @@ class FacturasTable
 
                         return 'warning';
                     }),
+                TextColumn::make('pdf')
+                    ->label('PDF')
+                    ->getStateUsing(fn (Factura $record): ?int => $record->estado !== 'borrador' ? 1 : null)
+                    ->formatStateUsing(fn (): string => '')
+                    ->icon(fn (Factura $record) => $record->estado !== 'borrador' ? Heroicon::OutlinedArrowDownTray : null)
+                    ->url(fn (Factura $record): ?string => $record->estado !== 'borrador' ? route('facturas.pdf', $record) : null)
+                    ->openUrlInNewTab()
+                    ->color('primary')
+                    ->tooltip(fn (Factura $record): ?string => $record->estado !== 'borrador' ? 'Descargar PDF' : null)
+                    ->alignCenter(),
             ])
             ->filters([
                 //
