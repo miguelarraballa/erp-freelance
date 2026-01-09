@@ -86,6 +86,7 @@ class Component extends ViewComponent
             'get' => [$this->makeGetUtility()],
             'livewire' => [$this->getLivewire()],
             'model' => [$this->getModel()],
+            'parentRepeaterItemIndex' => [$this->getParentRepeaterItemIndex()],
             'rawState' => [$this->getRawState()],
             'record' => [$this->getRecord()],
             'set' => [$this->makeSetUtility()],
@@ -99,7 +100,7 @@ class Component extends ViewComponent
      */
     protected function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
     {
-        $record = $this->getRecord();
+        $record = is_a($parameterType, Model::class, allow_string: true) ? $this->getRecord() : null;
 
         if ((! $record) || is_array($record)) {
             return match ($parameterType) {

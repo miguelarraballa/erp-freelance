@@ -11,6 +11,7 @@ use Filament\Forms\Components\RichEditor\Actions\LinkAction;
 use Filament\Forms\Components\RichEditor\Actions\TextColorAction;
 use Filament\Forms\Components\RichEditor\EditorCommand;
 use Filament\Forms\Components\RichEditor\FileAttachmentProviders\Contracts\FileAttachmentProvider;
+use Filament\Forms\Components\RichEditor\MentionProvider;
 use Filament\Forms\Components\RichEditor\Models\Contracts\HasRichContent;
 use Filament\Forms\Components\RichEditor\Plugins\Contracts\RichContentPlugin;
 use Filament\Forms\Components\RichEditor\RichContentAttribute;
@@ -21,12 +22,14 @@ use Filament\Forms\Components\RichEditor\StateCasts\RichEditorStateCast;
 use Filament\Forms\Components\RichEditor\TextColor;
 use Filament\Schemas\Components\StateCasts\Contracts\StateCast;
 use Filament\Support\Colors\Color;
+use Filament\Support\Components\Attributes\ExposedLivewireMethod;
 use Filament\Support\Concerns\HasExtraAlpineAttributes;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Renderless;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Tiptap\Editor;
 
@@ -46,6 +49,11 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
 
     protected string | Closure | null $uploadingFileMessage = null;
 
+    /**
+     * @var array<string> | Closure
+     */
+    protected array | Closure $linkProtocols = ['http', 'https', 'mailto'];
+
     protected bool | Closure | null $isJson = null;
 
     /**
@@ -62,6 +70,11 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
      * @var array<string> | Closure | null
      */
     protected array | Closure | null $mergeTags = null;
+
+    /**
+     * @var array<MentionProvider> | Closure | null
+     */
+    protected array | Closure | null $mentions = null;
 
     /**
      * @var array<class-string<RichContentCustomBlock>> | Closure | null
@@ -92,6 +105,8 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
     protected array | Closure | null $textColors = null;
 
     protected bool | Closure | null $hasCustomTextColors = null;
+
+    protected bool | Closure | null $hasResizableImages = null;
 
     protected function setUp(): void
     {
@@ -141,18 +156,21 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
             RichEditorTool::make('h1')
                 ->label(__('filament-forms::components.rich_editor.tools.h1'))
                 ->jsHandler('$getEditor()?.chain().focus().toggleHeading({ level: 1 }).run()')
+                ->activeKey('heading')
                 ->activeOptions(['level' => 1])
                 ->icon(Heroicon::H1)
                 ->iconAlias('forms:components.rich-editor.toolbar.h1'),
             RichEditorTool::make('h2')
                 ->label(__('filament-forms::components.rich_editor.tools.h2'))
                 ->jsHandler('$getEditor()?.chain().focus().toggleHeading({ level: 2 }).run()')
+                ->activeKey('heading')
                 ->activeOptions(['level' => 2])
                 ->icon(Heroicon::H2)
                 ->iconAlias('forms:components.rich-editor.toolbar.h2'),
             RichEditorTool::make('h3')
                 ->label(__('filament-forms::components.rich_editor.tools.h3'))
                 ->jsHandler('$getEditor()?.chain().focus().toggleHeading({ level: 3 }).run()')
+                ->activeKey('heading')
                 ->activeOptions(['level' => 3])
                 ->icon(Heroicon::H3)
                 ->iconAlias('forms:components.rich-editor.toolbar.h3'),
@@ -231,6 +249,11 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
                 ->jsHandler('$getEditor()?.chain().focus().toggleHeaderRow().run()')
                 ->icon('fi-o-table-toggle-header-row')
                 ->iconAlias('forms:components.rich-editor.toolbar.table_toggle_header_row'),
+            RichEditorTool::make('tableToggleHeaderCell')
+                ->label(__('filament-forms::components.rich_editor.tools.table_toggle_header_cell'))
+                ->jsHandler('$getEditor()?.chain().focus().toggleHeaderCell().run()')
+                ->icon('fi-o-table-toggle-header-cell')
+                ->iconAlias('forms:components.rich-editor.toolbar.table_toggle_header_cell'),
             RichEditorTool::make('tableDelete')
                 ->label(__('filament-forms::components.rich_editor.tools.table_delete'))
                 ->jsHandler('$getEditor()?.chain().focus().deleteTable().run()')
@@ -555,6 +578,24 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
     }
 
     /**
+     * @param  array<string> | Closure  $protocols
+     */
+    public function linkProtocols(array | Closure $protocols): static
+    {
+        $this->linkProtocols = $protocols;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getLinkProtocols(): array
+    {
+        return $this->evaluate($this->linkProtocols);
+    }
+
+    /**
      * @return array<RichContentPlugin>
      */
     public function getPlugins(): array
@@ -601,14 +642,6 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
         return array_reduce(
             [
                 ...array_reduce(
-                    $this->getPlugins(),
-                    fn (array $carry, RichContentPlugin $plugin): array => [
-                        ...$carry,
-                        ...$plugin->getEditorTools(),
-                    ],
-                    initial: [],
-                ),
-                ...array_reduce(
                     $this->tools,
                     function (array $carry, RichEditorTool | Closure $tool): array {
                         if ($tool instanceof Closure) {
@@ -620,6 +653,14 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
                             ...Arr::wrap($tool),
                         ];
                     },
+                    initial: [],
+                ),
+                ...array_reduce(
+                    $this->getPlugins(),
+                    fn (array $carry, RichContentPlugin $plugin): array => [
+                        ...$carry,
+                        ...$plugin->getEditorTools(),
+                    ],
                     initial: [],
                 ),
             ],
@@ -684,7 +725,7 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
                 'tableAddColumnBefore', 'tableAddColumnAfter', 'tableDeleteColumn',
                 'tableAddRowBefore', 'tableAddRowAfter', 'tableDeleteRow',
                 'tableMergeCells', 'tableSplitCell',
-                'tableToggleHeaderRow',
+                'tableToggleHeaderRow', 'tableToggleHeaderCell',
                 'tableDelete',
             ],
         ];
@@ -701,7 +742,7 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
             ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
             [
                 'table',
-                'attachFiles',
+                ...($this->hasFileAttachments(default: true) ? ['attachFiles'] : []),
                 ...(filled($this->getCustomBlocks()) ? ['customBlocks'] : []),
                 ...(filled($this->getMergeTags()) ? ['mergeTags'] : []),
             ],
@@ -780,6 +821,109 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
             $mergeTags,
             fn (string $label, int | string $id): array => [(is_string($id) ? $id : $label) => $label],
         );
+    }
+
+    /**
+     * @param  array<MentionProvider> | Closure  $providers
+     */
+    public function mentions(array | Closure $providers): static
+    {
+        $this->mentions = $providers;
+
+        return $this;
+    }
+
+    /**
+     * @return array<MentionProvider>
+     */
+    public function getMentionProviders(): array
+    {
+        return [
+            ...($this->getContentAttribute()?->getMentionProviders() ?? []),
+            ...($this->evaluate($this->mentions) ?? []),
+        ];
+    }
+
+    /**
+     * @return array<int, array{char: string, extraAttributes: array<string, mixed>, isSearchable: bool, items: array<string, string>, noOptionsMessage: string, noSearchResultsMessage: string, searchPrompt: string, searchingMessage: string}>
+     */
+    public function getMentionsForJs(): array
+    {
+        return array_map(
+            function (MentionProvider $provider): array {
+                return [
+                    'char' => $provider->getChar(),
+                    'extraAttributes' => $provider->getExtraAttributes(),
+                    'isSearchable' => $provider->hasSearchResultsUsing(),
+                    'items' => $provider->getItems(),
+                    'noOptionsMessage' => $provider->getNoItemsMessage(),
+                    'noSearchResultsMessage' => $provider->getNoSearchResultsMessage(),
+                    'searchPrompt' => $provider->getSearchPrompt(),
+                    'searchingMessage' => $provider->getSearchingMessage(),
+                ];
+            },
+            $this->getMentionProviders(),
+        );
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    #[ExposedLivewireMethod]
+    #[Renderless]
+    public function getMentionSearchResultsForJs(?string $search = null, ?string $char = '@'): array
+    {
+        $char = $char ?? '@';
+
+        $providers = $this->getMentionProviders();
+
+        $provider = collect($providers)->first(function (MentionProvider $mentionProvider) use ($char): bool {
+            return $mentionProvider->getChar() === $char;
+        }) ?? ($providers[0] ?? null);
+
+        if (! $provider) {
+            return [];
+        }
+
+        return $provider->getSearchResults($search ?? '');
+    }
+
+    /**
+     * @param  array<array{id: mixed, char: string}>  $mentions
+     * @return array<mixed, string>
+     */
+    #[ExposedLivewireMethod]
+    #[Renderless]
+    public function getMentionLabelsForJs(array $mentions = []): array
+    {
+        $providers = $this->getMentionProviders();
+        $labels = [];
+
+        $mentionsByChar = collect($mentions)->groupBy('char');
+
+        foreach ($mentionsByChar as $char => $charMentions) {
+            $provider = collect($providers)->first(function (MentionProvider $mentionProvider) use ($char): bool {
+                return $mentionProvider->getChar() === $char;
+            }) ?? ($providers[0] ?? null);
+
+            if (! $provider) {
+                continue;
+            }
+
+            $ids = $charMentions->pluck('id')->all();
+            $charLabels = $provider->getLabels($ids);
+
+            foreach ($charLabels as $id => $label) {
+                $labels[$id] = $label;
+            }
+        }
+
+        return $labels;
+    }
+
+    public function hasMentions(): bool
+    {
+        return isset($this->mentions);
     }
 
     public function noMergeTagSearchResultsMessage(string | Closure | null $message): static
@@ -1013,6 +1157,18 @@ class RichEditor extends Field implements Contracts\CanBeLengthConstrained
     public function hasCustomTextColors(): bool
     {
         return (bool) ($this->evaluate($this->hasCustomTextColors) ?? $this->getContentAttribute()?->hasCustomTextColors() ?? false);
+    }
+
+    public function resizableImages(bool | Closure | null $condition = true): static
+    {
+        $this->hasResizableImages = $condition;
+
+        return $this;
+    }
+
+    public function hasResizableImages(): bool
+    {
+        return (bool) $this->evaluate($this->hasResizableImages);
     }
 
     public function hasFileAttachmentsByDefault(): bool

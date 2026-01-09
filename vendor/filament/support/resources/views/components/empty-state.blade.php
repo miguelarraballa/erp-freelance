@@ -4,6 +4,8 @@
 @endphp
 
 @props([
+    'compact' => false,
+    'contained' => true,
     'description' => null,
     'footer' => null,
     'heading',
@@ -26,6 +28,8 @@
     {{
         $attributes->class([
             'fi-empty-state',
+            'fi-compact' => $compact,
+            'fi-empty-state-not-contained' => ! $contained,
         ])
     }}
 >
@@ -44,18 +48,20 @@
             </div>
         @endif
 
-        <{{ $headingTag }} class="fi-empty-state-heading">
-            {{ $heading }}
-        </{{ $headingTag }}>
+        <div class="fi-empty-state-text-ctn">
+            <{{ $headingTag }} class="fi-empty-state-heading">
+                {{ $heading }}
+            </{{ $headingTag }}>
 
-        @if ($hasDescription)
-            <p class="fi-empty-state-description">
-                {{ $description }}
-            </p>
-        @endif
+            @if ($hasDescription)
+                <p class="fi-empty-state-description">
+                    {{ $description }}
+                </p>
+            @endif
 
-        <footer class="fi-empty-state-footer">
-            {{ $footer }}
-        </footer>
+            <footer class="fi-empty-state-footer">
+                {{ $footer }}
+            </footer>
+        </div>
     </div>
 </section>

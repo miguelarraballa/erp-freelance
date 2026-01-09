@@ -6,6 +6,8 @@
     $icon = $getIcon();
     $iconColor = $getIconColor();
     $iconSize = $getIconSize();
+    $isCompact = $isCompact();
+    $isContained = $isContained();
 @endphp
 
 <div
@@ -16,6 +18,8 @@
     }}
 >
     <x-filament::empty-state
+        :compact="$isCompact"
+        :contained="$isContained"
         :description="$description"
         :footer="$footer"
         :heading="$heading"
