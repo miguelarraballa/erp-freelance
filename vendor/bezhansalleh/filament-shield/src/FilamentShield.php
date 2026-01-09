@@ -10,7 +10,6 @@ use Filament\Pages\BasePage as Page;
 use Filament\Resources\Resource;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -51,45 +50,6 @@ class FilamentShield
         return once(fn (): ?array => $this->transformCustomPermissions($localized));
     }
 
-    /**
-     * Get the localized resource permission label
-     */
-    public static function getLocalizedResourcePermissionLabel(string $permission): string
-    {
-        return Lang::has("filament-shield::filament-shield.resource_permission_prefixes_labels.$permission", app()->getLocale())
-            ? __("filament-shield::filament-shield.resource_permission_prefixes_labels.$permission")
-            : Str::of($permission)->headline();
-    }
-
-    private function buildPermissionKey(string $entity, string $affix, string $subject): string
-    {
-        $permissionConfig = Utils::getConfig()->permissions;
-
-        if ($this->buildPermissionKeyUsing instanceof \Closure) {
-
-            /** @var string $result */
-            $result = $this->evaluate(
-                value: $this->buildPermissionKeyUsing,
-                namedInjections: [
-                    'entity' => $entity,
-                    'affix' => $affix,
-                    'subject' => $subject,
-                    'case' => $permissionConfig->case,
-                    'separator' => $permissionConfig->separator,
-                ]
-            );
-
-            return $result;
-        }
-
-        return $this->defaultPermissionKeyBuilder(
-            affix: $affix,
-            separator: $permissionConfig->separator,
-            subject: $subject,
-            case: $permissionConfig->case
-        );
-    }
-
     public function defaultPermissionKeyBuilder(string $affix, string $separator, string $subject, string $case): string
     {
         return $this->format($case, $affix) . $separator . $this->format($case, $subject);
@@ -99,19 +59,45 @@ class FilamentShield
     {
         $subject = $this->resolveSubject($entity);
 
+        // Resources: multiple permissions with affixes (view, create, update, etc.)
         if (is_array($affixes)) {
             return collect($affixes)
                 ->mapWithKeys(fn (string $affix): array => [
                     $this->format('camel', $affix) => [
                         'key' => $this->buildPermissionKey($entity, $affix, $subject),
-                        'label' => $this->getAffixLabel($affix, $entity) . ' ' . $this->resolveLabel($entity),
+                        'label' => $this->getAffixLabel($affix), // . ' ' . $this->resolveEntityLabel($entity),
                     ],
                 ])
                 ->uniqueStrict()
                 ->toArray();
         }
 
-        return [$this->buildPermissionKey($entity, $affixes, $subject) => $this->resolveLabel($entity)];
+        // Pages/Widgets: single permission with prefix
+        $permissionKey = $this->buildPermissionKey($entity, $affixes, $subject);
+
+        return [$permissionKey => $this->getEntityPermissionLabel($entity, $permissionKey)];
+    }
+
+    public function getEntitiesPermissions(): ?array
+    {
+        return collect($this->getAllResourcePermissionsWithLabels())->keys()
+            ->merge(collect($this->getPages())->map->permission->keys())
+            ->merge(collect($this->getWidgets())->map->permission->keys())
+            ->merge(collect($this->getCustomPermissions())->keys())
+            ->values()
+            ->flatten()
+            ->unique()
+            ->toArray();
+    }
+
+    public function prohibitDestructiveCommands(bool $prohibit = true): void
+    {
+        Commands\GenerateCommand::prohibit($prohibit);
+        Commands\InstallCommand::prohibit($prohibit);
+        Commands\PublishCommand::prohibit($prohibit);
+        Commands\SeederCommand::prohibit($prohibit);
+        Commands\SetupCommand::prohibit($prohibit);
+        Commands\SuperAdminCommand::prohibit($prohibit);
     }
 
     protected function resolveSubject(string $entity): string
@@ -144,25 +130,32 @@ class FilamentShield
         };
     }
 
-    public function getEntitiesPermissions(): ?array
+    private function buildPermissionKey(string $entity, string $affix, string $subject): string
     {
-        return collect($this->getAllResourcePermissionsWithLabels())->keys()
-            ->merge(collect($this->getPages())->map->permission->keys())
-            ->merge(collect($this->getWidgets())->map->permission->keys())
-            ->merge(collect($this->getCustomPermissions())->keys())
-            ->values()
-            ->flatten()
-            ->unique()
-            ->toArray();
-    }
+        $permissionConfig = Utils::getConfig()->permissions;
 
-    public function prohibitDestructiveCommands(bool $prohibit = true): void
-    {
-        Commands\GenerateCommand::prohibit($prohibit);
-        Commands\InstallCommand::prohibit($prohibit);
-        Commands\PublishCommand::prohibit($prohibit);
-        Commands\SeederCommand::prohibit($prohibit);
-        Commands\SetupCommand::prohibit($prohibit);
-        Commands\SuperAdminCommand::prohibit($prohibit);
+        if ($this->buildPermissionKeyUsing instanceof Closure) {
+
+            /** @var string $result */
+            $result = $this->evaluate(
+                value: $this->buildPermissionKeyUsing,
+                namedInjections: [
+                    'entity' => $entity,
+                    'affix' => $affix,
+                    'subject' => $subject,
+                    'case' => $permissionConfig->case,
+                    'separator' => $permissionConfig->separator,
+                ]
+            );
+
+            return $result;
+        }
+
+        return $this->defaultPermissionKeyBuilder(
+            affix: $affix,
+            separator: $permissionConfig->separator,
+            subject: $subject,
+            case: $permissionConfig->case
+        );
     }
 }

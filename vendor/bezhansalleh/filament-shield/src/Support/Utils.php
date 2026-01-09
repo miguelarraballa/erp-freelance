@@ -10,6 +10,7 @@ use Filament\Panel;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -148,7 +149,7 @@ class Utils
 
     public static function getResourceCluster(): ?string
     {
-        return config('filament-shield.shield_resource.cluster', null);
+        return config('filament-shield.shield_resource.cluster');
     }
 
     public static function getRoleModel(): string
@@ -180,36 +181,50 @@ class Utils
 
     public static function createRole(?string $name = null, int | string | null $tenantId = null): Role
     {
+        $guardName = static::getFilamentAuthGuard();
+
         if (static::isTenancyEnabled()) {
             return static::getRoleModel()::firstOrCreate(
                 [
                     'name' => $name ?? static::getConfig()->super_admin->name,
                     static::getTenantModelForeignKey() => $tenantId,
+                    'guard_name' => $guardName,
                 ],
-                ['guard_name' => static::getFilamentAuthGuard()]
             );
         }
 
         return static::getRoleModel()::firstOrCreate(
-            ['name' => $name ?? static::getSuperAdminName()],
-            ['guard_name' => static::getFilamentAuthGuard()]
+            [
+                'name' => $name ?? static::getSuperAdminName(),
+                'guard_name' => $guardName,
+            ],
         );
     }
 
     public static function createPermission(string $name): string
     {
         return static::getPermissionModel()::firstOrCreate(
-            ['name' => $name],
-            ['guard_name' => static::getFilamentAuthGuard()]
+            ['name' => $name, 'guard_name' => static::getFilamentAuthGuard()],
         )->name;
     }
 
     public static function giveSuperAdminPermission(string | array | Collection $permissions): void
     {
         if (! static::isSuperAdminDefinedViaGate() && static::isSuperAdminEnabled()) {
-            $superAdmin = static::createRole();
 
-            $superAdmin->givePermissionTo($permissions);
+            if (static::isTenancyEnabled() && $tenantModel = static::getTenantModel()) {
+
+                $tenants = app($tenantModel)->all();
+
+                foreach ($tenants as $tenant) {
+                    $superAdmin = static::createRole(tenantId: $tenant->getKey());
+                    $superAdmin->givePermissionTo($permissions);
+                }
+
+            } else {
+                $superAdmin = static::createRole();
+                $superAdmin->givePermissionTo($permissions);
+            }
 
             app(PermissionRegistrar::class)->forgetCachedPermissions();
         }
@@ -268,7 +283,7 @@ class Utils
 
             // Fast path: exact match
             if ($checkPathLower === $basePathLower) {
-                return rtrim($namespace, '\\');
+                return rtrim((string) $namespace, '\\');
             }
 
             // Check if configured path is within this PSR-4 base
@@ -276,7 +291,7 @@ class Utils
                 $relative = substr($checkPath, strlen($basePath));
                 $relative = rtrim($relative, DIRECTORY_SEPARATOR);
 
-                $ns = rtrim($namespace, '\\');
+                $ns = rtrim((string) $namespace, '\\');
                 if ($relative !== '') {
                     $ns .= '\\' . str_replace(DIRECTORY_SEPARATOR, '\\', $relative);
                 }
@@ -285,7 +300,23 @@ class Utils
             }
         }
 
-        throw new \RuntimeException("Configured path does not match any PSR-4 mapping: {$configuredPath}");
+        throw new RuntimeException('Configured path does not match any PSR-4 mapping: ' . $configuredPath);
+    }
+
+    /**
+     * Convert a permission key to a localization key.
+     *
+     * Removes the configured separator and converts to snake_case.
+     */
+    public static function toLocalizationKey(string $key): string
+    {
+        $separator = static::getConfig()->permissions->separator;
+
+        return Str::of($key)
+            ->replace($separator, '_')
+            ->snake()
+            ->replace('__', '_')
+            ->toString();
     }
 
     protected static function isAbsolutePath(string $path): bool

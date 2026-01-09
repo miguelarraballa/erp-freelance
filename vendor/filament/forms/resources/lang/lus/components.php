@@ -51,7 +51,7 @@ return [
             ],
 
             'delete' => [
-                'label' => 'Sûtna',
+                'label' => 'Thai bona',
             ],
 
             'edit' => [
@@ -75,31 +75,31 @@ return [
             ],
 
             'reorder' => [
-                'label' => 'Move',
+                'label' => 'Dah sawnna',
             ],
 
             'move_down' => [
-                'label' => 'Move down',
+                'label' => 'Chhukna',
             ],
 
             'move_up' => [
-                'label' => 'Move up',
+                'label' => 'Chhohna',
             ],
 
             'collapse' => [
-                'label' => 'Collapse',
+                'label' => 'Tihzimna',
             ],
 
             'expand' => [
-                'label' => 'Expand',
+                'label' => 'Tihzauna',
             ],
 
             'collapse_all' => [
-                'label' => 'Collapse all',
+                'label' => 'Avaia tihzimna',
             ],
 
             'expand_all' => [
-                'label' => 'Expand all',
+                'label' => 'Avaia tihzauhna',
             ],
 
         ],
@@ -284,6 +284,10 @@ return [
 
     'markdown_editor' => [
 
+        'file_attachments_accepted_file_types_message' => 'File upload ho hi type: :values an ni tur ani.',
+
+        'file_attachments_max_size_message' => 'File upload ho hi :max kilobytes ai a lian theilo.',
+
         'tools' => [
             'attach_files' => 'Attach files',
             'blockquote' => 'Blockquote',
@@ -338,47 +342,47 @@ return [
         'actions' => [
 
             'add' => [
-                'label' => 'Add to :label',
+                'label' => ':Label a belhna',
             ],
 
             'add_between' => [
-                'label' => 'Insert between',
+                'label' => 'A inkâra thunna',
             ],
 
             'delete' => [
-                'label' => 'Delete',
+                'label' => 'Paihna',
             ],
 
             'clone' => [
-                'label' => 'Clone',
+                'label' => 'A ang siamna',
             ],
 
             'reorder' => [
-                'label' => 'Move',
+                'label' => 'Dah sawnna',
             ],
 
             'move_down' => [
-                'label' => 'Move down',
+                'label' => 'Chhukna',
             ],
 
             'move_up' => [
-                'label' => 'Move up',
+                'label' => 'Chhohna',
             ],
 
             'collapse' => [
-                'label' => 'Collapse',
+                'label' => 'Tihzimna',
             ],
 
             'expand' => [
-                'label' => 'Expand',
+                'label' => 'Tihzauna',
             ],
 
             'collapse_all' => [
-                'label' => 'Collapse all',
+                'label' => 'Avaia tihzimna',
             ],
 
             'expand_all' => [
-                'label' => 'Expand all',
+                'label' => 'Avaia tihzauhna',
             ],
 
         ],
@@ -443,9 +447,74 @@ return [
 
             ],
 
+            'grid' => [
+
+                'label' => 'Grid',
+
+                'modal' => [
+
+                    'heading' => 'Grid',
+
+                    'form' => [
+
+                        'preset' => [
+
+                            'label' => 'Preset',
+
+                            'placeholder' => 'None',
+
+                            'options' => [
+                                'two' => 'Two',
+                                'three' => 'Three',
+                                'four' => 'Four',
+                                'five' => 'Five',
+                                'two_start_third' => 'Two (Start Third)',
+                                'two_end_third' => 'Two (End Third)',
+                                'two_start_fourth' => 'Two (Start Fourth)',
+                                'two_end_fourth' => 'Two (End Fourth)',
+                            ],
+                        ],
+
+                        'columns' => [
+                            'label' => 'Columns',
+                        ],
+
+                        'from_breakpoint' => [
+
+                            'label' => 'From breakpoint',
+
+                            'options' => [
+                                'default' => 'All',
+                                'sm' => 'Small',
+                                'md' => 'Medium',
+                                'lg' => 'Large',
+                                'xl' => 'Extra large',
+                                '2xl' => 'Two extra large',
+                            ],
+
+                        ],
+
+                        'is_asymmetric' => [
+                            'label' => 'Two asymmetric columns',
+                        ],
+
+                        'start_span' => [
+                            'label' => 'Start span',
+                        ],
+
+                        'end_span' => [
+                            'label' => 'End span',
+                        ],
+
+                    ],
+
+                ],
+
+            ],
+
             'link' => [
 
-                'label' => 'Edit',
+                'label' => 'Link',
 
                 'modal' => [
 
@@ -467,7 +536,35 @@ return [
 
             ],
 
+            'text_color' => [
+
+                'label' => 'Text color',
+
+                'modal' => [
+
+                    'heading' => 'Text color',
+
+                    'form' => [
+
+                        'color' => [
+                            'label' => 'Color',
+                        ],
+
+                        'custom_color' => [
+                            'label' => 'Custom color',
+                        ],
+
+                    ],
+
+                ],
+
+            ],
+
         ],
+
+        'file_attachments_accepted_file_types_message' => 'File upload ho hi type: :values an ni tur ani.',
+
+        'file_attachments_max_size_message' => 'File upload ho hi :max kilobytes ai a lian theilo.',
 
         'no_merge_tag_search_results_message' => 'No merge tag results.',
 
@@ -488,6 +585,8 @@ return [
             'h1' => 'Title',
             'h2' => 'Heading',
             'h3' => 'Subheading',
+            'grid' => 'Grid',
+            'grid_delete' => 'Delete grid',
             'highlight' => 'Highlight',
             'horizontal_rule' => 'Horizontal rule',
             'italic' => 'Italic',
@@ -511,9 +610,13 @@ return [
             'table_merge_cells' => 'Merge cells',
             'table_split_cell' => 'Split cell',
             'table_toggle_header_row' => 'Toggle header row',
+            'table_toggle_header_cell' => 'Toggle header cell',
+            'text_color' => 'Text color',
             'underline' => 'Underline',
             'undo' => 'Undo',
         ],
+
+        'uploading_file_message' => 'Uploading file...',
 
     ],
 
@@ -547,16 +650,16 @@ return [
 
             'edit_option' => [
 
-                'label' => 'Edit',
+                'label' => 'Tihdikna',
 
                 'modal' => [
 
-                    'heading' => 'Edit',
+                    'heading' => 'Tihdikna',
 
                     'actions' => [
 
                         'save' => [
-                            'label' => 'Save',
+                            'label' => 'Thlâkthlengna',
                         ],
 
                     ],
@@ -576,6 +679,8 @@ return [
 
         'max_items_message' => ':count chiah a select theih.',
 
+        'no_options_message' => 'Duh thlan tur a awmlo.',
+
         'no_search_results_message' => 'I thilzawn hi a awmlo.',
 
         'placeholder' => 'I duh thlang rawh...',
@@ -587,7 +692,7 @@ return [
     ],
 
     'tags_input' => [
-        'placeholder' => 'New tag',
+        'placeholder' => 'Tag thar',
     ],
 
     'text_input' => [
@@ -595,16 +700,16 @@ return [
         'actions' => [
 
             'copy' => [
-                'label' => 'Copy',
-                'message' => 'Copied',
+                'label' => 'Lâk chhâwnna',
+                'message' => 'Lâk chhâwn ani e',
             ],
 
             'hide_password' => [
-                'label' => 'Hide password',
+                'label' => 'Password hliahna',
             ],
 
             'show_password' => [
-                'label' => 'Show password',
+                'label' => 'Password tihlanna',
             ],
 
         ],

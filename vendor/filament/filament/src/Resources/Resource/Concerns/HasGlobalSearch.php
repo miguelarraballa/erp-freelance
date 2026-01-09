@@ -160,22 +160,24 @@ trait HasGlobalSearch
         $search = generate_search_term_expression($search, static::isGlobalSearchForcedCaseInsensitive(), $databaseConnection);
 
         if (! static::shouldSplitGlobalSearchTerms()) {
-            $isFirst = true;
+            $query->where(function (Builder $query) use ($search): void {
+                $isFirst = true;
 
-            foreach (static::getGloballySearchableAttributes() as $attributes) {
-                static::applyGlobalSearchAttributeConstraint(
-                    query: $query,
-                    search: $search,
-                    searchAttributes: Arr::wrap($attributes),
-                    isFirst: $isFirst,
-                );
-            }
+                foreach (static::getGloballySearchableAttributes() as $attributes) {
+                    static::applyGlobalSearchAttributeConstraint(
+                        query: $query,
+                        search: $search,
+                        searchAttributes: Arr::wrap($attributes),
+                        isFirst: $isFirst,
+                    );
+                }
+            });
 
             return;
         }
 
         $searchWords = array_filter(
-            str_getcsv(preg_replace('/\s+/', ' ', $search), separator: ' ', escape: '\\'),
+            str_getcsv(preg_replace('/(\s|\x{3164}|\x{1160})+/u', ' ', $search), separator: ' ', escape: '\\'),
             fn ($word): bool => filled($word),
         );
 

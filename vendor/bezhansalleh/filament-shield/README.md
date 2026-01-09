@@ -21,19 +21,14 @@
     </a>
 </p>
 
-<span style="font-size:2em; font-weight:bold; display:block; margin:0.67em 0;">Shield</span>
+<h1 style="font-size:2em; font-weight:bold; display:block; margin:0.67em 0;">Shield</h1>
 
 The easiest and most intuitive way to add access management to your Filament panels.
 
 
 > [!IMPORTANT]
-> This iteration is a complete rewrite from versions 3.x and 4.x-beta and is not backward compatible. Please refer to the release notes on how to [UPGRADE](https://github.com/bezhanSalleh/filament-shield/releases/tag/4.0.0).
+> This iteration is a complete rewrite from versions 3.x and 4.x-beta and is not backward compatible. Please refer to the [Upgrade](#upgrade) section on how to proceed.
 
-
-
-> [!NOTE]
-> The documentation is a work in progress. Please refer to the [CHANGELOG](CHANGELOG.md) and [PR](https://github.com/bezhanSalleh/filament-shield/pull/592) for the latest updates.
-> Feedback and contributions are welcome!
 
 ## Features
 
@@ -63,7 +58,7 @@ The easiest and most intuitive way to add access management to your Filament pan
 | Package Version | Filament Version |
 |-----------------|------------------|
 | [2.x](https://github.com/bezhanSalleh/filament-shield/tree/2.x)             | 2.x              |
-| [4.x](https://github.com/bezhanSalleh/filament-shield/tree/3.x)             | 3.x              |
+| [3.x](https://github.com/bezhanSalleh/filament-shield/tree/3.x)             | 3.x              |
 | **4.x**             | 4.x              |
 
 </div>
@@ -108,10 +103,14 @@ The easiest and most intuitive way to add access management to your Filament pan
     - [Prohibited Commands](#prohibited-commands)
     - [Core Commands](#core-commands)
     - [Generate Command Options (recap)](#generate-command-options-recap)
+    - [Seeder Command Options (recap)](#seeder-command-options-recap)
   - [Localization](#localization)
     - [Configuration](#configuration-4)
-    - [Key](#key)
-    - [Default](#default)
+    - [How It Works](#how-it-works)
+    - [Generating Translation Files](#generating-translation-files)
+    - [Translation Keys](#translation-keys)
+    - [Default Package Translations](#default-package-translations)
+- [Upgrade](#upgrade)
 - [Translations](#translations)
 - [Testing](#testing)
 - [Changelog](#changelog)
@@ -550,7 +549,7 @@ FilamentShieldPlugin::make()
 
 Since almost all Shield commands are destructive and can cause data loss, they can be prohibited by calling the `prohibit` method of the command as follows in a service provider's `boot()` method:
 ```php
-use BezhanSalleh\FilamentShield\FilamentShield;
+use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use BezhanSalleh\FilamentShield\Commands;
     public function boot(): void
     {
@@ -580,6 +579,8 @@ shield:super-admin [--user=] [--panel=] [--tenant=]
 shield:seeder [--generate] [--option=permissions_via_roles|direct_permissions] [--force]
 
 shield:publish --panel={panel} [--cluster=] [--nested] [--force]
+
+shield:translation {locale} [--panel=] [--path=]
 ```
 
 ### Generate Command Options (recap)
@@ -596,37 +597,177 @@ shield:publish --panel={panel} [--cluster=] [--nested] [--force]
 --relationships                     Generate tenancy relationships (panel must have tenancy)
 ```
 
+### Seeder Command Options (recap)
+
+```bash
+--generate    Generate seeder file
+--option=permissions_via_roles|direct_permissions   Choose seeder type
+--with-users    Export users based on their roles/permissions
+--all   Export all tenants/users regardless of role assignments
+--include-passwords Include existing hashed passwords from database
+--generate-passwords=   Generate passwords (random, prompt, or custom value)
+--force   Overwrite existing seeder file
+```
+
 ## Localization
-Shield supports multiple languages out of the box. When enabled, you can provide translated labels for 
-permissions to create a more localized experience for your international users.
+Shield supports multiple languages out of the box. When enabled, you can provide translated labels for
+permissions to create a more localized experience for your app's users.
 
 ### Configuration
 ```php
 'localization' => [
      'enabled' => false,
-     'key' => 'filament-shield::filament-shield',
+     'key' => 'shield-permissions', // could be any name you want
  ],
 ```
-### Key
-You can translate the permission labels by creating the translations files for your application's 
-supported locales following Laravel's localization conventions. The translation file can be 
-named anything you want. 
-For example, you can create a file named `permissions.php` per locale and then set the 
-`localization.key` in the config as `localization.key' => 'permissions'`. 
-For the default permission pattern, the structure of the translation file could be as follow:
+
+### How It Works
+
+Shield uses a **fallback chain** for resolving permission labels:
+
+1. **User's translation file** (when `localization.enabled = true`)
+   - Checks `lang/{locale}/{key}.php` where `{key}` is your configured localization key
+2. **Package's default translations**
+   - Falls back to `resource_permission_prefixes_labels` for standard affixes (view, create, update, etc.)
+3. **Headline fallback**
+   - Converts the key to a readable format (e.g., `force_delete_any` → "Force Delete Any")
+
+### Generating Translation Files
+
+The easiest way to create a translation file is using the `shield:translation` command:
+
+```bash
+php artisan shield:translation en --panel=admin
+```
+
+This generates a file at `lang/en/shield-permissions.php` containing all permission labels:
 
 ```php
+<?php
+
+/**
+ * Shield Permission Labels
+ *
+ * Translate the values below to localize permission labels in your application.
+ */
+
 return [
-    'ViewAny:Posts' => 'View All Posts',
-    'View:Posts' => 'View Post',
-    'Create:Posts' => 'Create Post',
-    'Update:Posts' => 'Update Post',
-    'Delete:Posts' => 'Delete Post',
+    // Resource affixes
+    'create' => 'Create',
+    'delete' => 'Delete',
+    'delete_any' => 'Delete Any',
+    'force_delete' => 'Force Delete',
+    'force_delete_any' => 'Force Delete Any',
+    'replicate' => 'Replicate',
+    'reorder' => 'Reorder',
+    'restore' => 'Restore',
+    'restore_any' => 'Restore Any',
+    'update' => 'Update',
+    'view' => 'View',
+    'view_any' => 'View Any',
+
+    // Pages (permission key in snake_case)
+    'view_dashboard' => 'Dashboard',
+
+    // Widgets (permission key in snake_case)
+    'view_stats_overview' => 'Stats Overview',
+
+    // Custom permissions
+    'approve_posts' => 'Approve Posts',
 ];
 ```
 
-### Default
-if you want to use the default translations provided by the package for the commonly used set of permissions for resources, you can set the `localization.key` in the config as `localization.key' => 'filament-shield::filament-shield.resource_permission_prefixes_labels'` and enable localization by setting `localization.enabled` to `true`.
+### Translation Keys
+
+All translation keys are in **snake_case** format:
+
+| Permission Type | Original Key | Translation Key |
+|-----------------|--------------|-----------------|
+| Resource affix | `viewAny` | `view_any` |
+| Resource affix | `forceDeleteAny` | `force_delete_any` |
+| Page permission | `view:Dashboard` | `view_dashboard` |
+| Widget permission | `view:StatsOverview` | `view_stats_overview` |
+| Custom permission | `Approve:Posts` | `approve_posts` |
+
+### Default Package Translations
+
+Shield includes translations for standard resource affixes in 32 languages. When `localization.enabled = false`,
+the package automatically uses these translations for affixes like `view`, `create`, `update`, `delete`, etc.
+
+For entity labels (Resources, Pages, Widgets), Filament's entity related methods are used
+(`getModelLabel()`, `getTitle()`, `getHeading()`, etc.).
+
+
+# Upgrade
+Upgrading from `3.x|4.0.0-Beta*` versions to 4.x requires careful consideration due to significant changes in the package's architecture and functionality. Here are the key steps and considerations for a successful upgrade:
+1. **Backup Your Data**: Before making any changes, ensure you have a complete backup of your database and application files. This is crucial in case you need to revert to the previous version.
+2. **Remove Config and Resource**: Delete the existing `filament-shield.php` config file and the published `RoleResource` if you have done so. This is important to avoid conflicts with the new configuration and resource structure.
+3. **Update Composer**: Run `composer require bezhansalleh/filament-shield` to update the package to the latest version.
+4. **Publish New Config and Resource**: Publish the new configuration file and the `RoleResource` using the following commands:
+   ```bash
+   php artisan vendor:publish --tag="filament-shield-config"
+   php artisan shield:publish --panel=admin # you can ignore this if you didn't published the resource previously
+   ```
+5. **Adjust Configuration**: Review and adjust the new `filament-shield.php` configuration file to match your application's requirements. Pay special attention to the new options and defaults that may differ from the previous version.
+6. **HasShieldPermissions Contract is Deprecated**: If you have implemented the `HasShieldPermissions` contract in your resources, consult [Policies](#policies) and [Resources](#resources) sections on how to migrate. If you leave it as is, it will be ignored.
+7. **Clean Slate** or **Perserve**: Decide whether to start fresh with a clean slate or preserve existing roles and permissions.
+    1. **Clean Slate**: If you choose to start fresh, you can run the following command to and follow along to set up the package from scratch.
+         ```bash
+         php artisan shield:setup --fresh
+         ```
+    2. **Preserve Existing Data**: If you want to keep your existing roles and permissions intact, then follow these steps:
+        1. Add the following code to your `AppServiceProvider`'s `boot()` method to perserve the the previous versions(3.x|4.x-Beta*) permission pattern:
+            ```php
+            use BezhanSalleh\FilamentShield\Facades\FilamentShield;
+            use Filament\Pages\BasePage as Page;
+            use Filament\Resources\Resource;
+            use Filament\Widgets\Widget;
+            use Illuminate\Support\Str;
+
+            //...
+            public function boot(): void
+            {
+                FilamentShield::buildPermissionKeyUsing(
+                        function (string $entity, string $affix, string $subject, string $case, string $separator) {
+                            return match(true) {
+                                # if `configurePermissionIdentifierUsing()` was used previously, then this needs to be adjusted accordingly
+                                is_subclass_of($entity, Resource::class) => Str::of($affix)
+                                    ->snake()
+                                    ->append('_')
+                                    ->append(
+                                        Str::of($entity)
+                                            ->afterLast('\\')
+                                            ->beforeLast('Resource')
+                                            ->replace('\\', '')
+                                            ->snake()
+                                            ->replace('_', '::')
+                                    )
+                                    ->toString(),
+                                is_subclass_of($entity, Page::class) => Str::of('page_')
+                                    ->append(class_basename($entity))
+                                    ->toString(),
+                                is_subclass_of($entity, Widget::class) => Str::of('widget_')
+                                    ->append(class_basename($entity))
+                                    ->toString()
+                                };
+                        });
+            }
+            ```
+        2. If you have used the `configurePermissionIdentifierUsing()` method to customize the permission key composition, then adjust the logic for resources above to match your custom logic.
+        3. Running the `shield:generate` command 
+           - If your policies are altered or customized, you may need to run the generate command carefully per resource or set of resources to avoid any unwanted side effects. Then manually review and adjust the customized policies as needed. :
+               ```bash
+               php artisan shield:generate --resource=FooResource,BarResource --option=policies
+               ```
+            - If you haven't customized your policies then run the following command to ensure that your policies are up to date with the latest version of Shield:
+               ```bash
+               php artisan shield:generate --all --option=policies
+               ```
+           - If you have tenancy enabled in your panels and you want to generate the tenancy relationships, you can add the `--relationships` flag to the above commands.
+        4. Review and adjust the generated policies and permissions as needed.
+        
+8. **Test Thoroughly**: After completing the upgrade, thoroughly test your application to ensure that all functionalities related to roles, permissions, and access control are working as expected. Pay special attention to any custom implementations you may have had in place.
+
 
 # Translations 
 
