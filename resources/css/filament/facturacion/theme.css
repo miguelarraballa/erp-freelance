@@ -4,3 +4,19 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+
+:root {
+  --readonly-bg: #dbdbdb;
+}
+
+.dark {
+  --readonly-bg: rgb(86,86,86);
+}
+
+.fi-fo-field input[readonly],
+.fi-fo-field textarea[readonly],
+.fi-fo-field select[readonly],
+.fi-fo-field .fi-input[readonly],
+.fi-fo-field [aria-readonly="true"] {
+  background-color: var(--readonly-bg) !important;
+}
