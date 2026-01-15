@@ -28,7 +28,7 @@ class ClienteForm
             ->schema([
 
                 TextInput::make('nombre')->required()->maxLength(255)->columnSpan(12),
-                TextInput::make('razon_social')->required()->maxLength(255)->columnSpan(8),
+                TextInput::make('razon_social')->required()->maxLength(255)->columnSpan(6),
                 TextInput::make('nif')
                     ->label("NIF/NIE/CIF")
                     ->required()
@@ -37,11 +37,16 @@ class ClienteForm
                     ->helperText('Introduce un NIF, NIE o CIF válido. Ejemplo: 12345678A, X1234567B, B12345678')
                     ->label("NIF/NIE/CIF")
                     ->required()
-                    ->rules([ new SpanishDocIdRule() ])
+                    ->rule(fn (Get $get) => $get('extranjero') ? null : new SpanishDocIdRule())
                     ->dehydrateStateUsing(fn ($state) => DocId::normalize((string) $state))
                     ->unique(table: 'clientes', column: 'nif', ignorable: fn ($record) => $record)
                     ->maxLength(20)
                     ->columnSpan(4),
+                Toggle::make('extranjero')
+                    ->label('Extranjero')
+                    ->live()
+                    ->default(false)
+                    ->columnSpan(2),    
                 TextInput::make('direccion')->required()->maxLength(255)->columnSpan(12),
                 TextInput::make('cp')->required()->label('Código postal')->maxLength(10)->columnSpan(6),
                 TextInput::make('ciudad')->required()->columnSpan(6),
@@ -81,7 +86,8 @@ class ClienteForm
                         }
                     },
                 ])
-                ->columnSpan(3),
+                ->columnSpan(2),
+                
                 TextInput::make('codigo_cliente')->readonly()->columnSpan(4),
 
                 Toggle::make('proveedor')
@@ -102,13 +108,13 @@ class ClienteForm
                             }
                         },
                     ])
-                    ->columnSpan(3),
+                    ->columnSpan(2),
                 TextInput::make('codigo_proveedor')->readonly()->columnSpan(4),
 
-                Toggle::make('irpf')->label('Sujeto a IRPF')->columnSpan(3),
+                DatePicker::make('fecha_alta')->required()->columnSpan(3),
+                DatePicker::make('fecha_baja')->columnSpan(3),
                 Toggle::make('activo')->default(true)->columnSpan(3),
-                DatePicker::make('fecha_alta')->required()->columnSpan(6),
-                DatePicker::make('fecha_baja')->columnSpan(6),
+                Toggle::make('irpf')->label('Sujeto a IRPF')->columnSpan(3),
 
                 Html::make('<hr/>')->columnSpanFull(),
 

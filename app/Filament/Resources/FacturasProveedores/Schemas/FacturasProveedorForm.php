@@ -10,6 +10,30 @@ use Illuminate\Database\Eloquent\Builder;
 class FacturasProveedorForm {
 
     public static function configure(Schema $schema): Schema {
+        $buildSnapshot = function (?int $id): ?string {
+            if (! $id) {
+                return null;
+            }
+
+            $p = \App\Models\Cliente::find($id);
+
+            return $p ? implode("\n", array_filter([
+                $p->razon_social ?: $p->nombre,
+                $p->nif ? "NIF: {$p->nif}" : null,
+                $p->direccion,
+                trim(($p->cp ? "{$p->cp} " : '') . ($p->ciudad ?: '')),
+                $p->provincia ? "({$p->provincia})" : null,
+                $p->pais,
+            ])) : null;
+        };
+        $recalcTotal = function (Get $get, Set $set): void {
+            $base = (float) ($get('base') ?? 0);
+            $iva = (float) ($get('iva_total') ?? 0);
+            $irpf = (float) ($get('irpf_total') ?? 0);
+
+            $set('total', $base + $iva - $irpf);
+        };
+
         return $schema
             ->columns(12)
             ->schema([
@@ -24,22 +48,16 @@ class FacturasProveedorForm {
                     )
                     ->searchable()
                     ->preload()
-                    ->live(onBlur: false) 
-                    ->afterStateUpdated(function (Get $get, Set $set) {
-                        $id = $get('cliente_id');
-                        if (!$id) { $set('datos_proveedor', null); return; }
+                    ->live(onBlur: false)
+                    ->afterStateHydrated(function (Get $get, Set $set, $state) use ($buildSnapshot) {
+                        if ($get('datos_proveedor')) {
+                            return;
+                        }
 
-                        $p = \App\Models\Cliente::find($id);
-                        $snapshot = $p ? implode("\n", array_filter([
-                            $p->razon_social ?: $p->nombre,
-                            $p->nif ? "NIF: {$p->nif}" : null,
-                            $p->direccion,
-                            trim(($p->cp ? "{$p->cp} " : '') . ($p->ciudad ?: '')),
-                            $p->provincia ? "({$p->provincia})" : null,
-                            $p->pais,
-                        ])) : null;
-
-                        $set('datos_proveedor', $snapshot);
+                        $set('datos_proveedor', $buildSnapshot((int) $state));
+                    })
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) use ($buildSnapshot) {
+                        $set('datos_proveedor', $buildSnapshot((int) $state));
                     })
                     ->required()
                     ->columnSpan(12),
@@ -63,13 +81,13 @@ class FacturasProveedorForm {
                     ->rows(6)
                     ->disabled()
                     ->dehydrated(true)
-                    ->required()
                     ->columnSpan(4),
                 
                 // Concepto libre (opcional)
                 Textarea::make('concepto')
                     ->label('Concepto')
                     ->rows(6)
+                    ->required()
                     ->columnSpan(8),
 
                 Select::make('moneda')
@@ -87,6 +105,8 @@ class FacturasProveedorForm {
                     ->numeric()->minValue(0)->step('0.01')
                     ->required()
                     ->default(0)
+                    ->live(onBlur: false)
+                    ->afterStateUpdated(fn (Get $get, Set $set) => $recalcTotal($get, $set))
                     ->columnSpan(3),
 
                 TextInput::make('iva_total')
@@ -94,27 +114,34 @@ class FacturasProveedorForm {
                     ->numeric()->minValue(0)->step('0.01')
                     ->default(0)
                     ->required()
+                    ->live(onBlur: false)
+                    ->afterStateUpdated(fn (Get $get, Set $set) => $recalcTotal($get, $set))
                     ->columnSpan(3),
 
                 TextInput::make('irpf_total')
                     ->label('IRPF total')
                     ->numeric()->minValue(0)->step('0.01')
                     ->default(0)
+                    ->live(onBlur: false)
+                    ->afterStateUpdated(fn (Get $get, Set $set) => $recalcTotal($get, $set))
                     ->columnSpan(3),
 
                 TextInput::make('total')
                     ->label('Total')
                     ->numeric()->minValue(0)->step('0.01')
                     ->required()
+                    ->default(0)
+                    ->readOnly()
                     ->columnSpan(3),
 
                 // Snapshot de datos del proveedor (solo lectura, se guarda
 
-                // PDF adjunto (opcional)
+                // PDF adjunto de la factura
                 FileUpload::make('pdf_path')
                     ->label('PDF de la factura')
                     ->acceptedFileTypes(['application/pdf'])
-                    ->directory('compras') // ajusta si quieres otra carpeta
+                    ->directory('compras')
+                    ->required()
                     ->columnSpan(6),
             ]);
     }
