@@ -34,6 +34,7 @@ class Cliente extends Model
         'observaciones',
         'fecha_alta',
         'fecha_baja',
+        'extranjero'
     ];
 
     public function user()
