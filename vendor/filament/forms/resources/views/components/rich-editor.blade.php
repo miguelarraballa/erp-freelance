@@ -8,9 +8,11 @@
     $key = $getKey();
     $mergeTags = $getMergeTags();
     $statePath = $getStatePath();
+    $mentions = $getMentionsForJs();
     $tools = $getTools();
     $toolbarButtons = $getToolbarButtons();
     $floatingToolbars = $getFloatingToolbars();
+    $linkProtocols = $getLinkProtocols();
     $fileAttachmentsMaxSize = $getFileAttachmentsMaxSize();
     $fileAttachmentsAcceptedFileTypes = $getFileAttachmentsAcceptedFileTypes();
 @endphp
@@ -35,14 +37,32 @@
                         deleteCustomBlockButtonIconHtml: @js(\Filament\Support\generate_icon_html(\Filament\Support\Icons\Heroicon::Trash, alias: \Filament\Forms\View\FormsIconAlias::COMPONENTS_RICH_EDITOR_PANELS_CUSTOM_BLOCK_DELETE_BUTTON)->toHtml()),
                         editCustomBlockButtonIconHtml: @js(\Filament\Support\generate_icon_html(\Filament\Support\Icons\Heroicon::PencilSquare, alias: \Filament\Forms\View\FormsIconAlias::COMPONENTS_RICH_EDITOR_PANELS_CUSTOM_BLOCK_EDIT_BUTTON)->toHtml()),
                         extensions: @js($getTipTapJsExtensions()),
-                        key: @js($key),
+                        floatingToolbars: @js($floatingToolbars),
+                        getMentionLabelsUsing: async (mentions) => {
+                            return await $wire.callSchemaComponentMethod(
+                                @js($key),
+                                'getMentionLabelsForJs',
+                                { mentions },
+                            )
+                        },
+                        getMentionSearchResultsUsing: async (query, char) => {
+                            return await $wire.callSchemaComponentMethod(
+                                @js($key),
+                                'getMentionSearchResultsForJs',
+                                { search: query, char },
+                            )
+                        },
+                        hasResizableImages: @js($hasResizableImages()),
                         isDisabled: @js($isDisabled),
                         isLiveDebounced: @js($isLiveDebounced()),
                         isLiveOnBlur: @js($isLiveOnBlur()),
+                        key: @js($key),
+                        linkProtocols: @js($linkProtocols),
                         liveDebounce: @js($getNormalizedLiveDebounce()),
                         livewireId: @js($this->getId()),
                         maxFileSize: @js($fileAttachmentsMaxSize),
                         maxFileSizeValidationMessage: @js($fileAttachmentsMaxSize ? trans_choice('filament-forms::components.rich_editor.file_attachments_max_size_message', $fileAttachmentsMaxSize, ['max' => $fileAttachmentsMaxSize]) : null),
+                        mentions: @js($mentions),
                         mergeTags: @js($mergeTags),
                         noMergeTagSearchResultsMessage: @js($getNoMergeTagSearchResultsMessage()),
                         placeholder: @js($getPlaceholder()),
@@ -50,7 +70,6 @@
                         statePath: @js($statePath),
                         textColors: @js($getTextColorsForJs()),
                         uploadingFileMessage: @js($getUploadingFileMessage()),
-                        floatingToolbars: @js($floatingToolbars),
                     })"
             x-bind:class="{
                 'fi-fo-rich-editor-uploading-file': isUploadingFile,

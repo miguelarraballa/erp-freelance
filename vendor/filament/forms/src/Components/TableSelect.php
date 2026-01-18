@@ -31,6 +31,8 @@ class TableSelect extends Field
 
     protected string | Closure | null $tableConfiguration = null;
 
+    protected bool | Closure $shouldIgnoreRelatedRecords = false;
+
     protected string | Closure | null $relationship = null;
 
     protected bool | Closure $isMultiple = false;
@@ -57,6 +59,18 @@ class TableSelect extends Field
         return $this;
     }
 
+    public function ignoreRelatedRecords(bool | Closure $condition = true): static
+    {
+        $this->shouldIgnoreRelatedRecords = $condition;
+
+        return $this;
+    }
+
+    public function shouldIgnoreRelatedRecords(): bool
+    {
+        return (bool) $this->evaluate($this->shouldIgnoreRelatedRecords);
+    }
+
     public function getTableConfiguration(): string
     {
         return $this->evaluate($this->tableConfiguration) ?? throw new LogicException('The [tableConfiguration()] method must be set when using a [TableSelect] component.');
@@ -80,6 +94,68 @@ class TableSelect extends Field
             }
 
             $relationship = $component->getRelationship();
+            $relationshipName = $component->getRelationshipName();
+
+            if (
+                (! str_contains($relationshipName, '.')) &&
+                ($record = $component->getRecord()) instanceof Model &&
+                $record->relationLoaded($relationshipName)
+            ) {
+                $relatedRecords = $record->getRelationValue($relationshipName);
+
+                if (
+                    ($relationship instanceof BelongsToMany) ||
+                    ($relationship instanceof HasOneOrManyThrough)
+                ) {
+                    $component->state(
+                        $relatedRecords
+                            ->pluck(($relationship instanceof BelongsToMany) ? $relationship->getRelatedKeyName() : $relationship->getRelated()->getKeyName())
+                            ->map(static fn ($key): string => strval($key))
+                            ->all(),
+                    );
+
+                    return;
+                }
+
+                if ($relationship instanceof BelongsToThrough) {
+                    $component->state(
+                        $relatedRecords?->getAttribute(
+                            $relationship->getRelated()->getKeyName(),
+                        ),
+                    );
+
+                    return;
+                }
+
+                if ($relationship instanceof HasMany) {
+                    $component->state(
+                        $relatedRecords
+                            ->pluck($relationship->getLocalKeyName())
+                            ->all(),
+                    );
+
+                    return;
+                }
+
+                if ($relationship instanceof HasOne) {
+                    $component->state(
+                        $relatedRecords?->getAttribute(
+                            $relationship->getLocalKeyName(),
+                        ),
+                    );
+
+                    return;
+                }
+
+                /** @var BelongsTo $relationship */
+                $component->state(
+                    $relatedRecords?->getAttribute(
+                        $relationship->getOwnerKeyName(),
+                    ),
+                );
+
+                return;
+            }
 
             if (
                 ($relationship instanceof BelongsToMany) ||
@@ -228,7 +304,7 @@ class TableSelect extends Field
             $relationship->syncWithPivotValues($state, $pivotData, detaching: false);
         });
 
-        $this->dehydrated(fn (TableSelect $component): bool => ! $component->isMultiple());
+        $this->dehydrated(fn (TableSelect $component): bool => (! $component->isMultiple()) && $component->isSaved());
 
         return $this;
     }

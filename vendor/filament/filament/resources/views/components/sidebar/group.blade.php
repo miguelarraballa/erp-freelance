@@ -29,7 +29,6 @@
         <div
             @if ($collapsible)
                 x-on:click="$store.sidebar.toggleCollapsedGroup(label)"
-                role="button"
             @endif
             @if ($sidebarCollapsible)
                 x-show="$store.sidebar.isOpen"
@@ -64,7 +63,6 @@
     @if ($hasDropdown)
         <x-filament::dropdown
             :placement="(__('filament-panels::layout.direction') === 'rtl') ? 'left-start' : 'right-start'"
-            teleport
             x-show="! $store.sidebar.isOpen"
         >
             <x-slot name="trigger">

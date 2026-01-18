@@ -29,6 +29,19 @@ class GenerateCommand extends Command
     use CanManipulateFiles;
     use Prohibitable;
 
+    /** @var string */
+    public $signature = 'shield:generate
+        {--all : Generate permissions/policies for all entities }
+        {--option= : Override the config generator option(<fg=green;options=bold>policies_and_permissions,policies,permissions and tenant_relationships</>)}
+        {--resource= : One or many resources separated by comma (,) }
+        {--page= : One or many pages separated by comma (,) }
+        {--widget= : One or many widgets separated by comma (,) }
+        {--exclude : Exclude the given entities during generation }
+        {--ignore-existing-policies : Ignore generating policies that already exist }
+        {--panel= : Panel ID to get the components(resources, pages, widgets)}
+        {--relationships : Generate relationships for the given panel, only works if the panel has tenancy enabled}
+    ';
+
     protected array $resources = [];
 
     protected array $pages = [];
@@ -55,19 +68,6 @@ class GenerateCommand extends Command
         'permissions' => 0,
     ];
 
-    /** @var string */
-    public $signature = 'shield:generate
-        {--all : Generate permissions/policies for all entities }
-        {--option= : Override the config generator option(<fg=green;options=bold>policies_and_permissions,policies,permissions and tenant_relationships</>)}
-        {--resource= : One or many resources separated by comma (,) }
-        {--page= : One or many pages separated by comma (,) }
-        {--widget= : One or many widgets separated by comma (,) }
-        {--exclude : Exclude the given entities during generation }
-        {--ignore-existing-policies : Ignore generating policies that already exist }
-        {--panel= : Panel ID to get the components(resources, pages, widgets)}
-        {--relationships : Generate relationships for the given panel, only works if the panel has tenancy enabled}
-    ';
-
     public function handle(): int
     {
         if ($this->isProhibited()) {
@@ -81,18 +81,18 @@ class GenerateCommand extends Command
 
         $this->generatorOption = $this->option('option');
 
-        if (blank($this->generatorOption) && confirm('Would you like to select what to generate (permissions, policies or both) ?', default: true)) {
-            $this->generatorOption = Select(
-                label: 'What do you want to generate?',
-                options: [
-                    'policies_and_permissions' => 'Policies & Permissions',
-                    'policies' => 'Policies only',
-                    'permissions' => 'Permissions only',
-                ],
-                default: Utils::getGeneratorOption(),
-            );
-        } else {
-            $this->generatorOption = Utils::getGeneratorOption();
+        if (blank($this->generatorOption)) {
+            $this->generatorOption = confirm('Would you like to select what to generate (permissions, policies or both) ?', default: true)
+                ? Select(
+                    label: 'What do you want to generate?',
+                    options: [
+                        'policies_and_permissions' => 'Policies & Permissions',
+                        'policies' => 'Policies only',
+                        'permissions' => 'Permissions only',
+                    ],
+                    default: Utils::getGeneratorOption(),
+                )
+                : Utils::getGeneratorOption();
         }
 
         Filament::setCurrentPanel(Filament::getPanel($panel));
@@ -138,6 +138,15 @@ class GenerateCommand extends Command
         $this->components->twoColumnDetail('# Entities (Resources, Pages, Widgets) processed', (string) $this->counts['entities']);
 
         return Command::SUCCESS;
+    }
+
+    protected static function getPolicyStub(string $model): string
+    {
+        if (resolve($model) instanceof Authenticatable) {
+            return 'AuthenticatablePolicy';
+        }
+
+        return 'DefaultPolicy';
     }
 
     protected function determinGeneratorOptionAndEntities(): void
@@ -218,6 +227,7 @@ class GenerateCommand extends Command
                     if (! $this->option('ignore-existing-policies') || ($this->option('ignore-existing-policies') && ! $this->fileExists($policyPath))) {
                         $this->copyStubToApp(static::getPolicyStub($entity['modelFqcn']), $policyPath, $this->generatePolicyStubVariables($entity));
                     }
+
                     Utils::generateForResource($entity['resourceFqcn']);
                 }
 
@@ -298,7 +308,7 @@ class GenerateCommand extends Command
                 collect($resources)->map(fn (array $resource, int $key): array => [
                     '#' => $key + 1,
                     'Resource' => $resource['model'],
-                    'Policy' => "{$resource['model']}Policy.php" . ($this->generatorOption !== 'permissions' ? ' ✅' : ' ❌'),
+                    'Policy' => $resource['model'] . 'Policy.php' . ($this->generatorOption !== 'permissions' ? ' ✅' : ' ❌'),
                     'Permissions' => implode(
                         ',' . PHP_EOL,
                         FilamentShield::getResourcePermissions($resource['resourceFqcn'])
@@ -346,14 +356,5 @@ class GenerateCommand extends Command
                 ])
             );
         }
-    }
-
-    protected static function getPolicyStub(string $model): string
-    {
-        if (resolve($model) instanceof Authenticatable) {
-            return 'AuthenticatablePolicy';
-        }
-
-        return 'DefaultPolicy';
     }
 }

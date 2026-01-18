@@ -69,15 +69,18 @@ trait HasEntityTransformers
     }
 
     /** @return array<string, string> */
-    public function transformCustomPermissions(bool $localizedOrFormatted = false): ?array
+    public function transformCustomPermissions(bool $localized = false): ?array
     {
+        $permissionCase = Utils::getConfig()->permissions->case;
+
         return collect(Utils::getConfig()->custom_permissions)
-            ->mapWithKeys(function (string $label, int | string $key) use ($localizedOrFormatted): array {
+            ->mapWithKeys(function (string $label, int | string $key) use ($localized, $permissionCase): array {
                 $permission = is_numeric($key) ? $label : $key;
+                $configLabel = is_numeric($key) ? null : $label;
 
                 return [
-                    Str::of($permission)->snake()->toString() => $localizedOrFormatted
-                        ? $this->getPermissionLabel($permission)
+                    $this->format($permissionCase, $permission) => $localized
+                        ? $this->getCustomPermissionLabel($permission, $configLabel)
                         : Str::of($label)->headline()->toString(),
                 ];
             })
@@ -87,7 +90,7 @@ trait HasEntityTransformers
     protected function getResourcesToManage(): array
     {
         return collect(Utils::getConfig()->resources->manage)
-            ->mapWithKeys(fn (array $methods, string $key) => [basename($key) => $methods])
+            ->mapWithKeys(fn (array $methods, string $key): array => [basename($key) => $methods])
             ->toArray();
     }
 
@@ -97,7 +100,7 @@ trait HasEntityTransformers
         $defaultPolicyMethods = $policyConfig->methods;
 
         if (filled($resource)) {
-            $resourcePolicyMethods = data_get($this->getResourcesToManage(), basename($resource), null);
+            $resourcePolicyMethods = data_get($this->getResourcesToManage(), basename($resource));
 
             $defaultPolicyMethods = $policyConfig->merge
                 ? array_merge($defaultPolicyMethods, $resourcePolicyMethods ?? [])

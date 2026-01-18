@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Presupuestos\Filament\Resources\Presupuestos\PresupuestoResource;
+use Presupuestos\Models\Presupuesto;
 
 class FacturaForm
 {
@@ -439,6 +442,40 @@ class FacturaForm
                             . '</div>';
 
                         return new HtmlString($table);
+                    })
+                    ->visibleOn('edit')
+                    ->columnSpanFull(),
+
+                Placeholder::make('presupuesto_link')
+                    ->label('Presupuesto')
+                    ->content(function (?Factura $record) {
+                        if (! $record) {
+                            return null;
+                        }
+
+                        $presupuestoId = DB::table('presupuestos_facturas')
+                            ->where('factura_id', $record->id)
+                            ->value('presupuesto_id');
+
+                        if (! $presupuestoId) {
+                            return new HtmlString('<div class="text-sm text-gray-500">Sin presupuesto asociado</div>');
+                        }
+
+                        $presupuesto = Presupuesto::find($presupuestoId);
+                        if (! $presupuesto) {
+                            return new HtmlString('<div class="text-sm text-gray-500">Presupuesto no disponible</div>');
+                        }
+
+                        $label = $presupuesto->numero_completo
+                            ?? ($presupuesto->numero !== null
+                                ? str_pad((string) $presupuesto->numero, 3, '0', STR_PAD_LEFT)
+                                : (string) $presupuesto->id);
+
+                        $url = PresupuestoResource::getUrl('edit', ['record' => $presupuesto]);
+
+                        return new HtmlString(
+                            '<a class="text-primary-600 hover:text-primary-700 font-semibold" href="' . e($url) . '">' . e($label) . '</a>'
+                        );
                     })
                     ->visibleOn('edit')
                     ->columnSpanFull(),

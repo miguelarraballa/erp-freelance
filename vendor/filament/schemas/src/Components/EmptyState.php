@@ -5,8 +5,10 @@ namespace Filament\Schemas\Components;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Schemas\Components\Concerns\CanBeCompact;
 use Filament\Schemas\Components\Concerns\HasDescription;
 use Filament\Schemas\Schema;
+use Filament\Support\Concerns\CanBeContained;
 use Filament\Support\Concerns\HasIcon;
 use Filament\Support\Concerns\HasIconColor;
 use Filament\Support\Concerns\HasIconSize;
@@ -14,6 +16,8 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class EmptyState extends Component
 {
+    use CanBeCompact;
+    use CanBeContained;
     use HasDescription;
     use HasIcon;
     use HasIconColor;

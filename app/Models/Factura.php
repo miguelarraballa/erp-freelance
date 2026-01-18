@@ -42,8 +42,6 @@ class Factura extends Model
         return $this->hasMany(self::class, 'rectifica_id');
     }
 
-    // app/Models/Factura.php
-
     protected static function booted(): void
     {
         static::updating(function (Factura $f) {

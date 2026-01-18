@@ -568,6 +568,13 @@ return [
 
         'no_merge_tag_search_results_message' => 'No merge tag results.',
 
+        'mentions' => [
+            'no_options_message' => 'No options available.',
+            'no_search_results_message' => 'No results match your search.',
+            'search_prompt' => 'Start typing to search...',
+            'searching_message' => 'Searching...',
+        ],
+
         'tools' => [
             'align_center' => 'Align center',
             'align_end' => 'Align end',
@@ -610,6 +617,7 @@ return [
             'table_merge_cells' => 'Merge cells',
             'table_split_cell' => 'Split cell',
             'table_toggle_header_row' => 'Toggle header row',
+            'table_toggle_header_cell' => 'Toggle header cell',
             'text_color' => 'Text color',
             'underline' => 'Underline',
             'undo' => 'Undo',
@@ -678,6 +686,8 @@ return [
 
         'max_items_message' => 'Only :count can be selected.',
 
+        'no_options_message' => 'No options available.',
+
         'no_search_results_message' => 'No options match your search.',
 
         'placeholder' => 'Select an option',
@@ -689,7 +699,17 @@ return [
     ],
 
     'tags_input' => [
+
+        'actions' => [
+
+            'delete' => [
+                'label' => 'Delete',
+            ],
+
+        ],
+
         'placeholder' => 'New tag',
+
     ],
 
     'text_input' => [
