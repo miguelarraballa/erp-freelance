@@ -5,7 +5,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Factura {{ $factura->numero_completo ?? $factura->id }}</title>
+<title>Presupuesto {{ $presupuesto->numero_completo ?? $presupuesto->id }}</title>
 <style>
     @page { size: A4; margin: 24mm 18mm; }
     * { box-sizing: border-box; }
@@ -58,32 +58,16 @@
         </div>
 
         <div class="col-6">
-            <h2>Factura {{ $factura->numero_completo ?? 'Proforma' }}</h2>
+            <h2>Presupeusto {{ $presupuesto->numero_completo ?? 'Proforma' }}</h2>
             <div class="muted small mb-2">
-                @if($factura->tipo !== 'normal')
-                    <div>Tipo: {{ ucfirst($factura->tipo) }}</div>
-                @endif
-                <div>Fecha: {{ \Illuminate\Support\Carbon::parse($factura->fecha ?? now())->format('d/m/Y') }}</div>
-                @if($factura->vencimiento)
-                    <div>Vencimiento: {{ \Illuminate\Support\Carbon::parse($factura->vencimiento)->format('d/m/Y') }}</div>
-                @endif
-                <div>Estado: {{ ucfirst($factura->estado) }}</div>
-                @if($factura->rectifica_id)
-                    <div>Rectifica a: {{ optional($factura->rectifica)->numero_completo ?? $factura->rectifica_id }}</div>
+                <div>Fecha: {{ \Illuminate\Support\Carbon::parse($presupuesto->fecha ?? now())->format('d/m/Y') }}</div>
+                @if($presupuesto->vencimiento)
+                <div>Vencimiento: {{ \Illuminate\Support\Carbon::parse($presupuesto->vencimiento)->format('d/m/Y') }}</div>
                 @endif
             </div>
-            
             <div class="box small">
-                {!! nl2br(e($factura->datos_facturacion ?? '')) !!}
+                {!! nl2br(e($presupuesto->datos_facturacion ?? '')) !!}
             </div>
-            
-            @if($factura->hash)
-                <div class="box small">
-                    <div>Hash: {{ $factura->hash }}</div>
-                    {{-- Aquí podrías incrustar un QR con el hash si lo necesitas --}}
-                </div>
-            @endif
-            
         </div>
     </div>
 
@@ -103,7 +87,7 @@
             </tr>
         </thead>
         <tbody>
-        @foreach($factura->lineas as $ln)
+        @foreach($presupuesto->lineas as $ln)
             <tr>
                 <td>{!! nl2br(e($ln->concepto)) !!}</td>
                 <td class="right">{{ $fmt($ln->cantidad) }}</td>
@@ -125,46 +109,37 @@
         <tbody>
             <tr>
                 <td>Base imponible</td>
-                <td class="right">{{ $fmt($factura->base ?? 0) }} €</td>
+                <td class="right">{{ $fmt($presupuesto->base ?? 0) }} €</td>
             </tr>
             <tr>
                 <td>IVA total</td>
-                <td class="right">{{ $fmt($factura->iva_total ?? 0) }} €</td>
+                <td class="right">{{ $fmt($presupuesto->iva_total ?? 0) }} €</td>
             </tr>
-            @if(($factura->irpf_total ?? 0) != 0)
+            @if(($presupuesto->irpf_total ?? 0) != 0)
             <tr>
                 <td>IRPF total</td>
-                <td class="right">- {{ $fmt($factura->irpf_total) }} €</td>
+                <td class="right">- {{ $fmt($presupuesto->irpf_total) }} €</td>
             </tr>
             @endif
             <tr>
                 <td>Total</td>
-                <td class="right">{{ $fmt($factura->total ?? 0) }} €</td>
+                <td class="right">{{ $fmt($presupuesto->total ?? 0) }} €</td>
             </tr>
         </tbody>
     </table>
     
     <div class="clearfix"></div>
 
-    <div id="formas-de-pago">
-        Puede pagar la factura mediante: 
-        <ul class="small">
-            <li><b>Transferencia bancaria: </b> {{ $emisor->nombre ?? 'N/A' }} - (Triodos Bank) {{ $emisor->iban ?? 'N/A' }} </li>
-            <li><b>PayPal:</b> https://www.paypal.com/ncp/payment/UXYY3EYERUTAG</li>
-            <li><b>Bizum:</b> {{ $emisor->telefono ?? 'N/A' }}</li>
-        </ul>
-    </div>
-
-    @if($factura->notas)
+    @if($presupuesto->notas)
         <div class="mb-3">
             <h3>Notas:</h3>
-            <div class="small">{!! nl2br(e($factura->notas)) !!}</div>
+            <div class="small">{!! nl2br(e($presupuesto->notas)) !!}</div>
         </div>
     @endif
 
-    @if($emisor && $emisor->pie_factura)
+    @if($emisor && $emisor->pie_presupuesto)
     <div class="mb-3">
-        <div class="small">{!! nl2br(e($emisor->pie_factura)) !!}</div>
+        <div class="small">{!! nl2br(e($emisor->pie_presupuesto)) !!}</div>
     </div>
     @endif
 

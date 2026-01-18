@@ -1,8 +1,9 @@
 <?php
 namespace Presupuestos\Services;
 
-use Presupeustos\Models\Presupeustos;
+use Presupuestos\Models\Presupuesto;
 use App\Models\Serie;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PresupuestoService
@@ -46,7 +47,7 @@ class PresupuestoService
 
             $presupuesto->numero = $seq;
             $presupuesto->numero_completo = $numeroCompleto;
-            $presupuesto->estado = 'emitida';
+            $presupuesto->estado = 'emitido';
             if (empty($presupuesto->fecha)) {
                 $presupuesto->fecha = now()->toDateString();
             }

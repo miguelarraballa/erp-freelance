@@ -48,7 +48,7 @@ class PresupuestoPdfController extends Controller
             'dompdf.options.isHtml5ParserEnabled' => true,
         ]);
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.presupuesto', compact('presupuesto','emisor','logo'))
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('presupuestos::pdf.presupuesto', compact('presupuesto','emisor','logo'))
             ->setPaper('a4');
         $dompdf = $pdf->getDomPDF();
         $font = $dompdf->getFontMetrics()->get_font('DejaVu Sans', 'normal');

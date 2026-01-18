@@ -1,7 +1,7 @@
 <?php
 namespace Presupuestos\Services;
 
-use App\Models\Presupuesto;
+use Presupuestos\Models\Presupuesto;
 
 class PresupuestoCalc
 {

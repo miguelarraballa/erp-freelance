@@ -71,6 +71,9 @@
                 @if($factura->rectifica_id)
                     <div>Rectifica a: {{ optional($factura->rectifica)->numero_completo ?? $factura->rectifica_id }}</div>
                 @endif
+                @if(!empty($PresupuestoId))
+                    <div>Presupuesto asociado: {{ $PresupuestoId }}</div>
+                @endif
             </div>
             
             <div class="box small">

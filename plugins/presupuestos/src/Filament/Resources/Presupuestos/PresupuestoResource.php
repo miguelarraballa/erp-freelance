@@ -1,13 +1,13 @@
 <?php
 
-namespace Presupuestos\src\Filament\Resources\Presupuestos;
+namespace Presupuestos\Filament\Resources\Presupuestos;
 
-use Prespuestos\src\Filament\Resources\Presupuestos\Pages\CreateFactura;
-use Prespuestos\src\Filament\Resources\Presupuestos\EditFactura;
-use Prespuestos\src\Filament\Resources\Presupuestos\ListFacturas;
-use Prespuestos\src\Filament\Resources\Presupuestos\Schemas\FacturaForm;
-use Prespuestos\src\Filament\Resources\Presupuestos\Tables\FacturasTable;
-use Prespuestos\Models\Presupuesto;
+use Presupuestos\Filament\Resources\Presupuestos\Pages\CreatePresupuesto;
+use Presupuestos\Filament\Resources\Presupuestos\Pages\EditPresupuesto;
+use Presupuestos\Filament\Resources\Presupuestos\Pages\ListPresupuestos;
+use Presupuestos\Filament\Resources\Presupuestos\Schemas\PresupuestoForm;
+use Presupuestos\Filament\Resources\Presupuestos\Tables\PresupuestosTable;
+use Presupuestos\Models\Presupuesto;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

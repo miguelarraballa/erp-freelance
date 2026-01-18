@@ -1,6 +1,6 @@
 <?php
 
-namespace Presupuestos\src\Filament\Resources\Presupuestos\Schemas;
+namespace Presupuestos\Filament\Resources\Presupuestos\Schemas;
 
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\{
@@ -14,14 +14,16 @@ use Filament\Forms\Components\{
     ToggleButtons,
 };
 use Filament\Schemas\Components\Utilities\{Get, Set};
-use App\Models\{Impuesto, Cliente};
-use Presupuestos\Models\Presupuestos;
+use App\Filament\Resources\Facturas\FacturaResource;
+use App\Models\{Impuesto, Cliente, Factura};
+use Presupuestos\Models\Presupuesto;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 
-class PresupuestosForm
+class PresupuestoForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -49,15 +51,15 @@ class PresupuestosForm
                     ->label("Estado")
                     ->options(fn (?Presupuesto $record) => ($record && $record->numero !== null)
                         ? [
-                            'emitido'   => 'Emitido',
-                            'facturado' => 'Facturado',
-                            'anulado'   => 'Anulado',
+                            'emitido'       => 'Emitido',
+                            'aceptado'      => 'Aceptado',
+                            'no-aceptado'   => 'No Aceptado',
+                            'facturado'     => 'Facturado',
+
                         ]
                         : [
                             'borrador'  => 'Borrador',
                             'emitido'   => 'Emitido',
-                            'facturado' => 'Facturado',
-                            'anulado'   => 'Anulado',
                         ]
                     )
                     ->required()
@@ -130,7 +132,7 @@ class PresupuestosForm
                             return;
                         }
                         $base = Carbon::parse($state);
-                        $set('vencimiento', $base->copy()->addWeek()->toDateString()); // +7 días
+                        $set('vencimiento', $base->copy()->addMonth(3)->toDateString()); // 3 meses por defecto
                     })
                     ->required()
                     ->columnSpan(4)
@@ -139,7 +141,7 @@ class PresupuestosForm
 
                 DatePicker::make('vencimiento')
                     ->label('Fecha de vencimiento')
-                    ->default(fn () => now()->addWeek()->toDateString())
+                    ->default(fn () => now()->addMonth(3)->toDateString())
                     ->minDate(fn (Get $get) => ($get('fecha') ?: now()->toDateString()))
                     ->required()
                     ->columnSpan(4)
@@ -268,6 +270,38 @@ class PresupuestosForm
                 Textarea::make('notas')->rows(3)->columnSpanFull()
                     ->disabled($lock)
                     ->dehydrated(fn (?Presupuesto $record) => is_null($record?->numero)),
+
+                Placeholder::make('factura_link')
+                    ->label('Factura')
+                    ->content(function (?Presupuesto $record) {
+                        if (! $record) {
+                            return null;
+                        }
+
+                        $facturaId = DB::table('presupuestos_facturas')
+                            ->where('presupuesto_id', $record->id)
+                            ->value('factura_id');
+
+                        if (! $facturaId) {
+                            return new HtmlString('<div class="text-sm text-gray-500">Sin factura asociada</div>');
+                        }
+
+                        $factura = Factura::find($facturaId);
+                        if (! $factura) {
+                            return new HtmlString('<div class="text-sm text-gray-500">Factura no disponible</div>');
+                        }
+
+                        $label = $factura->numero_completo ? $factura->numero_completo 
+                                : "Provisional #" . str_pad((string) $factura->id, 5, '0', STR_PAD_LEFT);
+
+                        $url = FacturaResource::getUrl('edit', ['record' => $factura]);
+
+                        return new HtmlString(
+                            '<a class="text-primary-600 hover:text-primary-700 font-semibold" href="' . e($url) . '">' . e($label) . '</a>'
+                        );
+                    })
+                    ->visibleOn('edit')
+                    ->columnSpanFull(),
  
             ]);
     }

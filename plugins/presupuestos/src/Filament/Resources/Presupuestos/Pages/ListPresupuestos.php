@@ -1,8 +1,8 @@
 <?php
 
-namespace Presupuestos\src\Filament\Resources\Presupuestos\Pages;
+namespace Presupuestos\Filament\Resources\Presupuestos\Pages;
 
-use Presupuestos\src\Filament\Resources\Presupuestos\PresupuestoResource;
+use Presupuestos\Filament\Resources\Presupuestos\PresupuestoResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 

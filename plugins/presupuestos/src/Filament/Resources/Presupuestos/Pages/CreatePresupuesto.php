@@ -1,13 +1,13 @@
 <?php
 
-namespace Presupuestos\src\Filament\Resources\Presupuestos\Pages;
+namespace Presupuestos\Filament\Resources\Presupuestos\Pages;
 
-use Presupuestos\Filament\Resources\Facturas\PresupuestosResource;
+use Presupuestos\Filament\Resources\Presupuestos\PresupuestoResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePresupuesto extends CreateRecord
 {
-    protected static string $resource = PresupuestosResource::class;
+    protected static string $resource = PresupuestoResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -20,4 +20,3 @@ class CreatePresupuesto extends CreateRecord
         \Presupuestos\Services\PresupuestoCalc::recalcular($this->record);
     }
 }
-
