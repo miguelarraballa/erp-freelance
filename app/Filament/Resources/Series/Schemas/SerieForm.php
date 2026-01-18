@@ -44,6 +44,7 @@ class SerieForm
                         "rectificativa"   => "Rectificativa",
                         "abono"           => "Abono",
                         "proveedor"       => "Proveedor",
+                        "presupuesto"     => "Presupuesto",
                     ])
                     ->default("null")
                     ->columnSpan(3),

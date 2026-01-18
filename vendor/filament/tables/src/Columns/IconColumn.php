@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Js;
 use Illuminate\View\ComponentAttributeBag;
 
+use function Filament\Support\generate_href_html;
 use function Filament\Support\generate_icon_html;
 
 class IconColumn extends Column implements HasEmbeddedView
@@ -38,14 +39,14 @@ class IconColumn extends Column implements HasEmbeddedView
      */
     protected string | array | Closure | null $falseColor = null;
 
-    protected string | BackedEnum | Closure | false | null $falseIcon = null;
+    protected string | BackedEnum | Htmlable | Closure | false | null $falseIcon = null;
 
     /**
      * @var string | array<string> | Closure | null
      */
     protected string | array | Closure | null $trueColor = null;
 
-    protected string | BackedEnum | Closure | false | null $trueIcon = null;
+    protected string | BackedEnum | Htmlable | Closure | false | null $trueIcon = null;
 
     protected bool | Closure $isListWithLineBreaks = false;
 
@@ -68,7 +69,7 @@ class IconColumn extends Column implements HasEmbeddedView
     /**
      * @param  string | array<int | string, string | int> | Closure | null  $color
      */
-    public function false(string | BackedEnum | Closure | false | null $icon = null, string | array | Closure | null $color = null): static
+    public function false(string | BackedEnum | Htmlable | Closure | false | null $icon = null, string | array | Closure | null $color = null): static
     {
         $this->falseIcon($icon);
         $this->falseColor($color);
@@ -87,7 +88,7 @@ class IconColumn extends Column implements HasEmbeddedView
         return $this;
     }
 
-    public function falseIcon(string | BackedEnum | Closure | false | null $icon): static
+    public function falseIcon(string | BackedEnum | Htmlable | Closure | false | null $icon): static
     {
         $this->boolean();
         $this->falseIcon = $icon;
@@ -98,7 +99,7 @@ class IconColumn extends Column implements HasEmbeddedView
     /**
      * @param  string | array<int | string, string | int> | Closure | null  $color
      */
-    public function true(string | BackedEnum | Closure | false | null $icon = null, string | array | Closure | null $color = null): static
+    public function true(string | BackedEnum | Htmlable | Closure | false | null $icon = null, string | array | Closure | null $color = null): static
     {
         $this->trueIcon($icon);
         $this->trueColor($color);
@@ -117,7 +118,7 @@ class IconColumn extends Column implements HasEmbeddedView
         return $this;
     }
 
-    public function trueIcon(string | BackedEnum | Closure | false | null $icon): static
+    public function trueIcon(string | BackedEnum | Htmlable | Closure | false | null $icon): static
     {
         $this->boolean();
         $this->trueIcon = $icon;
@@ -165,7 +166,7 @@ class IconColumn extends Column implements HasEmbeddedView
         return $size;
     }
 
-    public function getIcon(mixed $state): string | BackedEnum | null
+    public function getIcon(mixed $state): string | BackedEnum | Htmlable | null
     {
         if (filled($icon = $this->getBaseIcon($state))) {
             return $icon;
@@ -210,7 +211,7 @@ class IconColumn extends Column implements HasEmbeddedView
         return $this->evaluate($this->falseColor) ?? 'danger';
     }
 
-    public function getFalseIcon(): string | BackedEnum | null
+    public function getFalseIcon(): string | BackedEnum | Htmlable | null
     {
         $icon = $this->evaluate($this->falseIcon);
 
@@ -231,7 +232,7 @@ class IconColumn extends Column implements HasEmbeddedView
         return $this->evaluate($this->trueColor) ?? 'success';
     }
 
-    public function getTrueIcon(): string | BackedEnum | null
+    public function getTrueIcon(): string | BackedEnum | Htmlable | null
     {
         $icon = $this->evaluate($this->trueIcon);
 
@@ -310,33 +311,43 @@ class IconColumn extends Column implements HasEmbeddedView
                 'fi-wrapped' => $this->canWrap(),
             ]);
 
+        $shouldOpenUrlInNewTab = $this->shouldOpenUrlInNewTab();
+
+        $formatState = function (mixed $stateItem) use ($shouldOpenUrlInNewTab): string {
+            $icon = $this->getIcon($stateItem);
+
+            if (blank($icon)) {
+                return '';
+            }
+
+            $color = $this->getColor($stateItem);
+            $size = $this->getSize($stateItem);
+
+            $item = generate_icon_html($icon, attributes: (new ComponentAttributeBag)
+                ->merge([
+                    'x-tooltip' => filled($tooltip = $this->getTooltip($stateItem))
+                        ? '{
+                            content: ' . Js::from($tooltip) . ',
+                            theme: $store.theme,
+                            allowHTML: ' . Js::from($tooltip instanceof Htmlable) . ',
+                        }'
+                        : null,
+                ], escape: false)
+                ->color(IconComponent::class, $color), size: $size ?? IconSize::Large)
+                ->toHtml();
+
+            if (filled($url = $this->getUrl($stateItem))) {
+                $item = '<a ' . generate_href_html($url, $shouldOpenUrlInNewTab)->toHtml() . '>' . $item . '</a>';
+            }
+
+            return $item;
+        };
+
         ob_start(); ?>
 
         <div <?= $attributes->toHtml() ?>>
             <?php foreach ($state as $stateItem) { ?>
-                <?php
-                $icon = $this->getIcon($stateItem);
-
-                if (blank($icon)) {
-                    continue;
-                }
-
-                $color = $this->getColor($stateItem);
-                $size = $this->getSize($stateItem);
-                ?>
-
-                <?= generate_icon_html($icon, attributes: (new ComponentAttributeBag)
-                    ->merge([
-                        'x-tooltip' => filled($tooltip = $this->getTooltip($stateItem))
-                            ? '{
-                                content: ' . Js::from($tooltip) . ',
-                                theme: $store.theme,
-                                allowHTML: ' . Js::from($tooltip instanceof Htmlable) . ',
-                            }'
-                            : null,
-                    ], escape: false)
-                    ->color(IconComponent::class, $color), size: $size ?? IconSize::Large)
-                    ->toHtml() ?>
+                <?= $formatState($stateItem) ?>
             <?php } ?>
         </div>
 

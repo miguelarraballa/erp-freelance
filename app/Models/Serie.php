@@ -3,12 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Presupuestos\Models\Presupuesto;
+
+
 
 class Serie extends Model
 {
     protected $fillable = ['codigo','prefijo','sufijo','siguiente_numero','por_defecto','activo','tipo','ejercicio'];
 
-    public function facturas() { return $this->hasMany(Factura::class); }
+    public function facturas() 
+    { 
+        return $this->hasMany(Factura::class); 
+    }
+
+    public function presupuestos()
+    {
+        return $this->hasMany(Presupuesto::class);
+    }
 
     protected static function booted(): void
     {
@@ -32,4 +43,6 @@ class Serie extends Model
             
         });
     }
+
+ 
 }

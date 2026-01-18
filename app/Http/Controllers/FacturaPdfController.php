@@ -7,6 +7,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Emisor;
+use Illuminate\Support\Facades\DB;
 
 class FacturaPdfController extends Controller
 {
@@ -15,6 +16,16 @@ class FacturaPdfController extends Controller
         $factura->load(['cliente','serie','lineas.impuesto']);
 
         $emisor = Emisor::activo()->first();
+
+        $PresupuestoId = DB::table('presupuestos_facturas')
+        ->where('factura_id', $factura->id)
+        ->value('presupuesto_id');
+
+        if (!empty($PresupuestoId)) {
+            $PresupuestoId = DB::table('presupuestos')
+                ->where('id', $PresupuestoId)
+                ->value('numero_completo');
+        }
 
         // Logo en base64 (opcional)
         $logo = null;
@@ -49,7 +60,7 @@ class FacturaPdfController extends Controller
             'dompdf.options.isHtml5ParserEnabled' => true,
         ]);
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.factura', compact('factura','emisor','logo'))
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.factura', compact('factura','emisor','logo','PresupuestoId'))
             ->setPaper('a4');
         $dompdf = $pdf->getDomPDF();
         $font = $dompdf->getFontMetrics()->get_font('DejaVu Sans', 'normal');
