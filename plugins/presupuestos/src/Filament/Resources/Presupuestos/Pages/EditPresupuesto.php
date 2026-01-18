@@ -1,13 +1,15 @@
 <?php
 
-namespace Presupuestos\src\Filament\Resources\Presupuestos\Pages;
+namespace Presupuestos\Filament\Resources\Presupuestos\Pages;
 
-use Prespuestos\src\Filament\Resources\Presupuestos\PresupuestosResource;
+use Presupuestos\Filament\Resources\Presupuestos\PresupuestoResource;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Actions\{Action, DeleteAction};
 use App\Models\Serie;
-use Presupuestos\src\Services\PresupuestoService;
+use Presupuestos\Services\PresupuestoService;
+use Presupuestos\Services\PresupuestoCalc;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class EditPresupuesto extends EditRecord
 {
@@ -51,8 +53,21 @@ class EditPresupuesto extends EditRecord
     protected function getHeaderActions(): array
     {
         $enBorrador = fn () => $this->record?->estado === 'borrador';
+        $aceptado = fn () => $this->record?->estado === 'aceptado';
+        $yaFacturado = fn () => $this->record
+            && DB::table('presupuestos_facturas')
+                ->where('presupuesto_id', $this->record->id)
+                ->exists();
 
         return [
+
+            Action::make('facturar')
+                ->label('Crear factura')
+                ->icon('heroicon-o-document-text')
+                ->color('success')
+                ->hidden(fn () => ! $aceptado() || $yaFacturado())
+                ->url(fn () => route('presupuesto.facturar', $this->record)),
+
              Action::make('pdf')
                 ->label('Descargar PDF')
                 ->icon('heroicon-o-arrow-down-tray')
@@ -66,7 +81,7 @@ class EditPresupuesto extends EditRecord
     protected function afterSave(): void
     {
         if ($this->record->estado === 'borrador') {
-            \Presupuestos\src\Services\PresupuestoCalc::recalcular($this->record);
+            PresupuestoCalc::recalcular($this->record);
         }
 
         if (! $this->shouldEmit) {

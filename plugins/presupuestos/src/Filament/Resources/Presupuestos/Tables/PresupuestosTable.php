@@ -1,6 +1,6 @@
 <?php
 
-namespace Presupuestos\src\Filament\Resources\Presupuestos\Tables;
+namespace Presupuestos\Filament\Resources\Presupuestos\Tables;
 
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;

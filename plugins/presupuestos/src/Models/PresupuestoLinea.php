@@ -3,6 +3,7 @@
 namespace Presupuestos\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Impuesto;
 
 class PresupuestoLinea extends Model
 {
@@ -13,6 +14,13 @@ class PresupuestoLinea extends Model
         'impuesto_id','base_linea','iva_linea','irpf_linea','total_linea','producto'
     ];
 
-    public function factura()  { return $this->belongsTo(Factura::class); }
-    public function impuesto() { return $this->belongsTo(Impuesto::class); }
+    public function presupuesto()
+    {
+        return $this->belongsTo(Presupuesto::class);
+    }
+
+    public function impuesto()
+    {
+        return $this->belongsTo(Impuesto::class);
+    }
 }

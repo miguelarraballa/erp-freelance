@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->date('fecha')->nullable();
             $table->date('vencimiento')->nullable();
-            $table->enum('estado', ['borrador','emitido','facturado','anulado'])->default('borrador');
+            $table->enum('estado', ['borrador','emitido','facturado','aceptado','no-aceptado'])->default('borrador');
 
             // Totales
             $table->decimal('base', 13, 2)->default(0);

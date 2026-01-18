@@ -4,7 +4,7 @@ namespace Presupuestos\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Cliente;
-use App\Models\Factura;
+use App\Models\Serie;
 
 
 class Presupuesto extends Model
@@ -15,23 +15,26 @@ class Presupuesto extends Model
         'created_by','updated_by','datos_facturacion',
     ];
 
-    public function serie()   { 
-        return $this->belongsTo(Serie::class); 
+    public function serie()
+    {
+        return $this->belongsTo(Serie::class);
     }
 
-    public function cliente() { 
-        return $this->belongsTo(Cliente::class); 
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class);
     }
 
-    public function PresupuestoLineas()  { 
-        return $this->hasMany(PresupuestoLinea::class)->orderBy('orden'); 
+    public function lineas()
+    {
+        return $this->hasMany(PresupuestoLinea::class)->orderBy('orden');
     }
 
     protected static function booted(): void
     {
-        static::updating(function (Factura $f) {
-            $origEstado = $f->getOriginal('estado');
-            $origNumero = $f->getOriginal('numero');
+        static::updating(function (Presupuesto $presupuesto) {
+            $origEstado = $presupuesto->getOriginal('estado');
+            $origNumero = $presupuesto->getOriginal('numero');
 
             // Si aún es borrador, no imponemos restricciones aquí.
             if ($origEstado === 'borrador') {
@@ -47,13 +50,13 @@ class Presupuesto extends Model
                     'numero',
                     'numero_completo',
                     'fecha',
-                    $f->getUpdatedAtColumn(),
+                    $presupuesto->getUpdatedAtColumn(),
                 ];
 
-                foreach (array_keys($f->getDirty()) as $campo) {
+                foreach (array_keys($presupuesto->getDirty()) as $campo) {
                     if (! in_array($campo, $permitidos, true)) {
                         // revertimos silenciosamente cualquier otro cambio
-                        $f->{$campo} = $f->getOriginal($campo);
+                        $presupuesto->{$campo} = $presupuesto->getOriginal($campo);
                     }
                 }
 
@@ -62,20 +65,20 @@ class Presupuesto extends Model
 
             // Caso 2: ya emitida Y numerada → solo se puede cambiar 'estado'
             if ($origEstado === 'emitida' && ! is_null($origNumero)) {
-                $permitidos = ['estado', $f->getUpdatedAtColumn()];
+                $permitidos = ['estado', $presupuesto->getUpdatedAtColumn()];
 
-                foreach (array_keys($f->getDirty()) as $campo) {
+                foreach (array_keys($presupuesto->getDirty()) as $campo) {
                     if (! in_array($campo, $permitidos, true)) {
                         // revertimos silenciosamente cualquier otro cambio
-                        $f->{$campo} = $f->getOriginal($campo);
+                        $presupuesto->{$campo} = $presupuesto->getOriginal($campo);
                     }
                 }
             }
         });
 
-        static::deleting(function (Factura $f) {
-            if ($f->estado !== 'borrador') {
-                throw new \DomainException('Solo se puede borrar una factura en estado borrador.');
+        static::deleting(function (Presupuesto $presupuesto) {
+            if ($presupuesto->estado !== 'borrador') {
+                throw new \DomainException('Solo se puede borrar un presupuesto en estado borrador.');
             }
         });
     }

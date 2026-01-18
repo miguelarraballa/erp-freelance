@@ -4,7 +4,7 @@ namespace Presupuestos\Filament;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use Presupuestos\Filament\Pages\PresupuestosPage;
+use Presupuestos\Filament\Resources\Presupuestos\PresupuestoResource;
 
 class PresupuestosPlugin implements Plugin
 {
@@ -20,8 +20,8 @@ class PresupuestosPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->pages([
-            PresupuestosPage::class,
+        $panel->resources([
+            PresupuestoResource::class,
         ]);
     }
 
