@@ -47,6 +47,7 @@ $allowed = [
     'route:clear'    => [],
     'route:cache'    => [],
     'view:clear'     => [],
+    'cache:clear'    => [],
     'filament:clear-cached-components' => [],
     'filament:cache-components'        => [],
     'storage:link'   => [],
