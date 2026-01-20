@@ -101,7 +101,8 @@
                 <th class="right" style="width: 10%">Cant.</th>
                 <th class="right" style="width: 14%">Precio</th>
                 <th class="right" style="width: 10%">Dto. %</th>
-                <th class="right" style="width: 10%">IVA</th>
+                <th class="right" style="width: 10%">IVA %</th>
+                <th class="right" style="width: 10%">IRPF %</th>
                 <th class="right" style="width: 16%">Total</th>
             </tr>
         </thead>
@@ -110,15 +111,27 @@
             <tr>
                 <td>{!! nl2br(e($ln->concepto)) !!}</td>
                 <td class="right">{{ $fmt($ln->cantidad) }}</td>
-                <td class="right">{{ $fmt($ln->precio_unitario) }} €</td>
+                <td class="right">{{ $fmt($ln->precio_unitario) }}€</td>
                 <td class="right">{{ $fmt($ln->descuento_pct ?? 0) }}</td>
                 <td class="right">
                     @php
                         $ivaPct = optional($ln->impuesto)->porcentaje ?? 0;
                     @endphp
-                    {{ $fmt($ivaPct) }} %
+                    {{ $fmt($ivaPct) }}
                 </td>
-                <td class="right">{{ $fmt($ln->total_linea ?? 0) }} €</td>
+                <td class="right">
+                    @php
+                        $irpfBase = (float) ($ln->base_linea ?? 0);
+                        $irpfLinea = (float) ($ln->irpf_linea ?? 0);
+                        $irpfPct = ($irpfBase > 0 && $irpfLinea != 0)
+                            ? (($irpfLinea / $irpfBase) * 100)
+                            : 0;
+                        $irpfPct = $irpfPct != 0 ? '-'.$irpfPct : 0;
+                    @endphp
+                    {{ $fmt($irpfPct) }}
+
+                </td>
+                <td class="right">{{ $fmt($ln->total_linea ?? 0) }}€</td>
             </tr>
         @endforeach
         </tbody>
