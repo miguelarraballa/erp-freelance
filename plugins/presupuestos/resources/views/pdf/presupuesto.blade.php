@@ -18,7 +18,7 @@
     .muted { color: #666; }
     .box { border: 1px solid #ddd; padding: 10px; border-radius: 4px; }
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 8px; border-bottom: 1px solid #e5e5e5; vertical-align: top; }
+    th, td { padding: 8px; border-bottom: 1px solid #e5e5e5; vertical-align: top; font-size: 10px; }
     th { background: #f7f7f7; text-align: left; }
     tfoot td { border-top: 1px solid #aaa; font-weight: bold; }
     .totals td { padding: 6px; }
@@ -26,6 +26,7 @@
     .mb-2 { margin-bottom: 12px; }
     .mb-3 { margin-bottom: 18px; }
     .mb-4 { margin-bottom: 24px; }
+    .concepto { width: 50% }
     .clearfix::after { content: ""; display: table; clear: both; }
     #notas-legales { position: fixed; bottom: -20pt; width: 100%; font-size: 8px; text-align: justify}
     #formas-de-pago { font-size: 10px; margin-top: 24px; margin-bottom: 24px; }
@@ -79,12 +80,12 @@
         <thead>
             <tr>
                 <th>Concepto</th>
-                <th class="right" style="width: 10%">Cant.</th>
-                <th class="right" style="width: 14%">Precio</th>
-                <th class="right" style="width: 10%">Dto. %</th>
+                <th class="right" style="width: 5%">Cant.</th>
+                <th class="right" style="width: 5%">Precio</th>
+                <th class="right" style="width: 5%">Dto.</th>
                 <th class="right" style="width: 10%">IVA</th>
-                <th class="right" style="width: 10%">IRPF</th>
-                <th class="right" style="width: 16%">Total</th>
+                <th class="right" style="width: 11%">IRPF</th>
+                <th class="right" style="width: 13%">Total</th>
             </tr>
         </thead>
         <tbody>
@@ -96,20 +97,15 @@
                 <td class="right">{{ $fmt($ln->descuento_pct ?? 0) }}</td>
                 <td class="right">
                     @php
-                        $ivaPct = optional($ln->impuesto)->porcentaje ?? 0;
+                        $ivaLinea = (float) ($ln->iva_linea ?? 0);
                     @endphp
-                    {{ $fmt($ivaPct) }} %
+                    {{ $fmt($ivaLinea) }}€
                 </td>
                 <td class="right">
                     @php
-                        $irpfBase = (float) ($ln->base_linea ?? 0);
                         $irpfLinea = (float) ($ln->irpf_linea ?? 0);
-                        $irpfPct = ($irpfBase > 0 && $irpfLinea != 0)
-                            ? (($irpfLinea / $irpfBase) * 100)
-                            : 0;
-                        $irpfPct = $irpfPct != 0 ? '-'.$irpfPct : 0;
                     @endphp
-                    {{ $fmt($irpfPct) }}
+                    {{ $irpfLinea != 0 ? '-' . $fmt(abs($irpfLinea)) : $fmt(0) }}€
                 </td>
                 <td class="right">{{ $fmt($ln->total_linea ?? 0) }}€</td>
             </tr>
@@ -121,21 +117,21 @@
         <tbody>
             <tr>
                 <td>Base imponible</td>
-                <td class="right">{{ $fmt($presupuesto->base ?? 0) }} €</td>
+                <td class="right">{{ $fmt($presupuesto->base ?? 0) }}€</td>
             </tr>
             <tr>
                 <td>IVA total</td>
-                <td class="right">{{ $fmt($presupuesto->iva_total ?? 0) }} €</td>
+                <td class="right">{{ $fmt($presupuesto->iva_total ?? 0) }}€</td>
             </tr>
             @if(($presupuesto->irpf_total ?? 0) != 0)
             <tr>
                 <td>IRPF total</td>
-                <td class="right">- {{ $fmt($presupuesto->irpf_total) }} €</td>
+                <td class="right">- {{ $fmt($presupuesto->irpf_total) }}€</td>
             </tr>
             @endif
             <tr>
                 <td>Total</td>
-                <td class="right">{{ $fmt($presupuesto->total ?? 0) }} €</td>
+                <td class="right">{{ $fmt($presupuesto->total ?? 0) }}€</td>
             </tr>
         </tbody>
     </table>
