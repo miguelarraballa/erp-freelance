@@ -58,7 +58,7 @@
         </div>
 
         <div class="col-6">
-            <h2>Presupeusto {{ $presupuesto->numero_completo ?? 'Proforma' }}</h2>
+            <h2>Presupuesto {{ $presupuesto->numero_completo ?? 'Proforma' }}</h2>
             <div class="muted small mb-2">
                 <div>Fecha: {{ \Illuminate\Support\Carbon::parse($presupuesto->fecha ?? now())->format('d/m/Y') }}</div>
                 @if($presupuesto->vencimiento)
