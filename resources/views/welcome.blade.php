@@ -19,14 +19,55 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --color-bg: #ffffff;
+      --color-text: #000000;
+      --color-muted: rgba(0, 0, 0, 0.7);
+      --color-surface: #f2f2f2;
+      --color-border: rgba(0, 0, 0, 0.12);
+      --color-heading: #020BFF;
+      --color-accent: #020BFF;
+      --color-accent-2: #020BFF;
+      --color-accent-contrast: #ffffff;
+      --color-grid: rgba(13, 41, 37, 0.15);
+      --color-glow: rgba(2, 11, 255, 0.08);
+      --color-accent-soft: rgba(2, 11, 255, 0.12);
+      --color-accent-shadow: rgba(2, 11, 255, 0.25);
+      --color-button-bg: #020BFF;
+      --color-button-border: rgba(2, 11, 255, 0.4);
+      --color-button-hover: #020BFF;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #000000;
+        --color-text: #ffffff;
+        --color-muted: rgba(255, 255, 255, 0.7);
+        --color-surface: rgba(255, 255, 255, 0.06);
+        --color-border: rgba(255, 255, 255, 0.14);
+        --color-heading: #020BFF;
+        --color-grid: rgba(2, 11, 255, 0.22);
+        --color-glow: rgba(2, 11, 255, 0.18);
+        --color-accent-soft: rgba(2, 11, 255, 0.2);
+        --color-accent-shadow: rgba(2, 11, 255, 0.35);
+        --color-button-bg: #020BFF;
+        --color-button-border: rgba(2, 11, 255, 0.5);
+        --color-button-hover: #020BFF;
+      }
+
+      .logo-icon {
+        filter: invert(1);
+      }
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: hsl(222, 47%, 6%);
-      color: hsl(210, 40%, 98%);
+      background-color: var(--color-bg);
+      color: var(--color-text);
       min-height: 100vh;
-      background-image: 
-        linear-gradient(to right, hsl(222, 30%, 18%, 0.3) 1px, transparent 1px),
-        linear-gradient(to bottom, hsl(222, 30%, 18%, 0.3) 1px, transparent 1px);
+      background-image:
+        linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
       background-size: 60px 60px;
     }
 
@@ -37,7 +78,7 @@
       transform: translateX(-50%);
       width: 800px;
       height: 400px;
-      background: hsl(43, 96%, 56%, 0.05);
+      background: var(--color-glow);
       filter: blur(120px);
       border-radius: 50%;
       pointer-events: none;
@@ -65,42 +106,37 @@
     }
 
     .logo-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 0.5rem;
-      background: linear-gradient(135deg, hsl(43, 96%, 56%), hsl(38, 92%, 50%));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.25rem;
-      color: hsl(222, 47%, 6%);
+      width: 120px;
+      height: auto;
+      display: block;
     }
 
     .logo-text h1 {
       font-size: 1.25rem;
       font-weight: bold;
+      color: var(--color-text);
     }
 
     .logo-text p {
       font-size: 0.75rem;
-      color: hsl(215, 20%, 55%);
+      color: var(--color-muted);
     }
 
     .btn-login {
       padding: 0.5rem 1rem;
       font-size: 0.875rem;
       font-weight: 500;
-      background: hsl(222, 47%, 12%);
-      border: 1px solid hsl(222, 30%, 18%);
-      color: hsl(210, 40%, 98%);
+      background: var(--color-button-bg);
+      border: 1px solid var(--color-button-border);
+      color: var(--color-accent-contrast);
+      text-decoration: none;
       border-radius: 0.5rem;
       cursor: pointer;
       transition: background 0.2s;
     }
 
     .btn-login:hover {
-      background: hsl(222, 47%, 16%);
+      background: var(--color-button-hover);
     }
 
     .hero {
@@ -112,17 +148,18 @@
     .hero h2 {
       font-size: 2.5rem;
       margin-bottom: 1rem;
+      color: var(--color-heading);
     }
 
     .hero .gradient-text {
-      background: linear-gradient(90deg, hsl(43, 96%, 56%), hsl(38, 92%, 60%));
+      background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .hero p {
-      color: hsl(215, 20%, 55%);
+      color: var(--color-muted);
       font-size: 1.125rem;
       max-width: 600px;
       margin: 0 auto;
@@ -137,9 +174,9 @@
     }
 
     .card {
-      background: hsl(222, 47%, 8%, 0.8);
+      background: var(--color-surface);
       backdrop-filter: blur(8px);
-      border: 1px solid hsl(222, 30%, 18%, 0.5);
+      border: 1px solid var(--color-border);
       border-radius: 0.75rem;
       padding: 1.5rem;
       text-decoration: none;
@@ -159,14 +196,14 @@
     .card:nth-child(6) { animation-delay: 0.6s; }
 
     .card:hover {
-      box-shadow: 0 0 30px -5px hsl(43, 96%, 56%, 0.3);
+      box-shadow: 0 0 30px -5px var(--color-accent-shadow);
     }
 
     .card-icon {
       width: 48px;
       height: 48px;
       border-radius: 0.5rem;
-      background: hsl(43, 96%, 56%, 0.1);
+      background: var(--color-accent-soft);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -176,7 +213,7 @@
     .card-icon svg {
       width: 24px;
       height: 24px;
-      stroke: hsl(43, 96%, 56%);
+      stroke: var(--color-accent);
       fill: none;
       stroke-width: 2;
       stroke-linecap: round;
@@ -184,26 +221,27 @@
     }
 
     .card:hover .card-icon {
-      background: hsl(43, 96%, 56%);
+      background: var(--color-accent);
     }
 
     .card:hover .card-icon svg {
-      stroke: hsl(222, 47%, 6%);
+      stroke: var(--color-accent-contrast);
     }
 
     .card h3 {
       font-size: 1.125rem;
       font-weight: 600;
       transition: color 0.3s;
+      color: var(--color-heading);
     }
 
     .card:hover h3 {
-      color: hsl(43, 96%, 56%);
+      color: var(--color-accent);
     }
 
     .card p {
       font-size: 0.875rem;
-      color: hsl(215, 20%, 55%);
+      color: var(--color-muted);
       margin-top: 0.25rem;
     }
 
@@ -212,13 +250,13 @@
       align-items: center;
       gap: 0.5rem;
       font-size: 0.875rem;
-      color: hsl(215, 20%, 55%);
+      color: var(--color-muted);
       margin-top: auto;
       transition: color 0.3s;
     }
 
     .card:hover .card-link {
-      color: hsl(43, 96%, 56%);
+      color: var(--color-accent);
     }
 
     .card-link svg {
@@ -235,7 +273,7 @@
       text-align: center;
       margin-top: 5rem;
       font-size: 0.875rem;
-      color: hsl(215, 20%, 55%);
+      color: var(--color-muted);
     }
 
     @keyframes fadeIn {
@@ -262,7 +300,7 @@
   <div class="container">
     <header>
       <div class="logo">
-        <div class="logo-icon">ERP</div>
+      <img class="logo-icon" src="{{ asset('brand/logo.svg') }}" alt="Logo" />
         <div class="logo-text">
           <h1>MDMG Desarrollo Web</h1>
           <p>Sistema de Gestión</p>

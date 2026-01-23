@@ -32,8 +32,11 @@ class FacturacionPanelProvider extends PanelProvider
             ->id('facturacion')
             ->path('facturacion')
             ->login()
+            ->brandLogo(asset('brand/logo.svg'))
+            ->brandLogoHeight('2rem')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#020BFF'),
+                'gray' => Color::Slate,
             ])
             ->viteTheme('resources/css/filament/facturacion/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
