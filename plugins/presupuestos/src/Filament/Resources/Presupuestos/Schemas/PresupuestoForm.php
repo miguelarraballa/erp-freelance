@@ -123,8 +123,8 @@ class PresupuestoForm
                 DatePicker::make('fecha')
                     ->label('Fecha de emisión')
                     ->default(fn () => now()->toDateString())
-                    ->minDate(now()->toDateString())
-                    ->rule('after_or_equal:today')        
+                    ->minDate(fn (?Presupuesto $record) => $lock($record) ? null : now()->toDateString())
+                    ->rule(fn (?Presupuesto $record) => $lock($record) ? null : 'after_or_equal:today')
                     ->live(onBlur: false)                        
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         if (!$state) {
@@ -134,7 +134,7 @@ class PresupuestoForm
                         $base = Carbon::parse($state);
                         $set('vencimiento', $base->copy()->addMonth(3)->toDateString()); // 3 meses por defecto
                     })
-                    ->required()
+                    ->required(fn (?Presupuesto $record) => ! $lock($record))
                     ->columnSpan(4)
                     ->disabled($lock)
                     ->dehydrated(fn (?Presupuesto $record) => is_null($record?->numero)),
