@@ -225,8 +225,8 @@ class FacturaForm
                 DatePicker::make('fecha')
                     ->label('Fecha de emisión')
                     ->default(fn () => now()->toDateString())
-                    ->minDate(now()->toDateString())
-                    ->rule('after_or_equal:today')        
+                    ->minDate(fn (?Factura $record) => $lock($record) ? null : now()->toDateString())
+                    ->rule(fn (?Factura $record) => $lock($record) ? null : 'after_or_equal:today')
                     ->live(onBlur: false)                        
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         if (!$state) {
@@ -236,7 +236,7 @@ class FacturaForm
                         $base = Carbon::parse($state);
                         $set('vencimiento', $base->copy()->addWeek()->toDateString()); // +7 días
                     })
-                    ->required()
+                    ->required(fn (?Factura $record) => ! $lock($record))
                     ->columnSpan(4)
                     ->disabled($lock)
                     ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
