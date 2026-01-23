@@ -15,8 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
     'version' => '1.5.0',
-    'release_date' => '2024-06-10',
-    
+    'release_date' => '2026-01-23',
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
