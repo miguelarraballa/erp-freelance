@@ -6,11 +6,29 @@
 @source '../../../../resources/views/filament/**/*';
 
 :root {
-  --readonly-bg: #dbdbdb;
+  --readonly-bg: #f2f2f2;
+  --fi-app-bg: #ffffff;
+  --fi-app-text: #000000;
+  --fi-app-muted: rgba(0, 0, 0, 0.7);
+  --fi-app-surface: #f2f2f2;
+  --fi-app-border: rgba(0, 0, 0, 0.12);
+  --fi-app-heading: #020BFF;
+  --fi-app-accent: #020BFF;
+  --fi-app-accent-2: #020BFF;
+  --fi-app-accent-soft: rgba(2, 11, 255, 0.08);
 }
 
 .dark {
-  --readonly-bg: rgb(86,86,86);
+  --readonly-bg: #1a1a1a;
+  --fi-app-bg: #000000;
+  --fi-app-text: #ffffff;
+  --fi-app-muted: rgba(255, 255, 255, 0.7);
+  --fi-app-surface: #101010;
+  --fi-app-border: rgba(255, 255, 255, 0.12);
+  --fi-app-heading: #020BFF;
+  --fi-app-accent: #020BFF;
+  --fi-app-accent-2: #020BFF;
+  --fi-app-accent-soft: rgba(2, 11, 255, 0.2);
 }
 
 .fi-fo-field input[readonly],
@@ -19,4 +37,74 @@
 .fi-fo-field .fi-input[readonly],
 .fi-fo-field [aria-readonly="true"] {
   background-color: var(--readonly-bg) !important;
+}
+
+.fi-body,
+.fi-main-ctn,
+.fi-main,
+.fi-page,
+.fi-page-content {
+  background-color: var(--fi-app-bg);
+  color: var(--fi-app-text);
+}
+
+.fi-topbar,
+.fi-topbar-ctn,
+.fi-sidebar,
+.fi-sidebar-header,
+.fi-sidebar-footer {
+  background-color: var(--fi-app-bg);
+  color: var(--fi-app-text);
+  border-color: var(--fi-app-border);
+}
+
+.fi-header-heading,
+.fi-simple-header-heading,
+.fi-section-header-heading,
+.fi-modal-heading {
+  color: var(--fi-app-heading);
+}
+
+.fi-header-subheading,
+.fi-simple-header-subheading,
+.fi-section-header-description,
+.fi-modal-description {
+  color: var(--fi-app-muted);
+}
+
+.fi-section:not(.fi-section-not-contained),
+.fi-section.fi-aside > .fi-section-content-ctn,
+.fi-modal-window {
+  background-color: var(--fi-app-surface);
+  border-color: var(--fi-app-border);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+  background-color: var(--fi-app-accent-soft);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label,
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-icon {
+  color: var(--fi-app-accent);
+}
+
+.fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover,
+.fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:focus-visible,
+.fi-topbar-item-btn:hover,
+.fi-topbar-item-btn:focus-visible {
+  background-color: var(--fi-app-accent-soft);
+}
+
+.dark .fi-logo,
+.dark .fi-logo img,
+.dark .fi-logo svg,
+.dark .fi-topbar .fi-logo img,
+.dark .fi-topbar .fi-logo svg,
+.dark .fi-sidebar .fi-logo img,
+.dark .fi-sidebar .fi-logo svg {
+  filter: invert(1);
+}
+
+.dark .fi-logo svg {
+  color: #ffffff;
 }
