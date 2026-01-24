@@ -27,7 +27,7 @@ class IngresosGastosMesWidget extends StatsOverviewWidget
         [$inicio, $fin] = $this->rangoMesActual();
 
         $ingresos = (float) Factura::query()
-            ->whereIn('estado', ['emitida', 'enviada', 'pagada'])
+            ->whereIn('estado', ['cobrada'])
             ->whereBetween('fecha', [$inicio, $fin])
             ->sum('total');
 
