@@ -4,43 +4,37 @@ namespace App\Filament\Widgets;
 
 use App\Models\Factura;
 use App\Models\FacturasProveedor;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Filament\Widgets\TableWidget;
 use Illuminate\Support\Carbon;
 
-class IvaTrimestreWidget extends StatsOverviewWidget
+class IvaTrimestreWidget extends TableWidget
 {
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 2;
+    protected static ?string $heading = 'IVA trimestre';
 
     public function getColumnSpan(): int|array
     {
         return 1;
     }
 
-    protected function getColumns(): int
+    public function table(Table $table): Table
     {
-        return 2;
-    }
-
-    protected function getStats(): array
-    {
-        [$inicio, $fin] = $this->rangoTrimestreActual();
-
-        $ivaIngresos = (float) Factura::query()
-            ->whereIn('estado', ['emitida', 'enviada', 'pagada'])
-            ->whereBetween('fecha', [$inicio, $fin])
-            ->sum('iva_total');
-
-        $ivaProveedores = (float) FacturasProveedor::query()
-            ->whereBetween('fecha', [$inicio, $fin])
-            ->sum('iva_total');
-
-        return [
-            Stat::make('IVA acumulado', $this->formatMoney($ivaIngresos))
-                ->color('success'),
-            Stat::make('IVA repercutido', $this->formatMoney($ivaProveedores))
-                ->color('warning'),
-        ];
+        return $table
+            ->records(fn () => $this->get_collection_iva())
+            ->columns([
+                Tables\Columns\TextColumn::make('iva_acumulado')
+                    ->label('IVA acumulado')
+                    ->money('EUR'),
+                Tables\Columns\TextColumn::make('iva_repercutido')
+                    ->label('IVA repercutido')
+                    ->money('EUR'),
+                Tables\Columns\TextColumn::make('iva_total')
+                    ->label('IVA total')
+                    ->money('EUR'),
+            ])
+            ->paginated(false);
     }
 
     private function rangoTrimestreActual(): array
@@ -51,11 +45,28 @@ class IvaTrimestreWidget extends StatsOverviewWidget
         return [$inicio, $fin];
     }
 
-    private function formatMoney(float $value): string
-    {
-        $signo = $value < 0 ? '-' : '';
-        $valor = abs($value);
+    protected function get_collection_iva()  {
 
-        return $signo . number_format($valor, 2, ',', '.') . ' €';
+        [$inicio, $fin] = $this->rangoTrimestreActual();
+
+        $ivaIngresos = (float) Factura::query()
+            ->whereIn('estado', ['emitida', 'cobrada'])
+            ->whereBetween('fecha', [$inicio, $fin])
+            ->sum('iva_total');
+
+        $ivaProveedores = (float) FacturasProveedor::query()
+            ->whereBetween('fecha', [$inicio, $fin])
+            ->sum('iva_total');
+
+        $ivaTotal = $ivaIngresos - $ivaProveedores;
+
+        return collect([
+            [
+                'iva_acumulado' => $ivaIngresos,
+                'iva_repercutido' => $ivaProveedores,
+                'iva_total' => $ivaTotal,
+            ],
+        ]);
     }
+    
 }
