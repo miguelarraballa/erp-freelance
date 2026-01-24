@@ -6,6 +6,8 @@ use BackedEnum;
 use App\Filament\Widgets\FacturasPendientesTableWidget;
 use App\Filament\Widgets\IngresosGastosMesWidget;
 use App\Filament\Widgets\IvaTrimestreWidget;
+use App\Filament\Widgets\PresupuestosAceptadosTableWidget;
+use App\Filament\Widgets\PresupuestosEmitidosTableWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -23,6 +25,8 @@ class Dashboard extends BaseDashboard
             IngresosGastosMesWidget::class,
             FacturasPendientesTableWidget::class,
             IvaTrimestreWidget::class,
+            PresupuestosEmitidosTableWidget::class,
+            PresupuestosAceptadosTableWidget::class,
         ];
     }
 
