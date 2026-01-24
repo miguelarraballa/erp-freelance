@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use BackedEnum;
 use App\Filament\Widgets\FacturasPendientesTableWidget;
 use App\Filament\Widgets\IngresosGastosMesWidget;
+use App\Filament\Widgets\IvaTrimestreWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -21,6 +22,7 @@ class Dashboard extends BaseDashboard
         return [
             IngresosGastosMesWidget::class,
             FacturasPendientesTableWidget::class,
+            IvaTrimestreWidget::class,
         ];
     }
 
