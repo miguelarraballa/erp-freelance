@@ -392,6 +392,7 @@
 
     <footer>
       <p>© 2026 MDMG Desarrollo Web. Todos los derechos reservados.</p>
+      <p><small>v{{ config('app.version') }} {{ config('app.release_date') }}</small></p>
     </footer>
   </div>
 </body>

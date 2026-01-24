@@ -37,9 +37,9 @@ class IngresosGastosMesWidget extends StatsOverviewWidget
 
         return [
             Stat::make('Ingresos del mes', $this->formatMoney($ingresos))
-                ->color('green'),
+                ->color('success'),
             Stat::make('Gastos del mes', $this->formatMoney(-$gastos))
-                ->color('red'),
+                ->color('danger'),
         ];
     }
 
