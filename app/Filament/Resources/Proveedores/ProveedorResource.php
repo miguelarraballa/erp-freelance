@@ -20,7 +20,7 @@ class ProveedorResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static \UnitEnum|string|null $navigationGroup = 'Proveedores';
     protected static ?string $navigationLabel = 'Proveedores';
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $modelLabel = 'Proveedor';
     protected static ?string $pluralModelLabel = 'Proveedores';
