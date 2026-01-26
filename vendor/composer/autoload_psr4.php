@@ -84,6 +84,7 @@ return array(
     'PHPStan\\PhpDocParser\\' => array($vendorDir . '/phpstan/phpdoc-parser/src'),
     'OpenSpout\\' => array($vendorDir . '/openspout/openspout/src'),
     'NunoMaduro\\Collision\\' => array($vendorDir . '/nunomaduro/collision/src'),
+    'Notificaciones\\' => array($vendorDir . '/contabilidad/notificaciones/src'),
     'Nette\\' => array($vendorDir . '/nette/php-generator/src', $vendorDir . '/nette/schema/src', $vendorDir . '/nette/utils/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Mockery\\' => array($vendorDir . '/mockery/mockery/library/Mockery'),

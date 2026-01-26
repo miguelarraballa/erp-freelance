@@ -250,6 +250,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'N' => 
         array (
             'NunoMaduro\\Collision\\' => 21,
+            'Notificaciones\\' => 15,
             'Nette\\' => 6,
         ),
         'M' => 
@@ -669,6 +670,10 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         array (
             0 => __DIR__ . '/..' . '/nunomaduro/collision/src',
         ),
+        'Notificaciones\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/contabilidad/notificaciones/src',
+        ),
         'Nette\\' => 
         array (
             0 => __DIR__ . '/..' . '/nette/php-generator/src',
@@ -958,6 +963,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'AnourValar\\EloquentSerialize\\Grammars\\QueryBuilderGrammar' => __DIR__ . '/..' . '/anourvalar/eloquent-serialize/src/Grammars/QueryBuilderGrammar.php',
         'AnourValar\\EloquentSerialize\\Package' => __DIR__ . '/..' . '/anourvalar/eloquent-serialize/src/Package.php',
         'AnourValar\\EloquentSerialize\\Service' => __DIR__ . '/..' . '/anourvalar/eloquent-serialize/src/Service.php',
+        'App\\Filament\\Pages\\Dashboard' => __DIR__ . '/../..' . '/app/Filament/Pages/Dashboard.php',
         'App\\Filament\\Resources\\Clientes\\ClienteResource' => __DIR__ . '/../..' . '/app/Filament/Resources/Clientes/ClienteResource.php',
         'App\\Filament\\Resources\\Clientes\\Pages\\CreateCliente' => __DIR__ . '/../..' . '/app/Filament/Resources/Clientes/Pages/CreateCliente.php',
         'App\\Filament\\Resources\\Clientes\\Pages\\EditCliente' => __DIR__ . '/../..' . '/app/Filament/Resources/Clientes/Pages/EditCliente.php',
@@ -1008,6 +1014,11 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'App\\Filament\\Resources\\Series\\Schemas\\SerieForm' => __DIR__ . '/../..' . '/app/Filament/Resources/Series/Schemas/SerieForm.php',
         'App\\Filament\\Resources\\Series\\SerieResource' => __DIR__ . '/../..' . '/app/Filament/Resources/Series/SerieResource.php',
         'App\\Filament\\Resources\\Series\\Tables\\SeriesTable' => __DIR__ . '/../..' . '/app/Filament/Resources/Series/Tables/SeriesTable.php',
+        'App\\Filament\\Widgets\\FacturasPendientesTableWidget' => __DIR__ . '/../..' . '/app/Filament/Widgets/FacturasPendientesTableWidget.php',
+        'App\\Filament\\Widgets\\IngresosGastosMesWidget' => __DIR__ . '/../..' . '/app/Filament/Widgets/IngresosGastosMesWidget.php',
+        'App\\Filament\\Widgets\\IvaTrimestreWidget' => __DIR__ . '/../..' . '/app/Filament/Widgets/IvaTrimestreWidget.php',
+        'App\\Filament\\Widgets\\PresupuestosAceptadosTableWidget' => __DIR__ . '/../..' . '/app/Filament/Widgets/PresupuestosAceptadosTableWidget.php',
+        'App\\Filament\\Widgets\\PresupuestosEmitidosTableWidget' => __DIR__ . '/../..' . '/app/Filament/Widgets/PresupuestosEmitidosTableWidget.php',
         'App\\Forms\\Components\\CountrySelect' => __DIR__ . '/../..' . '/app/Forms/Components/CountrySelect.php',
         'App\\Http\\Controllers\\Api\\FacturaLogController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/FacturaLogController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
@@ -5992,6 +6003,22 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Nette\\Utils\\Validators' => __DIR__ . '/..' . '/nette/utils/src/Utils/Validators.php',
         'NoDiscard' => __DIR__ . '/..' . '/symfony/polyfill-php85/Resources/stubs/NoDiscard.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+        'Notificaciones\\Filament\\NotificacionesPlugin' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/NotificacionesPlugin.php',
+        'Notificaciones\\Filament\\Resources\\NotificacionesPlantillas\\NotificacionPlantillaResource' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/NotificacionesPlantillas/NotificacionPlantillaResource.php',
+        'Notificaciones\\Filament\\Resources\\NotificacionesPlantillas\\Pages\\CreateNotificacionPlantilla' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/NotificacionesPlantillas/Pages/CreateNotificacionPlantilla.php',
+        'Notificaciones\\Filament\\Resources\\NotificacionesPlantillas\\Pages\\EditNotificacionPlantilla' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/NotificacionesPlantillas/Pages/EditNotificacionPlantilla.php',
+        'Notificaciones\\Filament\\Resources\\NotificacionesPlantillas\\Pages\\ListNotificacionesPlantillas' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/NotificacionesPlantillas/Pages/ListNotificacionesPlantillas.php',
+        'Notificaciones\\Filament\\Resources\\NotificacionesPlantillas\\Schemas\\NotificacionPlantillaForm' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/NotificacionesPlantillas/Schemas/NotificacionPlantillaForm.php',
+        'Notificaciones\\Filament\\Resources\\NotificacionesPlantillas\\Tables\\NotificacionesPlantillasTable' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/NotificacionesPlantillas/Tables/NotificacionesPlantillasTable.php',
+        'Notificaciones\\Filament\\Resources\\Notificaciones\\NotificacionResource' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/Notificaciones/NotificacionResource.php',
+        'Notificaciones\\Filament\\Resources\\Notificaciones\\Pages\\CreateNotificacion' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/Notificaciones/Pages/CreateNotificacion.php',
+        'Notificaciones\\Filament\\Resources\\Notificaciones\\Pages\\EditNotificacion' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/Notificaciones/Pages/EditNotificacion.php',
+        'Notificaciones\\Filament\\Resources\\Notificaciones\\Pages\\ListNotificaciones' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/Notificaciones/Pages/ListNotificaciones.php',
+        'Notificaciones\\Filament\\Resources\\Notificaciones\\Schemas\\NotificacionForm' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/Notificaciones/Schemas/NotificacionForm.php',
+        'Notificaciones\\Filament\\Resources\\Notificaciones\\Tables\\NotificacionesTable' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Filament/Resources/Notificaciones/Tables/NotificacionesTable.php',
+        'Notificaciones\\Models\\Notificacion' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Models/Notificacion.php',
+        'Notificaciones\\Models\\NotificacionPlantilla' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/Models/NotificacionPlantilla.php',
+        'Notificaciones\\NotificacionesServiceProvider' => __DIR__ . '/..' . '/contabilidad/notificaciones/src/NotificacionesServiceProvider.php',
         'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Laravel/CollisionServiceProvider.php',
         'NunoMaduro\\Collision\\Adapters\\Laravel\\Commands\\TestCommand' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Laravel/Commands/TestCommand.php',
         'NunoMaduro\\Collision\\Adapters\\Laravel\\ExceptionHandler' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Laravel/ExceptionHandler.php',
