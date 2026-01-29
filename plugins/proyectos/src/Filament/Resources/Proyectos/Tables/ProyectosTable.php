@@ -13,6 +13,7 @@ class ProyectosTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('fecha_inicio', 'desc')
             ->columns([
                 TextColumn::make('nombre')
                     ->label('Proyecto')

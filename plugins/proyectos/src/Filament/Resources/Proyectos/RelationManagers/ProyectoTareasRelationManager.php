@@ -26,6 +26,7 @@ class ProyectoTareasRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->defaultSort('fecha', 'desc')
             ->columns([
                 TextColumn::make('descripcion')
                     ->label('Descripción')

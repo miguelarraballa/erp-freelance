@@ -13,6 +13,7 @@ class PagosTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('fecha_pago', 'desc')
             ->columns([
                 TextColumn::make('numero_completo')
                     ->label('Factura')
