@@ -25,7 +25,7 @@ class ProyectoTareasTable
                     ->sortable(),
                 TextColumn::make('fecha')
                     ->label('Fecha')
-                    ->date()
+                    ->date('d-m-Y')
                     ->sortable(),
                 TextColumn::make('inicio')
                     ->label('Inicio')
