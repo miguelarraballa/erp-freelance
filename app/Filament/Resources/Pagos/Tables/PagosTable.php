@@ -20,7 +20,7 @@ class PagosTable
                     ->getStateUsing(fn ($record) => $record->factura->numero_completo)
                     ->sortable(),
                 TextColumn::make('fecha_pago')
-                    ->date("d/m/Y")
+                    ->date("d-m-Y")
                     ->sortable(),
                 TextColumn::make('importe')
                     ->numeric()
