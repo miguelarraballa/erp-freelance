@@ -13,6 +13,7 @@ class FacturasProveedoresTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('fecha', 'desc')
             ->columns([
                 TextColumn::make('numero_completo')->label('Número')->searchable()->sortable(),
                 TextColumn::make('numero_proveedor')->label('Numero Factura')->searchable()->sortable(),
