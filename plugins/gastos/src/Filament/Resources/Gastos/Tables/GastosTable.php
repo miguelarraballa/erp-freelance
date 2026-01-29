@@ -26,7 +26,7 @@ class GastosTable
                     ->sortable(),
                 TextColumn::make('fecha')
                     ->label('Fecha')
-                    ->date('d/m/Y')
+                    ->date('d-m-Y')
                     ->sortable(),
                 TextColumn::make('importe')
                     ->label('Importe')

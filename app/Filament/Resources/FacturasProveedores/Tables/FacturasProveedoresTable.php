@@ -18,7 +18,7 @@ class FacturasProveedoresTable
                 TextColumn::make('numero_completo')->label('Número')->searchable()->sortable(),
                 TextColumn::make('numero_proveedor')->label('Numero Factura')->searchable()->sortable(),
                 TextColumn::make('cliente.nombre')->label('Cliente')->searchable()->sortable(),
-                TextColumn::make('fecha')->date("Y-m-d")->sortable(),
+                TextColumn::make('fecha')->date("d-m-Y")->sortable(),
                 TextColumn::make('base')->money('EUR')->sortable(),
                 TextColumn::make('total')->money('EUR')->sortable(),
                 TextColumn::make('documento')
