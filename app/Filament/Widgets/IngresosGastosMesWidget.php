@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Factura;
 use App\Models\FacturasProveedor;
+use gastos\Models\Gasto;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -35,11 +36,20 @@ class IngresosGastosMesWidget extends StatsOverviewWidget
             ->whereBetween('fecha', [$inicio, $fin])
             ->sum('total');
 
+        $gastos_nf = (float) Gasto::query()
+            ->whereBetween('fecha', [$inicio, $fin])
+            ->sum('importe');
+        
+
         return [
             Stat::make('Ingresos del mes', $this->formatMoney($ingresos))
                 ->color('success'),
-            Stat::make('Gastos del mes', $this->formatMoney(-$gastos))
+            Stat::make('Gastos de proveedores', $this->formatMoney(-$gastos))
                 ->color('danger'),
+            Stat::make('Gastos no facturables', $this->formatMoney(-$gastos_nf))
+                ->color('warning'),
+            Stat::make('Balance', $this->formatMoney($ingresos - $gastos - $gastos_nf))
+                ->color('primary'),
         ];
     }
 
