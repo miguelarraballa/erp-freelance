@@ -62,6 +62,7 @@ class FacturaPdfController extends Controller
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.factura', compact('factura','emisor','logo','PresupuestoId'))
             ->setPaper('a4');
+        $pdf->render();
         $dompdf = $pdf->getDomPDF();
         $font = $dompdf->getFontMetrics()->get_font('DejaVu Sans', 'normal');
         $dompdf->getCanvas()->page_text(

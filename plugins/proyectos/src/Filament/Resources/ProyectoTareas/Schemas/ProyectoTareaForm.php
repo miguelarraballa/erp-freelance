@@ -116,7 +116,7 @@ class ProyectoTareaForm
                     ->label('Precio / h')
                     ->numeric()
                     ->step('0.01')
-                    ->default(15.00)
+                    ->default(fn (Get $get) => $resolveProyecto($get)?->precio_hora ?? 15.00)
                     ->required()
                     ->columnSpan(4)
                     ->disabled(fn ($record) => (bool) $record?->facturado),
