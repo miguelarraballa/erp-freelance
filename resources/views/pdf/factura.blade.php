@@ -28,7 +28,7 @@
     .mb-3 { margin-bottom: 18px; }
     .mb-4 { margin-bottom: 24px; }
     .clearfix::after { content: ""; display: table; clear: both; }
-    #notas-legales { position: fixed; bottom: -20pt; width: 100%; font-size: 8px; text-align: justify}
+    #notas-legales { position: fixed; bottom: -10pt; width: 100%; font-size: 8px; text-align: justify}
     #formas-de-pago { font-size: 10px; margin-top: 24px; margin-bottom: 24px; }
 </style>
 </head>

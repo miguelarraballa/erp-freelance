@@ -59,6 +59,15 @@ class ProyectoForm
                     ->rule(fn (Get $get) => $get('fecha_inicio') ? 'after_or_equal:fecha_inicio' : null)
                     ->columnSpan(6)
                     ->disabled(fn (?Proyecto $record) => (bool) $record?->cerrado),
+
+                TextInput::make('precio_hora')
+                    ->label('Precio / hora')
+                    ->numeric()
+                    ->step('0.01')
+                    ->default(15.00)
+                    ->required()
+                    ->columnSpan(4)
+                    ->disabled(fn (?Proyecto $record) => (bool) $record?->cerrado),
             ]);
     }
 }
