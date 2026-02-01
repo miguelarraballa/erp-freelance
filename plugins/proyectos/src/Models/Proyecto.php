@@ -15,12 +15,14 @@ class Proyecto extends Model
         'descripcion',
         'fecha_inicio',
         'fecha_fin',
+        'precio_hora',
         'cerrado',
     ];
 
     protected $casts = [
         'fecha_inicio' => 'date',
         'fecha_fin' => 'date',
+        'precio_hora' => 'decimal:2',
         'cerrado' => 'boolean',
     ];
 
