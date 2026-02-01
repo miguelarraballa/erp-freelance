@@ -296,7 +296,7 @@ class FacturaForm
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         TextInput::make('cantidad')
-                            ->numeric()->minValue(0.1)->step('0.1')
+                            ->numeric()->minValue(0.10)->step('0.01')
                             ->rules(['numeric','gt:0'])
                             ->default(1)
                             ->columnSpan(2)
