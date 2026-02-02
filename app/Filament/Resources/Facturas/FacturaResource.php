@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Facturas;
 use App\Filament\Resources\Facturas\Pages\CreateFactura;
 use App\Filament\Resources\Facturas\Pages\EditFactura;
 use App\Filament\Resources\Facturas\Pages\ListFacturas;
+use App\Filament\Resources\Facturas\RelationManagers\FacturaPagosRelationManager;
 use App\Filament\Resources\Facturas\Schemas\FacturaForm;
 use App\Filament\Resources\Facturas\Tables\FacturasTable;
 use App\Models\Factura;
@@ -37,7 +38,7 @@ class FacturaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            FacturaPagosRelationManager::class,
         ];
     }
 
