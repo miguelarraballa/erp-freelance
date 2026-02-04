@@ -105,7 +105,7 @@ class FacturasProveedorForm {
                     ->numeric()
                     ->required()
                     ->default(0)
-                    ->live(onBlur: false)
+                    ->live(onBlur: true)
                     ->afterStateUpdated(fn (Get $get, Set $set) => $recalcTotal($get, $set))
                     ->columnSpan(3),
 
@@ -114,7 +114,7 @@ class FacturasProveedorForm {
                     ->numeric()
                     ->default(0)
                     ->required()
-                    ->live(onBlur: false)
+                    ->live(onBlur: true)
                     ->afterStateUpdated(fn (Get $get, Set $set) => $recalcTotal($get, $set))
                     ->columnSpan(3),
 
@@ -122,7 +122,7 @@ class FacturasProveedorForm {
                     ->label('IRPF total')
                     ->numeric()
                     ->default(0)
-                    ->live(onBlur: false)
+                    ->live(onBlur: true)
                     ->afterStateUpdated(fn (Get $get, Set $set) => $recalcTotal($get, $set))
                     ->columnSpan(3),
 

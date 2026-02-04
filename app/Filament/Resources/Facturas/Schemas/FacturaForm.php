@@ -301,7 +301,7 @@ class FacturaForm
                             ->default(1)
                             ->columnSpan(2)
                             ->required()
-                            ->live()
+                            ->live(onBlur: true)
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
@@ -311,7 +311,7 @@ class FacturaForm
                             ->label('Precio')
                             ->columnSpan(2)
                             ->required()
-                            ->live()
+                            ->live(onBlur: true)
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
@@ -321,7 +321,7 @@ class FacturaForm
                             ->label('Dto. %')
                             ->default(0)
                             ->columnSpan(2)
-                            ->live()
+                            ->live(onBlur: true)
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
