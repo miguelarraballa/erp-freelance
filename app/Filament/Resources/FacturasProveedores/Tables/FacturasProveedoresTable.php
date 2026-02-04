@@ -7,6 +7,7 @@ use Filament\Tables\Columns\TextColumn;
 use App\Models\FacturasProveedor;
 use Filament\Actions\{EditAction, DeleteAction, BulkAction, BulkActionGroup, DeleteBulkAction};
 use Filament\Support\Icons\Heroicon;
+use Carbon\Carbon;
 
 class FacturasProveedoresTable
 {
@@ -14,6 +15,9 @@ class FacturasProveedoresTable
     {
         return $table
             ->defaultSort('fecha', 'desc')
+            ->description(fn () => view('filament.facturasProveedores.total-stats', [
+                'stats' => self::getTotalStats(),
+            ]))
             ->columns([
                 TextColumn::make('numero_completo')->label('Número')->searchable()->sortable(),
                 TextColumn::make('numero_proveedor')->label('Numero Factura')->searchable()->sortable(),
@@ -43,5 +47,43 @@ class FacturasProveedoresTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected static function getTotalesAcumulados(): array
+    {
+        $inicioMes = Carbon::now()->startOfMonth()->toDateString();
+        $finMes = Carbon::now()->endOfMonth()->toDateString();
+        $inicioMesAnt = Carbon::now()->subMonth()->startOfMonth()->toDateString();
+        $finMesAnt = Carbon::now()->subMonth()->endOfMonth()->toDateString();
+
+        $total = (float) FacturasProveedor::query()
+            ->whereBetween('fecha', [$inicioMes, $finMes])
+            ->sum('total');
+        $totalMesAnt = (float) FacturasProveedor::query()
+            ->whereBetween('fecha', [$inicioMesAnt, $finMesAnt])
+            ->sum('total');
+
+        return [
+            'Total' => $total,
+            'TotalMesAnterior' => $totalMesAnt,
+        ];
+    }
+
+    protected static function getTotalStats(): array
+    {
+        $totales = self::getTotalesAcumulados();
+        $total = number_format($totales['Total'], 2, ',', '.');
+        $totalMesAnterior = number_format($totales['TotalMesAnterior'], 2, ',', '.');
+
+        return [
+            [
+                'label' => 'Total pagado en el mes actual',
+                'value' => $total . ' €',
+            ],
+            [
+                'label' => 'Total pagado en el mes anterior',
+                'value' => $totalMesAnterior . ' €',
+            ],
+        ];
     }
 }
