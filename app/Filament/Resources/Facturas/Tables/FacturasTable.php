@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Facturas\Tables;
 
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
 use App\Models\Factura;
 use Filament\Actions\{EditAction, DeleteAction, BulkAction, BulkActionGroup, DeleteBulkAction};
 use Filament\Support\Icons\Heroicon;
@@ -62,7 +64,17 @@ class FacturasTable
                     ->alignCenter(),
             ])
             ->filters([
-                //
+                Filter::make('fecha_rango')
+                    ->label('Fecha')
+                    ->form([
+                        DatePicker::make('desde')->label('Desde'),
+                        DatePicker::make('hasta')->label('Hasta'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['desde'] ?? null, fn ($q, $date) => $q->whereDate('fecha', '>=', $date))
+                            ->when($data['hasta'] ?? null, fn ($q, $date) => $q->whereDate('fecha', '<=', $date));
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
