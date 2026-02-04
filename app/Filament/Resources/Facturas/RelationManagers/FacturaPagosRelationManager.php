@@ -16,6 +16,8 @@ use App\Models\{Factura, Pago};
 use App\Services\FacturaCalc;
 use App\Filament\Resources\Pagos\Schemas\PagoForm;
 use Carbon\Carbon;
+use Filament\Support\Icons\Heroicon;
+
 
 class FacturaPagosRelationManager extends RelationManager
 {
@@ -37,6 +39,16 @@ class FacturaPagosRelationManager extends RelationManager
                 TextColumn::make('importe')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('pdf')
+                    ->label('PDF')
+                    ->getStateUsing(fn (Pago $record): ?int => $record->justificante_path ? 1 : null)
+                    ->formatStateUsing(fn (): string => '')
+                    ->icon(fn (Pago $record) => $record->justificante_path !== null ? Heroicon::OutlinedArrowDownTray : null)
+                    ->url(fn (Pago $record): ?string => $record->justificante_path !== null ? route('pagos.justificante', $record) : null)
+                    ->openUrlInNewTab()
+                    ->color('primary')
+                    ->tooltip(fn (Pago $record): ?string => $record->justificante_path ? 'Descargar PDF' : null)
+                    ->alignCenter(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
