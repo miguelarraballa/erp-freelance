@@ -29,6 +29,7 @@ class PagoForm
                 TextInput::make('importe')
                     ->required()
                     ->numeric()
+                    ->live(onBlur: true)
                     ->columnSpan(2),
                 FileUpload::make('justificante_path')
                     ->label('Justificante (PDF/JPG)')
