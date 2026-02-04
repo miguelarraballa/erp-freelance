@@ -5,7 +5,9 @@ namespace App\Filament\Resources\Pagos\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use App\Models\Pago;
 use Filament\Support\Icons\Heroicon;
@@ -47,7 +49,17 @@ class PagosTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('fecha_rango')
+                    ->label('Fecha')
+                    ->form([
+                        DatePicker::make('desde')->label('Desde'),
+                        DatePicker::make('hasta')->label('Hasta'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['desde'] ?? null, fn ($q, $date) => $q->whereDate('fecha_pago', '>=', $date))
+                            ->when($data['hasta'] ?? null, fn ($q, $date) => $q->whereDate('fecha_pago', '<=', $date));
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
