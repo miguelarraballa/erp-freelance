@@ -102,7 +102,7 @@ class FacturasProveedorForm {
                 // Totales (introducidos manualmente)
                 TextInput::make('base')
                     ->label('Base')
-                    ->numeric()->minValue(0)->step('0.01')
+                    ->numeric()
                     ->required()
                     ->default(0)
                     ->live(onBlur: false)
@@ -111,7 +111,7 @@ class FacturasProveedorForm {
 
                 TextInput::make('iva_total')
                     ->label('IVA total')
-                    ->numeric()->minValue(0)->step('0.01')
+                    ->numeric()
                     ->default(0)
                     ->required()
                     ->live(onBlur: false)
@@ -120,7 +120,7 @@ class FacturasProveedorForm {
 
                 TextInput::make('irpf_total')
                     ->label('IRPF total')
-                    ->numeric()->minValue(0)->step('0.01')
+                    ->numeric()
                     ->default(0)
                     ->live(onBlur: false)
                     ->afterStateUpdated(fn (Get $get, Set $set) => $recalcTotal($get, $set))
@@ -128,7 +128,7 @@ class FacturasProveedorForm {
 
                 TextInput::make('total')
                     ->label('Total')
-                    ->numeric()->minValue(0)->step('0.01')
+                    ->numeric()
                     ->required()
                     ->default(0)
                     ->readOnly()
