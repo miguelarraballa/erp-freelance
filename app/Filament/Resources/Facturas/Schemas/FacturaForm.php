@@ -296,12 +296,12 @@ class FacturaForm
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         TextInput::make('cantidad')
-                            ->numeric()->minValue(0.1)->step('0.1')
+                            ->numeric()->minValue(0.10)->step('0.01')
                             ->rules(['numeric','gt:0'])
                             ->default(1)
                             ->columnSpan(2)
                             ->required()
-                            ->live()
+                            ->live(onBlur: true)
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
@@ -311,7 +311,7 @@ class FacturaForm
                             ->label('Precio')
                             ->columnSpan(2)
                             ->required()
-                            ->live()
+                            ->live(onBlur: true)
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
@@ -321,7 +321,7 @@ class FacturaForm
                             ->label('Dto. %')
                             ->default(0)
                             ->columnSpan(2)
-                            ->live()
+                            ->live(onBlur: true)
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
@@ -374,77 +374,6 @@ class FacturaForm
                     ->dehydrated(fn (?Factura $record) => is_null($record?->numero)),
 
                 TextInput::make('hash')->label("Verifactu")->readonly()->columnSpan(6),
-
-                Placeholder::make('pagos_list')
-                    ->label('Pagos')
-                    ->content(function (?Factura $record) {
-                        if (! $record) {
-                            return null;
-                        }
-
-                        $pagos = $record->pagos()
-                            ->orderBy('fecha_pago')
-                            ->orderBy('id')
-                            ->get();
-
-                        if ($pagos->isEmpty()) {
-                            return new HtmlString('<div class="text-sm text-gray-500">Sin pagos</div>');
-                        }
-
-                        $rows = '';
-                        $totalPagado = 0.0;
-                        $downloadIcon = '<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">'
-                            . '<path d="M10 3a1 1 0 0 1 1 1v7.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 11.586V4a1 1 0 0 1 1-1z"/>'
-                            . '<path d="M4 13a1 1 0 0 1 1 1v1h10v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z"/>'
-                            . '</svg>';
-
-                        foreach ($pagos as $pago) {
-                            $fechaPago = $pago->fecha_pago
-                                ? Carbon::parse($pago->fecha_pago)->format('Y-m-d')
-                                : '-';
-                            $importe = (float) $pago->importe;
-                            $totalPagado += $importe;
-                            $justificanteUrl = null;
-                            if ($pago->justificante_path) {
-                                $justificanteUrl = Route::has('pagos.justificante')
-                                    ? route('pagos.justificante', $pago)
-                                    : url("/pagos/{$pago->id}/justificante");
-                            }
-                            $rows .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-800">'
-                                . '<td class="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 whitespace-nowrap text-gray-700 dark:text-gray-200">' . e($fechaPago) . '</td>'
-                                . '<td class="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-right font-semibold text-gray-900 dark:text-gray-100">' . e(number_format($importe, 2, ',', '.')) . '</td>'
-                                . '<td class="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-center">'
-                                . ($justificanteUrl
-                                    ? '<a class="inline-flex items-center justify-center text-primary-600 hover:text-primary-700" href="' . e($justificanteUrl) . '" target="_blank" rel="noopener" download aria-label="Descargar justificante">'
-                                        . $downloadIcon . '</a>'
-                                    : '<span class="text-gray-400 dark:text-gray-500">-</span>')
-                                . '</td>'
-                                . '</tr>';
-                        }
-
-                        $rows .= '<tr>'
-                            . '<td class="px-3 py-2 font-semibold bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">Total pagado</td>'
-                            . '<td class="px-3 py-2 text-right font-semibold bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">' . e(number_format($totalPagado, 2, ',', '.')) . '</td>'
-                            . '<td class="px-3 py-2 bg-white dark:bg-gray-900"></td>'
-                            . '</tr>';
-
-                        $table = '<div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">'
-                            . '<table class="min-w-full text-sm">'
-                            . '<thead>'
-                            . '<tr class="text-left bg-gray-50 dark:bg-gray-800">'
-                            . '<th class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">Fecha</th>'
-                            . '<th class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-right text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">Importe</th>'
-                            . '<th class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-center text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">Justificante</th>'
-                            . '</tr>'
-                            . '</thead>'
-                            . '<tbody>' . $rows . '</tbody>'
-                            . '</table>'
-                            . '</div>';
-
-                        return new HtmlString($table);
-                    })
-                    ->visibleOn('edit')
-                    ->columnSpanFull(),
 
                 Placeholder::make('presupuesto_link')
                     ->label('Presupuesto')

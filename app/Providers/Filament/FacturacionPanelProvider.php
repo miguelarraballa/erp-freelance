@@ -11,6 +11,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -21,8 +22,9 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationGroup;
 use Filament\Support\Icons\Heroicon;
+use Gastos\Filament\GastosPlugin;
 use Presupuestos\Filament\PresupuestosPlugin;
-use Notificaciones\Filament\NotificacionesPlugin;
+use Proyectos\Filament\ProyectosPlugin;
 
 class FacturacionPanelProvider extends PanelProvider
 {
@@ -36,6 +38,14 @@ class FacturacionPanelProvider extends PanelProvider
             ->brandLogo(asset('brand/logo.svg'))
             ->brandLogoHeight('2rem')
             ->brandName('Facturación')
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_LOGO_AFTER,
+                fn (): string => view('filament.partials.panel-version')->render(),
+            )
+            ->renderHook(
+                PanelsRenderHook::TOPBAR_LOGO_AFTER,
+                fn (): string => view('filament.partials.panel-version')->render(),
+            )
             ->colors([
                 'primary' => Color::hex('#020BFF'),
                 'gray' => Color::Slate,
@@ -68,12 +78,15 @@ class FacturacionPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
+                GastosPlugin::make(),
                 PresupuestosPlugin::make(),
-                NotificacionesPlugin::make(),
+                ProyectosPlugin::make(),
             ])
             ->navigationGroups([
                 NavigationGroup::make()
                     ->label('Empresa'),
+                NavigationGroup::make()
+                    ->label('Clientes'),
                     // ->icon(Heroicon::OutlinedDocumentText) // opcional
                 NavigationGroup::make()
                     ->label('Facturación'),

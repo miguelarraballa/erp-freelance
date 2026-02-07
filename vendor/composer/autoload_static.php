@@ -226,6 +226,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'Psr\\Clock\\' => 10,
+            'Proyectos\\' => 10,
             'Presupuestos\\' => 13,
             'PragmaRX\\Google2FA\\' => 19,
             'PragmaRX\\Google2FAQRCode\\Tests\\' => 31,
@@ -295,6 +296,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
             'GrahamCampbell\\ResultType\\' => 26,
+            'Gastos\\' => 7,
         ),
         'F' => 
         array (
@@ -362,8 +364,8 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
         ),
         'chillerlan\\Settings\\' => 
         array (
@@ -598,6 +600,11 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
         ),
+        'Proyectos\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/plugins/proyectos/src',
+            1 => __DIR__ . '/..' . '/contabilidad/proyectos/src',
+        ),
         'Presupuestos\\' => 
         array (
             0 => __DIR__ . '/..' . '/contabilidad/presupuestos/src',
@@ -784,6 +791,10 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'GrahamCampbell\\ResultType\\' => 
         array (
             0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
+        ),
+        'Gastos\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/contabilidad/gastos/src',
         ),
         'Fruitcake\\Cors\\' => 
         array (
@@ -2355,6 +2366,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Filament\\Forms\\Components\\Concerns\\HasStep' => __DIR__ . '/..' . '/filament/forms/src/Components/Concerns/HasStep.php',
         'Filament\\Forms\\Components\\Concerns\\HasToggleColors' => __DIR__ . '/..' . '/filament/forms/src/Components/Concerns/HasToggleColors.php',
         'Filament\\Forms\\Components\\Concerns\\HasToggleIcons' => __DIR__ . '/..' . '/filament/forms/src/Components/Concerns/HasToggleIcons.php',
+        'Filament\\Forms\\Components\\Concerns\\HasTooltips' => __DIR__ . '/..' . '/filament/forms/src/Components/Concerns/HasTooltips.php',
         'Filament\\Forms\\Components\\Concerns\\HasUploadingMessage' => __DIR__ . '/..' . '/filament/forms/src/Components/Concerns/HasUploadingMessage.php',
         'Filament\\Forms\\Components\\Concerns\\InteractsWithToolbarButtons' => __DIR__ . '/..' . '/filament/forms/src/Components/Concerns/InteractsWithToolbarButtons.php',
         'Filament\\Forms\\Components\\Contracts\\CanBeLengthConstrained' => __DIR__ . '/..' . '/filament/forms/src/Components/Contracts/CanBeLengthConstrained.php',
@@ -3191,6 +3203,15 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'FontLib\\WOFF\\TableDirectoryEntry' => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib/WOFF/TableDirectoryEntry.php',
         'Fruitcake\\Cors\\CorsService' => __DIR__ . '/..' . '/fruitcake/php-cors/src/CorsService.php',
         'Fruitcake\\Cors\\Exceptions\\InvalidOptionException' => __DIR__ . '/..' . '/fruitcake/php-cors/src/Exceptions/InvalidOptionException.php',
+        'Gastos\\Filament\\GastosPlugin' => __DIR__ . '/..' . '/contabilidad/gastos/src/Filament/GastosPlugin.php',
+        'Gastos\\Filament\\Resources\\Gastos\\GastoResource' => __DIR__ . '/..' . '/contabilidad/gastos/src/Filament/Resources/Gastos/GastoResource.php',
+        'Gastos\\Filament\\Resources\\Gastos\\Pages\\CreateGasto' => __DIR__ . '/..' . '/contabilidad/gastos/src/Filament/Resources/Gastos/Pages/CreateGasto.php',
+        'Gastos\\Filament\\Resources\\Gastos\\Pages\\EditGasto' => __DIR__ . '/..' . '/contabilidad/gastos/src/Filament/Resources/Gastos/Pages/EditGasto.php',
+        'Gastos\\Filament\\Resources\\Gastos\\Pages\\ListGastos' => __DIR__ . '/..' . '/contabilidad/gastos/src/Filament/Resources/Gastos/Pages/ListGastos.php',
+        'Gastos\\Filament\\Resources\\Gastos\\Schemas\\GastoForm' => __DIR__ . '/..' . '/contabilidad/gastos/src/Filament/Resources/Gastos/Schemas/GastoForm.php',
+        'Gastos\\Filament\\Resources\\Gastos\\Tables\\GastosTable' => __DIR__ . '/..' . '/contabilidad/gastos/src/Filament/Resources/Gastos/Tables/GastosTable.php',
+        'Gastos\\GastosServiceProvider' => __DIR__ . '/..' . '/contabilidad/gastos/src/GastosServiceProvider.php',
+        'Gastos\\Models\\Gasto' => __DIR__ . '/..' . '/contabilidad/gastos/src/Models/Gasto.php',
         'GrahamCampbell\\ResultType\\Error' => __DIR__ . '/..' . '/graham-campbell/result-type/src/Error.php',
         'GrahamCampbell\\ResultType\\Result' => __DIR__ . '/..' . '/graham-campbell/result-type/src/Result.php',
         'GrahamCampbell\\ResultType\\Success' => __DIR__ . '/..' . '/graham-campbell/result-type/src/Success.php',
@@ -3441,6 +3462,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Illuminate\\Bus\\Dispatcher' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Bus/Dispatcher.php',
         'Illuminate\\Bus\\DynamoBatchRepository' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Bus/DynamoBatchRepository.php',
         'Illuminate\\Bus\\Events\\BatchDispatched' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Bus/Events/BatchDispatched.php',
+        'Illuminate\\Bus\\Events\\BatchFinished' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Bus/Events/BatchFinished.php',
         'Illuminate\\Bus\\PendingBatch' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Bus/PendingBatch.php',
         'Illuminate\\Bus\\PrunableBatchRepository' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Bus/PrunableBatchRepository.php',
         'Illuminate\\Bus\\Queueable' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Bus/Queueable.php',
@@ -4669,6 +4691,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Illuminate\\Testing\\Concerns\\AssertsStatusCodes' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Testing/Concerns/AssertsStatusCodes.php',
         'Illuminate\\Testing\\Concerns\\RunsInParallel' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Testing/Concerns/RunsInParallel.php',
         'Illuminate\\Testing\\Concerns\\TestDatabases' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Testing/Concerns/TestDatabases.php',
+        'Illuminate\\Testing\\Concerns\\TestViews' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Testing/Concerns/TestViews.php',
         'Illuminate\\Testing\\Constraints\\ArraySubset' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Testing/Constraints/ArraySubset.php',
         'Illuminate\\Testing\\Constraints\\CountInDatabase' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Testing/Constraints/CountInDatabase.php',
         'Illuminate\\Testing\\Constraints\\HasInDatabase' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Testing/Constraints/HasInDatabase.php',
@@ -8161,6 +8184,23 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Presupuestos\\Services\\PresupuestoCalc' => __DIR__ . '/..' . '/contabilidad/presupuestos/src/Services/PresupuestoCalc.php',
         'Presupuestos\\Services\\PresupuestoEmisionService' => __DIR__ . '/..' . '/contabilidad/presupuestos/src/Services/PresupuestoEmisionService.php',
         'Presupuestos\\Services\\PresupuestoService' => __DIR__ . '/..' . '/contabilidad/presupuestos/src/Services/PresupuestoService.php',
+        'Proyectos\\Filament\\ProyectosPlugin' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/ProyectosPlugin.php',
+        'Proyectos\\Filament\\Resources\\ProyectoTareas\\Pages\\CreateProyectoTarea' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/ProyectoTareas/Pages/CreateProyectoTarea.php',
+        'Proyectos\\Filament\\Resources\\ProyectoTareas\\Pages\\EditProyectoTarea' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/ProyectoTareas/Pages/EditProyectoTarea.php',
+        'Proyectos\\Filament\\Resources\\ProyectoTareas\\Pages\\ListProyectoTareas' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/ProyectoTareas/Pages/ListProyectoTareas.php',
+        'Proyectos\\Filament\\Resources\\ProyectoTareas\\ProyectoTareaResource' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/ProyectoTareas/ProyectoTareaResource.php',
+        'Proyectos\\Filament\\Resources\\ProyectoTareas\\Schemas\\ProyectoTareaForm' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/ProyectoTareas/Schemas/ProyectoTareaForm.php',
+        'Proyectos\\Filament\\Resources\\ProyectoTareas\\Tables\\ProyectoTareasTable' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/ProyectoTareas/Tables/ProyectoTareasTable.php',
+        'Proyectos\\Filament\\Resources\\Proyectos\\Pages\\CreateProyecto' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/Proyectos/Pages/CreateProyecto.php',
+        'Proyectos\\Filament\\Resources\\Proyectos\\Pages\\EditProyecto' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/Proyectos/Pages/EditProyecto.php',
+        'Proyectos\\Filament\\Resources\\Proyectos\\Pages\\ListProyectos' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/Proyectos/Pages/ListProyectos.php',
+        'Proyectos\\Filament\\Resources\\Proyectos\\ProyectoResource' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/Proyectos/ProyectoResource.php',
+        'Proyectos\\Filament\\Resources\\Proyectos\\RelationManagers\\ProyectoTareasRelationManager' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/Proyectos/RelationManagers/ProyectoTareasRelationManager.php',
+        'Proyectos\\Filament\\Resources\\Proyectos\\Schemas\\ProyectoForm' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/Proyectos/Schemas/ProyectoForm.php',
+        'Proyectos\\Filament\\Resources\\Proyectos\\Tables\\ProyectosTable' => __DIR__ . '/../..' . '/plugins/proyectos/src/Filament/Resources/Proyectos/Tables/ProyectosTable.php',
+        'Proyectos\\Models\\Proyecto' => __DIR__ . '/../..' . '/plugins/proyectos/src/Models/Proyecto.php',
+        'Proyectos\\Models\\ProyectoTarea' => __DIR__ . '/../..' . '/plugins/proyectos/src/Models/ProyectoTarea.php',
+        'Proyectos\\ProyectosServiceProvider' => __DIR__ . '/../..' . '/plugins/proyectos/src/ProyectosServiceProvider.php',
         'Psr\\Clock\\ClockInterface' => __DIR__ . '/..' . '/psr/clock/src/ClockInterface.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
         'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',

@@ -50,6 +50,7 @@ class PresupuestoPdfController extends Controller
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('presupuestos::pdf.presupuesto', compact('presupuesto','emisor','logo'))
             ->setPaper('a4');
+        $pdf->render();
         $dompdf = $pdf->getDomPDF();
         $font = $dompdf->getFontMetrics()->get_font('DejaVu Sans', 'normal');
         $dompdf->getCanvas()->page_text(
