@@ -5,6 +5,7 @@ namespace Notificaciones\Filament;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Notificaciones\Filament\Resources\Notificaciones\NotificacionResource;
+use Notificaciones\Filament\Resources\NotificacionesEtiquetas\NotificacionEtiquetaResource;
 use Notificaciones\Filament\Resources\NotificacionesPlantillas\NotificacionPlantillaResource;
 
 class NotificacionesPlugin implements Plugin
@@ -22,6 +23,7 @@ class NotificacionesPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->resources([
+            NotificacionEtiquetaResource::class,
             NotificacionPlantillaResource::class,
             NotificacionResource::class,
         ]);

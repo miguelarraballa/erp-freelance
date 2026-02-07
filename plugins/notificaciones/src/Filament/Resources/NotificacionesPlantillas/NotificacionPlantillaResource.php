@@ -20,7 +20,7 @@ class NotificacionPlantillaResource extends Resource
 
     protected static ?string $navigationLabel = 'Plantillas de Notificaciones';
     protected static ?string $modelLabel = 'Plantilla de Notificación';
-    protected static ?string $pluralModelLabel = 'Notificaciones';
+    protected static ?string $pluralModelLabel = 'Plantillas de Notificaciones';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static \UnitEnum|string|null $navigationGroup = 'Empresa';

@@ -24,7 +24,7 @@ class NotificacionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static \UnitEnum|string|null $navigationGroup = 'Empresa';
-    protected static ?int $navigationSort = 91;
+    protected static ?int $navigationSort = 89;
     protected static ?string $recordTitleAttribute = 'id';
 
     public static function form(Schema $schema): Schema

@@ -916,6 +916,42 @@
             "install-path": "../contabilidad/gastos"
         },
         {
+            "name": "contabilidad/notificaciones",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/notificaciones",
+                "reference": "26f81f42f586621ede4c3640db1f1f7558c65e36"
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Notificaciones\\NotificacionesServiceProvider"
+                    ]
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Notificaciones\\": "src/",
+                    "Notificaciones\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Modulo de notificaciones por email",
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../contabilidad/notificaciones"
+        },
+        {
             "name": "contabilidad/presupuestos",
             "version": "1.0.0",
             "version_normalized": "1.0.0.0",

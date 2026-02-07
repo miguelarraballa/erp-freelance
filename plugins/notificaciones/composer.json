@@ -9,7 +9,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Notificaciones\\": "src/"
+      "Notificaciones\\": "src/",
+      "Notificaciones\\Database\\Seeders\\": "database/seeders/"
     }
   },
   "extra": {
