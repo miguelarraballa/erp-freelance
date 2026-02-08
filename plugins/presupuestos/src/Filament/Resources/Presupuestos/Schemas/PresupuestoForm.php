@@ -410,10 +410,18 @@ class PresupuestoForm
         $bruto = $cantidad * $precio;
         $bruto = $bruto * (1 - ($dtoPct / 100));
 
+        // Normalizar -0 a 0 para evitar CorruptComponentPayloadException de Livewire
         $base  = round($bruto, 2);
+        $base  = $base == 0 ? 0.0 : $base;
+
         $iva   = round($base * ($ivaPct / 100), 2);
+        $iva   = $iva == 0 ? 0.0 : $iva;
+
         $irpf  = round($base * ($irpfPct / 100), 2);
+        $irpf  = $irpf == 0 ? 0.0 : $irpf;
+
         $total = round($base + $iva - $irpf, 2);
+        $total = $total == 0 ? 0.0 : $total;
 
         // Set línea actual
         $set('base_linea',  $base);
@@ -446,10 +454,23 @@ class PresupuestoForm
             $sumTot  += (float) ($ln['total_linea'] ?? 0);
         }
 
-        $set('base',       round($sumBase, 2));
-        $set('iva_total',  round($sumIva,  2));
-        $set('irpf_total', round($sumIrpf, 2));
-        $set('total',      round($sumTot,  2));
+        // Normalizar -0 a 0 para evitar CorruptComponentPayloadException de Livewire
+        $base = round($sumBase, 2);
+        $base = $base == 0 ? 0.0 : $base;
+
+        $ivaTotal = round($sumIva, 2);
+        $ivaTotal = $ivaTotal == 0 ? 0.0 : $ivaTotal;
+
+        $irpfTotal = round($sumIrpf, 2);
+        $irpfTotal = $irpfTotal == 0 ? 0.0 : $irpfTotal;
+
+        $total = round($sumTot, 2);
+        $total = $total == 0 ? 0.0 : $total;
+
+        $set('base',       $base);
+        $set('iva_total',  $ivaTotal);
+        $set('irpf_total', $irpfTotal);
+        $set('total',      $total);
     }
 
 
@@ -475,10 +496,18 @@ class PresupuestoForm
         $bruto = $cantidad * $precio;
         $bruto = $bruto * (1 - ($dtoPct / 100));
 
+        // Normalizar -0 a 0 para evitar CorruptComponentPayloadException de Livewire
         $base  = round($bruto, 2);
+        $base  = $base == 0 ? 0.0 : $base;
+
         $iva   = round($base * ($ivaPct / 100), 2);
+        $iva   = $iva == 0 ? 0.0 : $iva;
+
         $irpf  = round($base * ($irpfPct / 100), 2);
+        $irpf  = $irpf == 0 ? 0.0 : $irpf;
+
         $total = round($base + $iva - $irpf, 2);
+        $total = $total == 0 ? 0.0 : $total;
 
         $set("lineas.$i.base_linea",  $base);
         $set("lineas.$i.iva_linea",   $iva);
