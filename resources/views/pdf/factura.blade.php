@@ -18,9 +18,10 @@
     .concepto { width: 50% }
     .muted { color: #666; }
     .box { border: 1px solid #ddd; padding: 10px; border-radius: 4px; }
-    table { width: 100%; border-collapse: collapse; }
+    table { width: 100%; border-collapse: collapse; table-layout: auto; }
     th, td { padding: 8px; border-bottom: 1px solid #e5e5e5; vertical-align: top; font-size: 10px; }
     th { background: #f7f7f7; text-align: left; }
+    .nowrap { white-space: nowrap; }
     tfoot td { border-top: 1px solid #aaa; font-weight: bold; }
     .totals td { padding: 6px; }
     .small { font-size: 11px; }
@@ -99,34 +100,34 @@
         <thead>
             <tr>
                 <th>Concepto</th>
-                <th class="right" style="width: 5%">Cant.</th>
-                <th class="right" style="width: 5%">Precio</th>
-                <th class="right" style="width: 5%">Dto.</th>
-                <th class="right" style="width: 10%">IVA</th>
-                <th class="right" style="width: 11%">IRPF</th>
-                <th class="right" style="width: 13%">Total</th>
+                <th class="right nowrap">Cant.</th>
+                <th class="right nowrap">Precio</th>
+                <th class="right nowrap">Dto.</th>
+                <th class="right nowrap">IVA</th>
+                <th class="right nowrap">IRPF</th>
+                <th class="right nowrap">Total</th>
             </tr>
         </thead>
         <tbody>
         @foreach($factura->lineas as $ln)
             <tr>
                 <td>{!! nl2br(e($ln->concepto)) !!}</td>
-                <td class="right">{{ $fmt($ln->cantidad) }}</td>
-                <td class="right">{{ $fmt($ln->precio_unitario) }}€</td>
-                <td class="right">{{ $fmt($ln->descuento_pct ?? 0) }}</td>
-                <td class="right">
+                <td class="right nowrap">{{ $fmt($ln->cantidad) }}</td>
+                <td class="right nowrap">{{ $fmt($ln->precio_unitario) }}€</td>
+                <td class="right nowrap">{{ $fmt($ln->descuento_pct ?? 0) }}</td>
+                <td class="right nowrap">
                     @php
                         $ivaLinea = (float) ($ln->iva_linea ?? 0);
                     @endphp
                     {{ $fmt($ivaLinea) }}€
                 </td>
-                <td class="right">
+                <td class="right nowrap">
                     @php
                         $irpfLinea = (float) ($ln->irpf_linea ?? 0);
                     @endphp
                     {{ $irpfLinea != 0 ? '-' . $fmt(abs($irpfLinea)) : $fmt(0) }}€
                 </td>
-                <td class="right">{{ $fmt($ln->total_linea ?? 0) }}€</td>
+                <td class="right nowrap">{{ $fmt($ln->total_linea ?? 0) }}€</td>
             </tr>
         @endforeach
         </tbody>
