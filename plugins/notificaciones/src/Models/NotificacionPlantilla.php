@@ -13,6 +13,7 @@ class NotificacionPlantilla extends Model
         'nombre',
         'asunto',
         'cuerpo_html',
+        'html_personalizado',
         'cuerpo_texto',
     ];
 

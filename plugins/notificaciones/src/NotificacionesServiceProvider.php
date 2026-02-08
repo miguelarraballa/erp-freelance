@@ -3,6 +3,7 @@
 namespace Notificaciones;
 
 use Illuminate\Support\ServiceProvider;
+use Notificaciones\Console\Commands\EnviarNotificacionesCommand;
 
 class NotificacionesServiceProvider extends ServiceProvider
 {
@@ -19,5 +20,12 @@ class NotificacionesServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/notificaciones.php' => config_path('notificaciones.php'),
         ], 'notificaciones-config');
+
+        // Register commands
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                EnviarNotificacionesCommand::class,
+            ]);
+        }
     }
 }

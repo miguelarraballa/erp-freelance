@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Notificaciones\Filament\Resources\Notificaciones\Pages\CreateNotificacion;
 use Notificaciones\Filament\Resources\Notificaciones\Pages\EditNotificacion;
 use Notificaciones\Filament\Resources\Notificaciones\Pages\ListNotificaciones;
+use Notificaciones\Filament\Resources\Notificaciones\Pages\ViewNotificacion;
 use Notificaciones\Filament\Resources\Notificaciones\Schemas\NotificacionForm;
 use Notificaciones\Filament\Resources\Notificaciones\Tables\NotificacionesTable;
 use Notificaciones\Models\Notificacion;
@@ -49,6 +50,7 @@ class NotificacionResource extends Resource
         return [
             'index' => ListNotificaciones::route('/'),
             'create' => CreateNotificacion::route('/create'),
+            'view' => ViewNotificacion::route('/{record}'),
             'edit' => EditNotificacion::route('/{record}/edit'),
         ];
     }

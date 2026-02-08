@@ -3,7 +3,12 @@
 namespace Notificaciones\Helpers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 use Notificaciones\Models\NotificacionEtiqueta;
+use Notificaciones\Models\NotificacionPlantilla;
+use Notificaciones\Models\Notificacion;
+use Notificaciones\Enums\NotificacionEstado;
 
 class NotificacionesHelper
 {
@@ -39,6 +44,11 @@ class NotificacionesHelper
         // If no ID is provided, try to get it from context
         if ($recordId === null && $context !== null) {
             $recordId = $context[$table] ?? null;
+        }
+
+        // Special case: for "emisores" table, use the active emisor if no ID provided
+        if ($recordId === null && $table === 'emisores') {
+            $recordId = DB::table('emisores')->where('activo', true)->value('id');
         }
 
         if ($recordId === null) {
@@ -78,5 +88,82 @@ class NotificacionesHelper
         }
 
         return $text;
+    }
+
+    /**
+     * Queue an email for sending
+     *
+     * @param string $plantillaNombre The template name
+     * @param string $emailDestinatario The recipient email
+     * @param array $context Array with table names as keys and IDs as values for tag replacement
+     * @param string|null $relacionadoTabla The related table name (for tracking)
+     * @param int|null $relacionadoId The related record ID (for tracking)
+     * @param Model|null $adjuntable Optional model to attach (Factura or Presupuesto)
+     * @return Notificacion The queued notification
+     * @throws InvalidArgumentException If template not found or required data missing
+     */
+    public static function queueEmail(
+        string $plantillaNombre,
+        string $emailDestinatario,
+        array $context,
+        ?string $relacionadoTabla = null,
+        ?int $relacionadoId = null,
+        ?Model $adjuntable = null
+    ): Notificacion {
+        // Validate email
+        if (!filter_var($emailDestinatario, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException("Email no válido: {$emailDestinatario}");
+        }
+
+        // Find template
+        $plantilla = NotificacionPlantilla::where('nombre', $plantillaNombre)->first();
+
+        if (!$plantilla) {
+            throw new InvalidArgumentException("Plantilla no encontrada: {$plantillaNombre}");
+        }
+
+        // Replace tags in subject and body
+        $asuntoProcesado = self::replaceTags($plantilla->asunto, $context);
+        $cuerpoHtmlProcesado = self::replaceTags($plantilla->cuerpo_html, $context);
+
+        // Add custom HTML if exists
+        if ($plantilla->html_personalizado) {
+            $htmlPersonalizado = self::replaceTags($plantilla->html_personalizado, $context);
+            $cuerpoHtmlProcesado .= "\n\n" . $htmlPersonalizado;
+        }
+
+        // Process plain text body if exists
+        $cuerpoTextoProcesado = null;
+        if ($plantilla->cuerpo_texto) {
+            $cuerpoTextoProcesado = self::replaceTags($plantilla->cuerpo_texto, $context);
+        }
+
+        // Auto-detect relacionado from context if not provided
+        if ($relacionadoTabla === null && $relacionadoId === null && !empty($context)) {
+            // Use the first entry in context as relacionado
+            $relacionadoTabla = array_key_first($context);
+            $relacionadoId = $context[$relacionadoTabla];
+        }
+
+        // Create notification record
+        $data = [
+            'notificacion_plantilla_id' => $plantilla->id,
+            'email_destinatario' => $emailDestinatario,
+            'asunto_procesado' => $asuntoProcesado,
+            'cuerpo_html_procesado' => $cuerpoHtmlProcesado,
+            'cuerpo_texto_procesado' => $cuerpoTextoProcesado,
+            'fecha' => now(),
+            'estado' => NotificacionEstado::EnCola,
+            'relacionado_tabla' => $relacionadoTabla,
+            'relacionado_id' => $relacionadoId,
+        ];
+
+        // Add attachable if provided
+        if ($adjuntable) {
+            $data['adjuntable_type'] = get_class($adjuntable);
+            $data['adjuntable_id'] = $adjuntable->id;
+        }
+
+        return Notificacion::create($data);
     }
 }

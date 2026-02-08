@@ -25,7 +25,27 @@ class NotificacionPlantillaForm
                 RichEditor::make('cuerpo_html')
                     ->label('Cuerpo HTML')
                     ->required()
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->toolbarButtons([
+                        'bold',
+                        'italic',
+                        'underline',
+                        'strike',
+                        'h2',
+                        'h3',
+                        'blockquote',
+                        'bulletList',
+                        'orderedList',
+                        'link',
+                        'undo',
+                        'redo',
+                    ]),
+                Textarea::make('html_personalizado')
+                    ->label('HTML Personalizado (Pie de Página / Avisos Legales)')
+                    ->rows(4)
+                    ->columnSpanFull()
+                    ->helperText('Aquí puedes añadir HTML personalizado como <small>texto legal</small> que se agregará al final del email')
+                    ->placeholder('<small>Este es un mensaje automático. Por favor no responder a este email.</small>'),
                 Textarea::make('cuerpo_texto')
                     ->label('Cuerpo texto')
                     ->rows(8)

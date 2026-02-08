@@ -16,7 +16,8 @@ class NotificacionesPlantillasTable
             ->columns([
                 TextColumn::make('nombre')->searchable()->sortable(),
                 TextColumn::make('asunto')->searchable()->sortable(),
-                TextColumn::make('updated_at')->dateTime()->sortable(),
+                TextColumn::make('created_at')->dateTime("d-m-Y")->sortable(),
+                TextColumn::make('updated_at')->dateTime("d-m-Y")->sortable(),
             ])
             ->filters([
                 //
