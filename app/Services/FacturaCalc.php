@@ -21,7 +21,15 @@ class FacturaCalc
 
             $totalLinea = round($bruto + $ivaLinea - $irpfLinea, 2);
 
-            $l->base_linea  = round($bruto, 2);
+            // Normalizar -0 a 0 para evitar CorruptComponentPayloadException de Livewire
+            $baseLinea = round($bruto, 2);
+            $baseLinea = $baseLinea == 0 ? 0.0 : $baseLinea;
+
+            $ivaLinea = $ivaLinea == 0 ? 0.0 : $ivaLinea;
+            $irpfLinea = $irpfLinea == 0 ? 0.0 : $irpfLinea;
+            $totalLinea = $totalLinea == 0 ? 0.0 : $totalLinea;
+
+            $l->base_linea  = $baseLinea;
             $l->iva_linea   = $ivaLinea;
             $l->irpf_linea  = $irpfLinea;
             $l->total_linea = $totalLinea;
@@ -33,10 +41,23 @@ class FacturaCalc
             $total += $l->total_linea;
         }
 
-        $f->base = round($base, 2);
-        $f->iva_total = round($iva, 2);
-        $f->irpf_total = round($irpf, 2);
-        $f->total = round($total, 2);
+        // Normalizar -0 a 0 para evitar CorruptComponentPayloadException de Livewire
+        $base = round($base, 2);
+        $base = $base == 0 ? 0.0 : $base;
+
+        $iva = round($iva, 2);
+        $iva = $iva == 0 ? 0.0 : $iva;
+
+        $irpf = round($irpf, 2);
+        $irpf = $irpf == 0 ? 0.0 : $irpf;
+
+        $total = round($total, 2);
+        $total = $total == 0 ? 0.0 : $total;
+
+        $f->base = $base;
+        $f->iva_total = $iva;
+        $f->irpf_total = $irpf;
+        $f->total = $total;
         $f->save();
 
         return $f->refresh();
