@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpiar Cachés - Laravel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .log {
+            margin-top: 30px;
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        .log.active { display: block; }
+        .log-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .log-item.pending {
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+        }
+        .log-item.success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .log-item.error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .log-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .log-item code {
+            display: block;
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Limpiar Cachés</h1>
+        <p class="subtitle">Limpia todas las cachés de Laravel y Livewire</p>
+
+        <div class="alert alert-warning">
+            <strong>⚠️ Importante:</strong> Esta operación limpiará todas las cachés en producción. El sitio puede tardar unos segundos más en la primera carga después de limpiar las cachés.
+        </div>
+
+        <div class="input-group">
+            <label for="token">Token de Autorización (ARTISAN_BRIDGE_TOKEN)</label>
+            <input
+                type="password"
+                id="token"
+                placeholder="Ingresa el token del archivo .env"
+                autocomplete="off"
+            >
+        </div>
+
+        <button id="clearBtn" onclick="clearAllCaches()">
+            Limpiar Todas las Cachés
+        </button>
+
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        const commands = [
+            { cmd: 'cache:clear', desc: 'Limpiando caché de aplicación' },
+            { cmd: 'config:clear', desc: 'Limpiando caché de configuración' },
+            { cmd: 'route:clear', desc: 'Limpiando caché de rutas' },
+            { cmd: 'view:clear', desc: 'Limpiando caché de vistas' },
+            { cmd: 'filament:clear-cached-components', desc: 'Limpiando caché de componentes Filament' },
+            { cmd: 'optimize:clear', desc: 'Limpiando optimizaciones generales' },
+            { cmd: 'config:cache', desc: 'Reconstruyendo caché de configuración' },
+            { cmd: 'route:cache', desc: 'Reconstruyendo caché de rutas' },
+            { cmd: 'filament:cache-components', desc: 'Reconstruyendo caché de Filament' },
+        ];
+
+        let logDiv, clearBtn, tokenInput;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            logDiv = document.getElementById('log');
+            clearBtn = document.getElementById('clearBtn');
+            tokenInput = document.getElementById('token');
+
+            // Recuperar token del localStorage si existe
+            const savedToken = localStorage.getItem('artisan_bridge_token');
+            if (savedToken) {
+                tokenInput.value = savedToken;
+            }
+        });
+
+        function log(message, type = 'pending', output = null) {
+            const item = document.createElement('div');
+            item.className = `log-item ${type}`;
+
+            let html = `<strong>${message}</strong>`;
+            if (output) {
+                html += `<code>${escapeHtml(output)}</code>`;
+            }
+
+            item.innerHTML = html;
+            logDiv.appendChild(item);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            return item;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function executeCommand(token, cmd, desc) {
+            const logItem = log(desc, 'pending');
+
+            try {
+                const response = await fetch('/artisan-bridge.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `token=${encodeURIComponent(token)}&cmd=${encodeURIComponent(cmd)}`
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    logItem.className = 'log-item success';
+                    logItem.innerHTML = `<strong>✅ ${desc}</strong>`;
+                    if (data.output && data.output.trim()) {
+                        logItem.innerHTML += `<code>${escapeHtml(data.output)}</code>`;
+                    }
+                    return true;
+                } else {
+                    logItem.className = 'log-item error';
+                    logItem.innerHTML = `<strong>❌ Error en: ${desc}</strong>`;
+                    if (data.error) {
+                        logItem.innerHTML += `<code>${escapeHtml(data.error)}</code>`;
+                    }
+                    return false;
+                }
+            } catch (error) {
+                logItem.className = 'log-item error';
+                logItem.innerHTML = `<strong>❌ Error de conexión: ${desc}</strong><code>${escapeHtml(error.message)}</code>`;
+                return false;
+            }
+        }
+
+        async function clearAllCaches() {
+            const token = tokenInput.value.trim();
+
+            if (!token) {
+                alert('Por favor ingresa el token de autorización');
+                tokenInput.focus();
+                return;
+            }
+
+            // Guardar token en localStorage
+            localStorage.setItem('artisan_bridge_token', token);
+
+            // Deshabilitar botón
+            clearBtn.disabled = true;
+            clearBtn.innerHTML = '<span class="spinner"></span>Ejecutando...';
+
+            // Mostrar log
+            logDiv.innerHTML = '';
+            logDiv.classList.add('active');
+
+            let allSuccess = true;
+
+            // Ejecutar comandos secuencialmente
+            for (const {cmd, desc} of commands) {
+                const success = await executeCommand(token, cmd, desc);
+                if (!success && cmd !== 'filament:clear-cached-components' && cmd !== 'filament:cache-components') {
+                    // No detenemos si fallan comandos de Filament (pueden no estar disponibles)
+                    allSuccess = false;
+                }
+                // Pequeña pausa entre comandos
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            // Resultado final
+            if (allSuccess) {
+                log('🎉 ¡Todas las cachés se limpiaron correctamente!', 'success');
+                setTimeout(() => {
+                    if (confirm('Cachés limpiadas exitosamente. ¿Quieres recargar la página?')) {
+                        window.location.reload();
+                    }
+                }, 1000);
+            } else {
+                log('⚠️ Algunas operaciones fallaron. Revisa los errores arriba.', 'error');
+            }
+
+            // Rehabilitar botón
+            clearBtn.disabled = false;
+            clearBtn.innerHTML = 'Limpiar Todas las Cachés';
+        }
+
+        // Enter para ejecutar
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !clearBtn.disabled) {
+                clearAllCaches();
+            }
+        });
+    </script>
+</body>
+</html>
