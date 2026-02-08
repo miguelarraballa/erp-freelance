@@ -205,12 +205,13 @@ class PresupuestoForm
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         TextInput::make('precio_unitario')
-                            ->numeric()
+                            ->type('number')
                             ->step('0.01')
+                            ->inputMode('decimal')
                             ->label('Precio')
                             ->columnSpan(2)
                             ->required()
-                            ->rules(['numeric'])  // Permite negativos
+                            ->rules(['required', 'numeric'])  // Permite negativos
                             ->live()
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
@@ -245,19 +246,79 @@ class PresupuestoForm
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         // (Opcional) campos calculados persistidos; se recomiendan sólo lectura:
-                        TextInput::make('base_linea')->readOnly()->numeric()->rules(['numeric'])->columnSpan(2),
-                        TextInput::make('iva_linea')->readOnly()->numeric()->rules(['numeric'])->columnSpan(2),
-                        TextInput::make('irpf_linea')->readOnly()->numeric()->rules(['numeric'])->columnSpan(2),
-                        TextInput::make('total_linea')->readOnly()->numeric()->rules(['numeric'])->columnSpan(2),
+                        TextInput::make('base_linea')
+                            ->readOnly()
+                            ->type('number')
+                            ->step('any')
+                            ->extraInputAttributes(['step' => 'any'])
+                            ->rules(['nullable', 'numeric'])
+                            ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) $state : null)
+                            ->columnSpan(2),
+                        TextInput::make('iva_linea')
+                            ->readOnly()
+                            ->type('number')
+                            ->step('any')
+                            ->extraInputAttributes(['step' => 'any'])
+                            ->rules(['nullable', 'numeric'])
+                            ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) $state : null)
+                            ->columnSpan(2),
+                        TextInput::make('irpf_linea')
+                            ->readOnly()
+                            ->type('number')
+                            ->step('any')
+                            ->extraInputAttributes(['step' => 'any'])
+                            ->rules(['nullable', 'numeric'])
+                            ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) $state : null)
+                            ->columnSpan(2),
+                        TextInput::make('total_linea')
+                            ->readOnly()
+                            ->type('number')
+                            ->step('any')
+                            ->extraInputAttributes(['step' => 'any'])
+                            ->rules(['nullable', 'numeric'])
+                            ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) $state : null)
+                            ->columnSpan(2),
                     ]),
                 
-                TextInput::make('base')->label("Base")->readOnly()->numeric()->rules(['numeric'])->columnSpan(3),
+                TextInput::make('base')
+                    ->label("Base")
+                    ->readOnly()
+                    ->type('number')
+                    ->step('any')
+                    ->extraInputAttributes(['step' => 'any'])
+                    ->rules(['nullable', 'numeric'])
+                    ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) $state : null)
+                    ->columnSpan(3),
 
-                TextInput::make('iva_total')->label("IVA Total")->readOnly()->numeric()->rules(['numeric'])->columnSpan(3),
+                TextInput::make('iva_total')
+                    ->label("IVA Total")
+                    ->readOnly()
+                    ->type('number')
+                    ->step('any')
+                    ->extraInputAttributes(['step' => 'any'])
+                    ->rules(['nullable', 'numeric'])
+                    ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) $state : null)
+                    ->columnSpan(3),
 
-                TextInput::make('irpf_total')->label("IRPF Total")->readOnly()->numeric()->rules(['numeric'])->columnSpan(3),
+                TextInput::make('irpf_total')
+                    ->label("IRPF Total")
+                    ->readOnly()
+                    ->type('number')
+                    ->step('any')
+                    ->extraInputAttributes(['step' => 'any'])
+                    ->rules(['nullable', 'numeric'])
+                    ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) $state : null)
+                    ->columnSpan(3),
 
-                TextInput::make('total')->label("Total")->readOnly()->numeric()->rules(['numeric'])->columnSpan(3),
+                TextInput::make('total')
+                    ->label("Total")
+                    ->readOnly()
+                    ->type('number')
+                    ->step('any')
+                    ->extraInputAttributes(['step' => 'any'])
+                    ->rules(['nullable', 'numeric'])
+                    ->dehydrateStateUsing(fn ($state) => $state !== null ? (float) $state : null)
+                    ->columnSpan(3),
 
                 Select::make('moneda')
                     ->label("Moneda")
