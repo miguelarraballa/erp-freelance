@@ -205,7 +205,7 @@ class PresupuestoForm
                             ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
 
                         TextInput::make('precio_unitario')
-                            ->numeric()->minValue(0)->step('0.01')
+                            ->numeric()->step('0.01')
                             ->label('Precio')
                             ->columnSpan(2)
                             ->required()
