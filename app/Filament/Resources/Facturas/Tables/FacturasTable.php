@@ -106,7 +106,7 @@ class FacturasTable
         
 
         $estimado = (float) Factura::query()
-            ->where('estado', '=', ['cobrada', 'emitida'])
+            ->whereIn('estado', ['cobrada', 'emitida'])
             ->whereBetween('fecha', [$inicioMes, $finMes])
             ->sum('total');
             
