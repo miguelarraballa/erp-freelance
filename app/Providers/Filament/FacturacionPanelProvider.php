@@ -66,15 +66,6 @@ class FacturacionPanelProvider extends PanelProvider
 
             ])
             ->viteTheme('resources/css/filament/facturacion/theme.css')
-                'primary' => Color::hex('#020BFF'),
-                'gray' => Color::Slate,
-                'success' => Color::hex('#16A34A'),
-                'danger'  => Color::hex('#DC2626'),
-                'warning' => Color::hex('#F59E0B'),
-                'info'    => Color::hex('#0EA5E9'),
-
-            ])
-            ->viteTheme('resources/css/filament/facturacion/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
