@@ -12,6 +12,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -36,6 +37,12 @@ class FacturacionPanelProvider extends PanelProvider
             ->id('facturacion')
             ->path('facturacion')
             ->login()
+            ->profile()
+            ->multiFactorAuthentication([
+                AppAuthentication::make()
+                    ->recoverable()
+                    ->brandName('Facturación'),
+            ], isRequired: true)
             ->brandLogo(asset('brand/logo.svg'))
             ->brandLogoHeight('2rem')
             ->brandName('Facturación')
@@ -64,6 +71,7 @@ class FacturacionPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+
 
             ])
             ->middleware([
