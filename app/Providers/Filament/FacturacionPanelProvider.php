@@ -26,9 +26,6 @@ use Filament\Support\Icons\Heroicon;
 use Gastos\Filament\GastosPlugin;
 use Presupuestos\Filament\PresupuestosPlugin;
 use Proyectos\Filament\ProyectosPlugin;
-use Gastos\Filament\GastosPlugin;
-use Presupuestos\Filament\PresupuestosPlugin;
-use Proyectos\Filament\ProyectosPlugin;
 
 class FacturacionPanelProvider extends PanelProvider
 {
@@ -92,16 +89,8 @@ class FacturacionPanelProvider extends PanelProvider
                 GastosPlugin::make(),
                 PresupuestosPlugin::make(),
                 ProyectosPlugin::make(),
-                GastosPlugin::make(),
-                PresupuestosPlugin::make(),
-                ProyectosPlugin::make(),
             ])
             ->navigationGroups([
-                NavigationGroup::make()
-                    ->label('Empresa'),
-                NavigationGroup::make()
-                    ->label('Clientes'),
-                    // ->icon(Heroicon::OutlinedDocumentText) // opcional
                 NavigationGroup::make()
                     ->label('Empresa'),
                 NavigationGroup::make()
