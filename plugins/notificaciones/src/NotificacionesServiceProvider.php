@@ -4,6 +4,7 @@ namespace Notificaciones;
 
 use Illuminate\Support\ServiceProvider;
 use Notificaciones\Console\Commands\EnviarNotificacionesCommand;
+use Notificaciones\Console\Commands\RecordarFacturasVencidasCommand;
 
 class NotificacionesServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,7 @@ class NotificacionesServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 EnviarNotificacionesCommand::class,
+                RecordarFacturasVencidasCommand::class,
             ]);
         }
     }
