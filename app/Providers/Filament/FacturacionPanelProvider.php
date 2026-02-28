@@ -12,6 +12,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -25,6 +26,9 @@ use Filament\Support\Icons\Heroicon;
 use Gastos\Filament\GastosPlugin;
 use Presupuestos\Filament\PresupuestosPlugin;
 use Proyectos\Filament\ProyectosPlugin;
+use Gastos\Filament\GastosPlugin;
+use Presupuestos\Filament\PresupuestosPlugin;
+use Proyectos\Filament\ProyectosPlugin;
 
 class FacturacionPanelProvider extends PanelProvider
 {
@@ -35,6 +39,12 @@ class FacturacionPanelProvider extends PanelProvider
             ->id('facturacion')
             ->path('facturacion')
             ->login()
+            ->profile()
+            ->multiFactorAuthentication([
+                AppAuthentication::make()
+                    ->recoverable()
+                    ->brandName('Facturación'),
+            ], isRequired: true)
             ->brandLogo(asset('brand/logo.svg'))
             ->brandLogoHeight('2rem')
             ->brandName('Facturación')
@@ -56,6 +66,15 @@ class FacturacionPanelProvider extends PanelProvider
 
             ])
             ->viteTheme('resources/css/filament/facturacion/theme.css')
+                'primary' => Color::hex('#020BFF'),
+                'gray' => Color::Slate,
+                'success' => Color::hex('#16A34A'),
+                'danger'  => Color::hex('#DC2626'),
+                'warning' => Color::hex('#F59E0B'),
+                'info'    => Color::hex('#0EA5E9'),
+
+            ])
+            ->viteTheme('resources/css/filament/facturacion/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -63,6 +82,7 @@ class FacturacionPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+
 
             ])
             ->middleware([
@@ -81,8 +101,16 @@ class FacturacionPanelProvider extends PanelProvider
                 GastosPlugin::make(),
                 PresupuestosPlugin::make(),
                 ProyectosPlugin::make(),
+                GastosPlugin::make(),
+                PresupuestosPlugin::make(),
+                ProyectosPlugin::make(),
             ])
             ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('Empresa'),
+                NavigationGroup::make()
+                    ->label('Clientes'),
+                    // ->icon(Heroicon::OutlinedDocumentText) // opcional
                 NavigationGroup::make()
                     ->label('Empresa'),
                 NavigationGroup::make()

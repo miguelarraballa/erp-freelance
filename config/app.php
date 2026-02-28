@@ -14,8 +14,8 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-    'version' => '1.7.4',
-    'release_date' => '2026-02-04',
+    'version' => '1.7.5',
+    'release_date' => '2026-02-28',
 
     /*
     |--------------------------------------------------------------------------
@@ -124,6 +124,8 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    'artisan_bridge_token' => env('ARTISAN_BRIDGE_TOKEN'),
 
     'artisan_bridge_token' => env('ARTISAN_BRIDGE_TOKEN'),
 
