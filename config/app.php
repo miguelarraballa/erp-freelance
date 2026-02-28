@@ -127,4 +127,6 @@ return [
 
     'artisan_bridge_token' => env('ARTISAN_BRIDGE_TOKEN'),
 
+    'artisan_bridge_token' => env('ARTISAN_BRIDGE_TOKEN'),
+
 ];
