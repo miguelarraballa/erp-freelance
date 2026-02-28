@@ -51,6 +51,7 @@ $allowed = [
     'filament:clear-cached-components' => [],
     'filament:cache-components'        => [],
     'storage:link'   => [],
+    'notificaciones:recordar-vencidas' => [],
     'migrate'        => ['--force' => true],
      'db:seed'       => ['--force' => true],
 ];
