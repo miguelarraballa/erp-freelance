@@ -78,7 +78,7 @@ try {
                 'Database\\Seeders\\DatabaseSeeder',
                 'Database\\Seeders\\ImpuestosSeeder',
                 'Database\\Seeders\\SeriesSeeder',
-                // a���ade aqu��� tus seeders permitidos
+                'Notificaciones\\Database\\Seeders\\NotificacionesEtiquetasSeeder',
             ];
             if (! in_array($class, $whitelist, true)) {
                 http_response_code(400);

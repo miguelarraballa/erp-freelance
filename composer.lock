@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8795948a3285e32a4719ce94fa3fc57",
+    "content-hash": "1cb82735a74063e7c757a7742fe76a11",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -788,6 +788,39 @@
                 "proprietary"
             ],
             "description": "Modulo de gastos para la aplicacion",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "contabilidad/notificaciones",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/notificaciones",
+                "reference": "26f81f42f586621ede4c3640db1f1f7558c65e36"
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Notificaciones\\NotificacionesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Notificaciones\\": "src/",
+                    "Notificaciones\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Modulo de notificaciones por email",
             "transport-options": {
                 "relative": true
             }

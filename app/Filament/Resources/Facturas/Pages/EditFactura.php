@@ -9,6 +9,7 @@ use App\Models\Serie;
 use App\Services\FacturaService;
 use App\Services\FacturaLogger;
 use Illuminate\Support\Carbon;
+use Notificaciones\Helpers\NotificacionesHelper;
 
 class EditFactura extends EditRecord
 {
@@ -93,6 +94,66 @@ class EditFactura extends EditRecord
                 request()->ip(),
                 request()->userAgent()
             );
+
+            // Encolar notificación de factura emitida
+            try {
+                // Cargar la relación cliente si no está cargada
+                $f->load('cliente');
+
+                // Priorizar facturacion_email, si no existe usar contacto_email
+                $emailCliente = $f->cliente->facturacion_email ?? $f->cliente->contacto_email ?? null;
+
+                \Log::info('Intentando encolar notificación de factura', [
+                    'factura_id' => $f->id,
+                    'cliente_id' => $f->cliente_id,
+                    'email_cliente' => $emailCliente,
+                    'facturacion_email' => $f->cliente->facturacion_email,
+                    'contacto_email' => $f->cliente->contacto_email,
+                ]);
+
+                if (!$emailCliente) {
+                    \Log::warning('Cliente sin email - no se puede enviar notificación', [
+                        'factura_id' => $f->id,
+                        'cliente_id' => $f->cliente_id,
+                    ]);
+                } elseif (!filter_var($emailCliente, FILTER_VALIDATE_EMAIL)) {
+                    \Log::warning('Email del cliente no válido', [
+                        'factura_id' => $f->id,
+                        'email' => $emailCliente,
+                    ]);
+                } else {
+                    // Email válido, proceder a encolar
+                    // Obtener el emisor activo
+                    $emisorActivo = \DB::table('emisores')->where('activo', true)->value('id');
+
+                    $notificacion = NotificacionesHelper::queueEmail(
+                        plantillaNombre: 'factura_emitida',
+                        emailDestinatario: $emailCliente,
+                        context: [
+                            'facturas' => $f->id,
+                            'clientes' => $f->cliente_id,
+                            'emisores' => $emisorActivo, // Incluir emisor activo
+                        ],
+                        relacionadoTabla: 'facturas',
+                        relacionadoId: $f->id,
+                        adjuntable: $f
+                    );
+
+                    \Log::info('Notificación encolada exitosamente', [
+                        'factura_id' => $f->id,
+                        'notificacion_id' => $notificacion->id,
+                        'email' => $emailCliente,
+                    ]);
+                }
+
+            } catch (\Exception $e) {
+                // Log error but don't stop the process
+                \Log::error('Error al encolar notificación de factura emitida', [
+                    'factura_id' => $f->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+            }
 
             $this->redirect($this->getResource()::getUrl('edit', ['record' => $f]));
         }

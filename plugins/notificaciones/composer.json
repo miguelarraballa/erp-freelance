@@ -1,0 +1,25 @@
+{
+  "name": "contabilidad/notificaciones",
+  "description": "Modulo de notificaciones por email",
+  "type": "library",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Notificaciones\\": "src/",
+      "Notificaciones\\Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Notificaciones\\NotificacionesServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

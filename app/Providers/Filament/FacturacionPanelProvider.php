@@ -24,6 +24,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationGroup;
 use Filament\Support\Icons\Heroicon;
 use Gastos\Filament\GastosPlugin;
+use Notificaciones\Filament\NotificacionesPlugin;
 use Presupuestos\Filament\PresupuestosPlugin;
 use Proyectos\Filament\ProyectosPlugin;
 
@@ -87,6 +88,7 @@ class FacturacionPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make(),
                 GastosPlugin::make(),
+                NotificacionesPlugin::make(),
                 PresupuestosPlugin::make(),
                 ProyectosPlugin::make(),
             ])
