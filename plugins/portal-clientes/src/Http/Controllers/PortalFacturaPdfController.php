@@ -5,17 +5,16 @@ namespace PortalClientes\Http\Controllers;
 use App\Models\Emisor;
 use App\Models\Factura;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PortalFacturaPdfController
 {
     public function show(Request $request, Factura $factura)
     {
-        $clienteId = Auth::user()?->cliente?->id;
+        $clienteId = (int) ($request->user()?->cliente?->id ?? 0);
 
         // Ensure the factura belongs to this client and is not a draft
-        if ($factura->cliente_id !== $clienteId || $factura->estado === 'borrador') {
+        if ((int) $factura->cliente_id !== $clienteId || $clienteId === 0 || $factura->estado === 'borrador') {
             abort(403, 'No tienes permiso para ver esta factura.');
         }
 

@@ -12,7 +12,7 @@ Route::middleware('web')
     ->name('portal.verify-email-change');
 
 // PDF downloads (auth + cliente role required)
-Route::middleware(['web', 'auth', EnsureIsCliente::class])->group(function () {
+Route::middleware(['web', EnsureIsCliente::class])->group(function () {
     Route::get('/portal/facturas/{factura}/pdf', [PortalFacturaPdfController::class, 'show'])
         ->name('portal.facturas.pdf');
     Route::get('/portal/presupuestos/{presupuesto}/pdf', [PortalPresupuestoPdfController::class, 'show'])
