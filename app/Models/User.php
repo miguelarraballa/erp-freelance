@@ -30,6 +30,9 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         'name',
         'email',
         'password',
+        'email_pending',
+        'email_pending_token',
+        'email_pending_expires_at',
     ];
 
     /**
@@ -52,10 +55,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'app_authentication_secret' => 'encrypted',
-            'app_authentication_recovery_codes' => 'encrypted:array',
+            'email_verified_at'        => 'datetime',
+            'password'                 => 'hashed',
+            'email_pending_expires_at' => 'datetime',
+            'app_authentication_secret'             => 'encrypted',
+            'app_authentication_recovery_codes'     => 'encrypted:array',
         ];
     }
 
@@ -63,6 +67,10 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         if ($panel->getId() === 'facturacion') {
             return $this->hasRole('administrador');
+        }
+
+        if ($panel->getId() === 'portal') {
+            return $this->hasRole('cliente') && $this->cliente()->exists();
         }
 
         return false;

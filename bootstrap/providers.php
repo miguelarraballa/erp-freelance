@@ -5,4 +5,5 @@ return [
     App\Providers\Filament\FacturacionPanelProvider::class,
     Presupuestos\PresupuestosServiceProvider::class,
     Proyectos\ProyectosServiceProvider::class,
+    PortalClientes\PortalClientesServiceProvider::class,
 ];

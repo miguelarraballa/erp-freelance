@@ -231,6 +231,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
             'PragmaRX\\Google2FA\\' => 19,
             'PragmaRX\\Google2FAQRCode\\Tests\\' => 31,
             'PragmaRX\\Google2FAQRCode\\' => 25,
+            'PortalClientes\\' => 15,
             'PhpParser\\' => 10,
             'PhpOption\\' => 10,
             'Pest\\Plugin\\' => 12,
@@ -621,6 +622,10 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'PragmaRX\\Google2FAQRCode\\' => 
         array (
             0 => __DIR__ . '/..' . '/pragmarx/google2fa-qrcode/src',
+        ),
+        'PortalClientes\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/plugins/portal-clientes/src',
         ),
         'PhpParser\\' => 
         array (
@@ -8169,6 +8174,20 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'PhpParser\\PrettyPrinter\\Standard' => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser/PrettyPrinter/Standard.php',
         'PhpParser\\Token' => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser/Token.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
+        'PortalClientes\\Filament\\Pages\\Dashboard' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Pages/Dashboard.php',
+        'PortalClientes\\Filament\\Pages\\MiPerfil' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Pages/MiPerfil.php',
+        'PortalClientes\\Filament\\Resources\\FacturaClienteResource' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/FacturaClienteResource.php',
+        'PortalClientes\\Filament\\Resources\\FacturaClienteResource\\Pages\\ListFacturasCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/FacturaClienteResource/Pages/ListFacturasCliente.php',
+        'PortalClientes\\Filament\\Resources\\FacturaClienteResource\\Pages\\ViewFacturaCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/FacturaClienteResource/Pages/ViewFacturaCliente.php',
+        'PortalClientes\\Filament\\Resources\\ProyectoClienteResource' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/ProyectoClienteResource.php',
+        'PortalClientes\\Filament\\Resources\\ProyectoClienteResource\\Pages\\ListProyectosCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/ProyectoClienteResource/Pages/ListProyectosCliente.php',
+        'PortalClientes\\Filament\\Resources\\ProyectoClienteResource\\Pages\\ViewProyectoCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/ProyectoClienteResource/Pages/ViewProyectoCliente.php',
+        'PortalClientes\\Http\\Controllers\\PortalEmailVerificationController' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Http/Controllers/PortalEmailVerificationController.php',
+        'PortalClientes\\Http\\Controllers\\PortalFacturaPdfController' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Http/Controllers/PortalFacturaPdfController.php',
+        'PortalClientes\\Http\\Middleware\\EnsureIsCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Http/Middleware/EnsureIsCliente.php',
+        'PortalClientes\\Mail\\EmailCambioVerificacion' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Mail/EmailCambioVerificacion.php',
+        'PortalClientes\\PortalClientesServiceProvider' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/PortalClientesServiceProvider.php',
+        'PortalClientes\\Providers\\PortalPanelProvider' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Providers/PortalPanelProvider.php',
         'PragmaRX\\Google2FAQRCode\\Exceptions\\MissingQrCodeServiceException' => __DIR__ . '/..' . '/pragmarx/google2fa-qrcode/src/Exceptions/MissingQrCodeServiceException.php',
         'PragmaRX\\Google2FAQRCode\\Google2FA' => __DIR__ . '/..' . '/pragmarx/google2fa-qrcode/src/Google2FA.php',
         'PragmaRX\\Google2FAQRCode\\QRCode\\Bacon' => __DIR__ . '/..' . '/pragmarx/google2fa-qrcode/src/QRCode/Bacon.php',
