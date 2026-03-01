@@ -1,0 +1,16 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../../../../plugins/portal-clientes/src/Filament/**/*';
+@source '../../../../plugins/portal-clientes/resources/views/**/*';
+
+.dark .fi-logo,
+.dark .fi-logo img,
+.dark .fi-logo svg,
+.dark .fi-topbar .fi-logo img,
+.dark .fi-topbar .fi-logo svg,
+.dark .fi-sidebar .fi-logo img,
+.dark .fi-sidebar .fi-logo svg {
+  filter: invert(1);
+}

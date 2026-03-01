@@ -71,6 +71,7 @@ return array(
     'PragmaRX\\Google2FA\\' => array($vendorDir . '/pragmarx/google2fa/src'),
     'PragmaRX\\Google2FAQRCode\\Tests\\' => array($vendorDir . '/pragmarx/google2fa-qrcode/tests'),
     'PragmaRX\\Google2FAQRCode\\' => array($vendorDir . '/pragmarx/google2fa-qrcode/src'),
+    'PortalClientes\\' => array($baseDir . '/plugins/portal-clientes/src'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'PhpOption\\' => array($vendorDir . '/phpoption/phpoption/src/PhpOption'),
     'Pest\\Plugin\\' => array($vendorDir . '/pestphp/pest-plugin/src'),

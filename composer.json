@@ -38,7 +38,8 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Proyectos\\": "plugins/proyectos/src/"
+            "Proyectos\\": "plugins/proyectos/src/",
+            "PortalClientes\\": "plugins/portal-clientes/src/"
         }
     },
     "autoload-dev": {

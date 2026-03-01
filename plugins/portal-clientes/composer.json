@@ -1,0 +1,24 @@
+{
+  "name": "contabilidad/portal-clientes",
+  "description": "Portal de acceso para clientes: facturas, proyectos y perfil",
+  "type": "library",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "PortalClientes\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "PortalClientes\\PortalClientesServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
