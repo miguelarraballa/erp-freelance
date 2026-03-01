@@ -12,7 +12,11 @@ class EnsureIsCliente
     {
         $user = $request->user();
 
-        if (!$user || !$user->hasRole('cliente') || !$user->cliente()->exists()) {
+        if (!$user) {
+            return redirect()->guest(route('filament.portal.auth.login'));
+        }
+
+        if (!$user->hasRole('cliente') || !$user->cliente()->exists()) {
             abort(403, 'Acceso restringido a clientes.');
         }
 

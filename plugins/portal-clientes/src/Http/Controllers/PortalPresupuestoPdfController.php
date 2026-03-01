@@ -4,16 +4,15 @@ namespace PortalClientes\Http\Controllers;
 
 use App\Models\Emisor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Presupuestos\Models\Presupuesto;
 
 class PortalPresupuestoPdfController
 {
     public function show(Request $request, Presupuesto $presupuesto)
     {
-        $clienteId = Auth::user()?->cliente?->id;
+        $clienteId = (int) ($request->user()?->cliente?->id ?? 0);
 
-        if ($presupuesto->cliente_id !== $clienteId || $presupuesto->estado === 'borrador') {
+        if ((int) $presupuesto->cliente_id !== $clienteId || $clienteId === 0 || $presupuesto->estado === 'borrador') {
             abort(403, 'No tienes permiso para ver este presupuesto.');
         }
 
