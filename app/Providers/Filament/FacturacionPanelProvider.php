@@ -27,6 +27,7 @@ use Gastos\Filament\GastosPlugin;
 use Notificaciones\Filament\NotificacionesPlugin;
 use Presupuestos\Filament\PresupuestosPlugin;
 use Proyectos\Filament\ProyectosPlugin;
+use Woocommerce\Filament\WoocommercePlugin;
 
 class FacturacionPanelProvider extends PanelProvider
 {
@@ -91,6 +92,7 @@ class FacturacionPanelProvider extends PanelProvider
                 NotificacionesPlugin::make(),
                 PresupuestosPlugin::make(),
                 ProyectosPlugin::make(),
+                WoocommercePlugin::make(),
             ])
             ->navigationGroups([
                 NavigationGroup::make()

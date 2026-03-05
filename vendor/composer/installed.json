@@ -1022,6 +1022,41 @@
             "install-path": "../contabilidad/proyectos"
         },
         {
+            "name": "contabilidad/woocommerce",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/woocommerce",
+                "reference": "8ebd2b4a6f5642062d01fd3ca81a60bed3b5107b"
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Woocommerce\\WoocommerceServiceProvider"
+                    ]
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Woocommerce\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Integración WooCommerce: importar pedidos como facturas simplificadas",
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../contabilidad/woocommerce"
+        },
+        {
             "name": "danharrin/date-format-converter",
             "version": "v0.3.1",
             "version_normalized": "0.3.1.0",

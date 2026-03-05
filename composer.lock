@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cb82735a74063e7c757a7742fe76a11",
+    "content-hash": "24a284f8a97d75283e658ecb31a2b599",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -885,6 +885,38 @@
                 "proprietary"
             ],
             "description": "Modulo de proyectos para la aplicacion",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "contabilidad/woocommerce",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/woocommerce",
+                "reference": "8ebd2b4a6f5642062d01fd3ca81a60bed3b5107b"
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Woocommerce\\WoocommerceServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Woocommerce\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Integración WooCommerce: importar pedidos como facturas simplificadas",
             "transport-options": {
                 "relative": true
             }
