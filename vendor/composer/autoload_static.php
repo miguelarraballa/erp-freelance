@@ -158,6 +158,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         ),
         'W' => 
         array (
+            'Woocommerce\\' => 12,
             'Whoops\\' => 7,
             'Webmozart\\Assert\\' => 17,
         ),
@@ -376,6 +377,10 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'chillerlan\\QRCode\\' => 
         array (
             0 => __DIR__ . '/..' . '/chillerlan/php-qrcode/src',
+        ),
+        'Woocommerce\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/contabilidad/woocommerce/src',
         ),
         'Whoops\\' => 
         array (
@@ -1036,6 +1041,11 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'App\\Filament\\Resources\\Series\\Schemas\\SerieForm' => __DIR__ . '/../..' . '/app/Filament/Resources/Series/Schemas/SerieForm.php',
         'App\\Filament\\Resources\\Series\\SerieResource' => __DIR__ . '/../..' . '/app/Filament/Resources/Series/SerieResource.php',
         'App\\Filament\\Resources\\Series\\Tables\\SeriesTable' => __DIR__ . '/../..' . '/app/Filament/Resources/Series/Tables/SeriesTable.php',
+        'App\\Filament\\Resources\\UsuariosCliente\\Pages\\CreateUsuarioCliente' => __DIR__ . '/../..' . '/app/Filament/Resources/UsuariosCliente/Pages/CreateUsuarioCliente.php',
+        'App\\Filament\\Resources\\UsuariosCliente\\Pages\\EditUsuarioCliente' => __DIR__ . '/../..' . '/app/Filament/Resources/UsuariosCliente/Pages/EditUsuarioCliente.php',
+        'App\\Filament\\Resources\\UsuariosCliente\\Pages\\ListUsuariosCliente' => __DIR__ . '/../..' . '/app/Filament/Resources/UsuariosCliente/Pages/ListUsuariosCliente.php',
+        'App\\Filament\\Resources\\UsuariosCliente\\Schemas\\UsuarioClienteForm' => __DIR__ . '/../..' . '/app/Filament/Resources/UsuariosCliente/Schemas/UsuarioClienteForm.php',
+        'App\\Filament\\Resources\\UsuariosCliente\\UsuarioClienteResource' => __DIR__ . '/../..' . '/app/Filament/Resources/UsuariosCliente/UsuarioClienteResource.php',
         'App\\Filament\\Widgets\\FacturasPendientesTableWidget' => __DIR__ . '/../..' . '/app/Filament/Widgets/FacturasPendientesTableWidget.php',
         'App\\Filament\\Widgets\\IngresosGastosMesWidget' => __DIR__ . '/../..' . '/app/Filament/Widgets/IngresosGastosMesWidget.php',
         'App\\Filament\\Widgets\\IvaTrimestreWidget' => __DIR__ . '/../..' . '/app/Filament/Widgets/IvaTrimestreWidget.php',
@@ -8179,11 +8189,15 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'PortalClientes\\Filament\\Resources\\FacturaClienteResource' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/FacturaClienteResource.php',
         'PortalClientes\\Filament\\Resources\\FacturaClienteResource\\Pages\\ListFacturasCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/FacturaClienteResource/Pages/ListFacturasCliente.php',
         'PortalClientes\\Filament\\Resources\\FacturaClienteResource\\Pages\\ViewFacturaCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/FacturaClienteResource/Pages/ViewFacturaCliente.php',
+        'PortalClientes\\Filament\\Resources\\PresupuestoClienteResource' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/PresupuestoClienteResource.php',
+        'PortalClientes\\Filament\\Resources\\PresupuestoClienteResource\\Pages\\ListPresupuestosCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/PresupuestoClienteResource/Pages/ListPresupuestosCliente.php',
+        'PortalClientes\\Filament\\Resources\\PresupuestoClienteResource\\Pages\\ViewPresupuestoCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/PresupuestoClienteResource/Pages/ViewPresupuestoCliente.php',
         'PortalClientes\\Filament\\Resources\\ProyectoClienteResource' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/ProyectoClienteResource.php',
         'PortalClientes\\Filament\\Resources\\ProyectoClienteResource\\Pages\\ListProyectosCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/ProyectoClienteResource/Pages/ListProyectosCliente.php',
         'PortalClientes\\Filament\\Resources\\ProyectoClienteResource\\Pages\\ViewProyectoCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Filament/Resources/ProyectoClienteResource/Pages/ViewProyectoCliente.php',
         'PortalClientes\\Http\\Controllers\\PortalEmailVerificationController' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Http/Controllers/PortalEmailVerificationController.php',
         'PortalClientes\\Http\\Controllers\\PortalFacturaPdfController' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Http/Controllers/PortalFacturaPdfController.php',
+        'PortalClientes\\Http\\Controllers\\PortalPresupuestoPdfController' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Http/Controllers/PortalPresupuestoPdfController.php',
         'PortalClientes\\Http\\Middleware\\EnsureIsCliente' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Http/Middleware/EnsureIsCliente.php',
         'PortalClientes\\Mail\\EmailCambioVerificacion' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/Mail/EmailCambioVerificacion.php',
         'PortalClientes\\PortalClientesServiceProvider' => __DIR__ . '/../..' . '/plugins/portal-clientes/src/PortalClientesServiceProvider.php',
@@ -10305,6 +10319,19 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Whoops\\Util\\Misc' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Util/Misc.php',
         'Whoops\\Util\\SystemFacade' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Util/SystemFacade.php',
         'Whoops\\Util\\TemplateHelper' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Util/TemplateHelper.php',
+        'Woocommerce\\Console\\Commands\\ImportarPedidosWooCommand' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Console/Commands/ImportarPedidosWooCommand.php',
+        'Woocommerce\\Filament\\Resources\\TiendasWoo\\Pages\\CreateTiendaWoo' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Filament/Resources/TiendasWoo/Pages/CreateTiendaWoo.php',
+        'Woocommerce\\Filament\\Resources\\TiendasWoo\\Pages\\EditTiendaWoo' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Filament/Resources/TiendasWoo/Pages/EditTiendaWoo.php',
+        'Woocommerce\\Filament\\Resources\\TiendasWoo\\Pages\\ListTiendasWoo' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Filament/Resources/TiendasWoo/Pages/ListTiendasWoo.php',
+        'Woocommerce\\Filament\\Resources\\TiendasWoo\\Schemas\\TiendaWooForm' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Filament/Resources/TiendasWoo/Schemas/TiendaWooForm.php',
+        'Woocommerce\\Filament\\Resources\\TiendasWoo\\Tables\\TiendasWooTable' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Filament/Resources/TiendasWoo/Tables/TiendasWooTable.php',
+        'Woocommerce\\Filament\\Resources\\TiendasWoo\\TiendaWooResource' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Filament/Resources/TiendasWoo/TiendaWooResource.php',
+        'Woocommerce\\Filament\\WoocommercePlugin' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Filament/WoocommercePlugin.php',
+        'Woocommerce\\Models\\TiendaWoo' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Models/TiendaWoo.php',
+        'Woocommerce\\Models\\WooPedidoImportado' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Models/WooPedidoImportado.php',
+        'Woocommerce\\Services\\WooOrderImportService' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Services/WooOrderImportService.php',
+        'Woocommerce\\Services\\WoocommerceApiService' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/Services/WoocommerceApiService.php',
+        'Woocommerce\\WoocommerceServiceProvider' => __DIR__ . '/..' . '/contabilidad/woocommerce/src/WoocommerceServiceProvider.php',
         'chillerlan\\QRCode\\Common\\BitBuffer' => __DIR__ . '/..' . '/chillerlan/php-qrcode/src/Common/BitBuffer.php',
         'chillerlan\\QRCode\\Common\\ECICharset' => __DIR__ . '/..' . '/chillerlan/php-qrcode/src/Common/ECICharset.php',
         'chillerlan\\QRCode\\Common\\EccLevel' => __DIR__ . '/..' . '/chillerlan/php-qrcode/src/Common/EccLevel.php',

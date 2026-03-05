@@ -45,6 +45,7 @@ class SerieForm
                         "abono"           => "Abono",
                         "proveedor"       => "Proveedor",
                         "presupuesto"     => "Presupuesto",
+                        "simplificada"    => "Simplificada (WooCommerce)",
                     ])
                     ->default("null")
                     ->columnSpan(3),

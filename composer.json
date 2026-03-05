@@ -13,6 +13,7 @@
         "contabilidad/notificaciones": "^1.0",
         "contabilidad/presupuestos": "^1.0",
         "contabilidad/proyectos": "^1.0",
+        "contabilidad/woocommerce": "^1.0",
         "filament/actions": "^4.1",
         "filament/filament": "^4.1",
         "filament/notifications": "^4.1",
@@ -119,6 +120,10 @@
         {
             "type": "path",
             "url": "plugins/notificaciones"
+        },
+        {
+            "type": "path",
+            "url": "plugins/woocommerce"
         }
     ]
 }
