@@ -13,10 +13,9 @@ class WoocommerceServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                ImportarPedidosWooCommand::class,
-            ]);
-        }
+        // Registrar siempre (no solo en consola) para que Artisan::call() funcione desde web
+        $this->commands([
+            ImportarPedidosWooCommand::class,
+        ]);
     }
 }
