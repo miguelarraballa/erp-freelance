@@ -4,8 +4,8 @@ namespace Woocommerce\Services;
 
 use App\Models\Factura;
 use App\Models\FacturaLinea;
-use App\Models\FacturaLog;
 use App\Models\Impuesto;
+use App\Services\FacturaLogger;
 use App\Models\Pago;
 use App\Models\Serie;
 use App\Services\SerieNumeracionService;
@@ -108,16 +108,11 @@ class WooOrderImportService
             $this->recalcularTotales($factura);
             $this->registrarPago($factura, $order);
 
-            FacturaLog::create([
-                'factura_id' => $factura->id,
-                'accion'     => 'emitida',
-                'usuario_id' => null,
-                'payload'    => [
-                    'origen'          => 'woocommerce',
-                    'tienda_id'       => $this->tienda->id,
-                    'woo_order_id'    => $order['id'],
-                    'numero_completo' => $numeroCompleto,
-                ],
+            FacturaLogger::log($factura, 'emitida', [
+                'origen'          => 'woocommerce',
+                'tienda_id'       => $this->tienda->id,
+                'woo_order_id'    => $order['id'],
+                'numero_completo' => $numeroCompleto,
             ]);
 
             WooPedidoImportado::create([
@@ -197,16 +192,11 @@ class WooOrderImportService
             $this->crearLineas($abono, $order['line_items'] ?? [], $order, negativo: true);
             $this->recalcularTotales($abono);
 
-            FacturaLog::create([
-                'factura_id' => $abono->id,
-                'accion'     => 'emitida',
-                'usuario_id' => null,
-                'payload'    => [
-                    'origen'       => 'woocommerce',
-                    'tienda_id'    => $this->tienda->id,
-                    'woo_order_id' => $order['id'],
-                    'tipo'         => 'abono',
-                ],
+            FacturaLogger::log($abono, 'emitida', [
+                'origen'       => 'woocommerce',
+                'tienda_id'    => $this->tienda->id,
+                'woo_order_id' => $order['id'],
+                'tipo'         => 'abono',
             ]);
 
             WooPedidoImportado::create([
