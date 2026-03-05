@@ -8,7 +8,8 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Artisan;
+use Woocommerce\Services\WoocommerceApiService;
+use Woocommerce\Services\WooOrderImportService;
 
 class TiendasWooTable
 {
@@ -55,22 +56,24 @@ class TiendasWooTable
                     ->requiresConfirmation()
                     ->modalHeading('Importar pedidos')
                     ->modalDescription(fn ($record) => "¿Importar pedidos nuevos de \"{$record->nombre}\"?")
-                    ->action(function ($record, $livewire) {
-                        $exitCode = Artisan::call('woo:import', ['--tienda' => $record->id]);
+                    ->action(function ($record) {
+                        try {
+                            $api = new WoocommerceApiService($record);
+                            $orders = $api->getAllOrdersSinceLastSync();
+                            $importer = new WooOrderImportService($record);
+                            $stats = $importer->importarPedidos($orders);
+                            $record->update(['ultima_sincronizacion' => now()]);
 
-                        $output = Artisan::output();
-
-                        if ($exitCode === 0) {
                             \Filament\Notifications\Notification::make()
                                 ->title('Importación completada')
-                                ->body(trim($output))
+                                ->body("{$stats['importados']} facturas, {$stats['abonos']} abonos, {$stats['errores']} errores")
                                 ->success()
                                 ->send();
-                        } else {
+                        } catch (\Throwable $e) {
                             \Filament\Notifications\Notification::make()
-                                ->title('Importación con errores')
-                                ->body(trim($output))
-                                ->warning()
+                                ->title('Error en la importación')
+                                ->body($e->getMessage())
+                                ->danger()
                                 ->send();
                         }
                     }),
