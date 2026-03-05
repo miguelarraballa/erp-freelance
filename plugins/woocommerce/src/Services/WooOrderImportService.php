@@ -218,30 +218,23 @@ class WooOrderImportService
         $orden = 1;
         $signo = $negativo ? -1 : 1;
 
+        // IVA del pedido: se extrae de tax_lines (rate_percent), default 21%
+        $ivaPct   = $this->extractOrderTaxRate($order['tax_lines'] ?? []);
+        $impuesto = $this->resolverImpuesto($ivaPct);
+
         foreach ($lineItems as $item) {
-            $cantidad       = (float) ($item['quantity'] ?? 1);
-            $precioUnitario = $signo * round((float) ($item['subtotal'] ?? 0) / max($cantidad, 1), 4);
-            $descuento      = 0.0;
-
-            // Calcular descuento si hay diferencia entre subtotal y total
-            $subtotal = (float) ($item['subtotal'] ?? 0);
-            $total    = (float) ($item['total'] ?? 0);
-            if ($subtotal > 0 && $total < $subtotal) {
-                $descuento = round((1 - ($total / $subtotal)) * 100, 2);
-            }
-
-            // Determinar IVA a partir de los impuestos del item
-            $ivaPct   = $this->extractTaxRate($item['taxes'] ?? [], $order['tax_lines'] ?? []);
-            $impuesto = $this->resolverImpuesto($ivaPct);
+            $cantidad = (float) ($item['quantity'] ?? 1);
+            // Usar total (después de descuento, sin IVA) como base unitaria
+            $precioUnitario = $signo * round((float) ($item['total'] ?? 0) / max($cantidad, 1), 4);
 
             FacturaLinea::create([
                 'factura_id'      => $factura->id,
                 'orden'           => $orden++,
-                'producto'        => 1, // productos de tienda
+                'producto'        => 1,
                 'concepto'        => $item['name'] ?? 'Producto',
                 'cantidad'        => $cantidad,
                 'precio_unitario' => $precioUnitario,
-                'descuento_pct'   => $descuento,
+                'descuento_pct'   => 0,
                 'impuesto_id'     => $impuesto?->id,
                 'base_linea'      => 0,
                 'iva_linea'       => 0,
@@ -253,9 +246,6 @@ class WooOrderImportService
         // Línea adicional por gastos de envío si existen
         $shippingTotal = (float) ($order['shipping_total'] ?? 0);
         if ($shippingTotal > 0) {
-            $ivaPct   = $this->extractShippingTaxRate($order['shipping_lines'] ?? [], $order['tax_lines'] ?? []);
-            $impuesto = $this->resolverImpuesto($ivaPct);
-
             FacturaLinea::create([
                 'factura_id'      => $factura->id,
                 'orden'           => $orden++,
@@ -334,37 +324,19 @@ class WooOrderImportService
     }
 
     /**
-     * Extrae el porcentaje de IVA de los taxes de una línea.
+     * Extrae el porcentaje de IVA del pedido a partir de tax_lines.
+     * Devuelve 21.0 por defecto si no se encuentra ningún tipo.
      */
-    private function extractTaxRate(array $lineTaxes, array $taxLines): float
+    private function extractOrderTaxRate(array $taxLines): float
     {
-        foreach ($lineTaxes as $tax) {
-            $taxId = $tax['id'] ?? null;
-            foreach ($taxLines as $tl) {
-                if (($tl['id'] ?? null) == $taxId) {
-                    return (float) ($tl['rate_percent'] ?? 0);
-                }
+        foreach ($taxLines as $tl) {
+            $rate = (float) ($tl['rate_percent'] ?? 0);
+            if ($rate > 0) {
+                return $rate;
             }
         }
 
-        // Fallback: si solo hay una tax_line, usar esa
-        if (count($taxLines) === 1) {
-            return (float) ($taxLines[0]['rate_percent'] ?? 0);
-        }
-
-        return 0.0;
-    }
-
-    /**
-     * Extrae el IVA de la línea de envío.
-     */
-    private function extractShippingTaxRate(array $shippingLines, array $taxLines): float
-    {
-        foreach ($shippingLines as $sl) {
-            $taxes = $sl['taxes'] ?? [];
-            return $this->extractTaxRate($taxes, $taxLines);
-        }
-        return 0.0;
+        return 21.0; // IVA estándar España
     }
 
     /**
