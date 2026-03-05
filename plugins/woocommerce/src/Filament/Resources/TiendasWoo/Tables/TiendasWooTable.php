@@ -62,12 +62,17 @@ class TiendasWooTable
                             $orders = $api->getAllOrdersSinceLastSync();
                             $importer = new WooOrderImportService($record);
                             $stats = $importer->importarPedidos($orders);
-                            $record->update(['ultima_sincronizacion' => now()]);
 
+                            // Solo actualizar la fecha si hubo algo importado correctamente
+                            if ($stats['errores'] === 0 || $stats['importados'] > 0 || $stats['abonos'] > 0) {
+                                $record->update(['ultima_sincronizacion' => now()]);
+                            }
+
+                            $tipo = $stats['errores'] > 0 ? 'warning' : 'success';
                             \Filament\Notifications\Notification::make()
                                 ->title('Importación completada')
-                                ->body("{$stats['importados']} facturas, {$stats['abonos']} abonos, {$stats['errores']} errores")
-                                ->success()
+                                ->body("{$stats['importados']} facturas, {$stats['abonos']} abonos, {$stats['omitidos']} omitidos, {$stats['errores']} errores")
+                                ->{$tipo}()
                                 ->send();
                         } catch (\Throwable $e) {
                             \Filament\Notifications\Notification::make()
