@@ -7,6 +7,7 @@ use App\Models\FacturaLinea;
 use App\Models\Impuesto;
 use App\Services\FacturaLogger;
 use App\Models\Pago;
+use Gastos\Models\Gasto;
 use App\Models\Serie;
 use App\Services\SerieNumeracionService;
 use Illuminate\Support\Facades\DB;
@@ -107,6 +108,7 @@ class WooOrderImportService
             $this->crearLineas($factura, $order['line_items'] ?? [], $order);
             $this->recalcularTotales($factura);
             $this->registrarPago($factura, $order);
+            $this->registrarComisionStripe($order);
 
             FacturaLogger::log($factura, 'emitida', [
                 'origen'          => 'woocommerce',
@@ -292,6 +294,27 @@ class WooOrderImportService
             'metodo'      => $metodoPago,
             'notas'       => 'Importado automáticamente desde WooCommerce',
         ]);
+    }
+
+    /**
+     * Crea un gasto por cada fee_line con importe negativo (comisión Stripe, etc.).
+     */
+    private function registrarComisionStripe(array $order): void
+    {
+        foreach ($order['fee_lines'] ?? [] as $fee) {
+            $importe = (float) ($fee['total'] ?? 0);
+            if ($importe >= 0) {
+                continue; // solo interesa si es un cargo (negativo)
+            }
+
+            Gasto::create([
+                'nombre'      => ($fee['name'] ?? 'Comisión') . ' - Pedido WooCommerce #' . $order['id'],
+                'descripcion' => 'Cargo por transacción importado automáticamente desde WooCommerce',
+                'categoria'   => 'Otros',
+                'fecha'       => $this->parseFecha($order),
+                'importe'     => abs($importe),
+            ]);
+        }
     }
 
     /**
