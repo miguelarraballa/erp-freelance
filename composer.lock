@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "24a284f8a97d75283e658ecb31a2b599",
+    "content-hash": "521b9308b1f02222115072a53506fbb2",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -788,6 +788,38 @@
                 "proprietary"
             ],
             "description": "Modulo de gastos para la aplicacion",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "contabilidad/informes",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/informes",
+                "reference": "dfdb91167aa570084fea6f4ae8268286f19a4e6d"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Informes\\InformesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Informes\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Plugin de informes y estadísticas con gráficas",
             "transport-options": {
                 "relative": true
             }

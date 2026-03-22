@@ -10,6 +10,7 @@
         "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-shield": "^4.0",
         "contabilidad/gastos": "^1.0",
+        "contabilidad/informes": "^1.0",
         "contabilidad/notificaciones": "^1.0",
         "contabilidad/presupuestos": "^1.0",
         "contabilidad/proyectos": "^1.0",
@@ -124,6 +125,10 @@
         {
             "type": "path",
             "url": "plugins/woocommerce"
+        },
+        {
+            "type": "path",
+            "url": "plugins/informes"
         }
     ]
 }

@@ -916,6 +916,41 @@
             "install-path": "../contabilidad/gastos"
         },
         {
+            "name": "contabilidad/informes",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/informes",
+                "reference": "dfdb91167aa570084fea6f4ae8268286f19a4e6d"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Informes\\InformesServiceProvider"
+                    ]
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Informes\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Plugin de informes y estadísticas con gráficas",
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../contabilidad/informes"
+        },
+        {
             "name": "contabilidad/notificaciones",
             "version": "1.0.0",
             "version_normalized": "1.0.0.0",
