@@ -289,6 +289,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         ),
         'I' => 
         array (
+            'Informes\\' => 9,
             'Illuminate\\Support\\' => 19,
             'Illuminate\\' => 11,
         ),
@@ -775,6 +776,10 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Jean85\\' => 
         array (
             0 => __DIR__ . '/..' . '/jean85/pretty-package-versions/src',
+        ),
+        'Informes\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/contabilidad/informes/src',
         ),
         'Illuminate\\Support\\' => 
         array (
@@ -4837,6 +4842,19 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Illuminate\\View\\ViewFinderInterface' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/View/ViewFinderInterface.php',
         'Illuminate\\View\\ViewName' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/View/ViewName.php',
         'Illuminate\\View\\ViewServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/View/ViewServiceProvider.php',
+        'Informes\\Filament\\InformesPlugin' => __DIR__ . '/..' . '/contabilidad/informes/src/Filament/InformesPlugin.php',
+        'Informes\\Filament\\Resources\\InformeResource' => __DIR__ . '/..' . '/contabilidad/informes/src/Filament/Resources/InformeResource.php',
+        'Informes\\Filament\\Resources\\InformeResource\\Pages\\CreateInforme' => __DIR__ . '/..' . '/contabilidad/informes/src/Filament/Resources/InformeResource/Pages/CreateInforme.php',
+        'Informes\\Filament\\Resources\\InformeResource\\Pages\\EditInforme' => __DIR__ . '/..' . '/contabilidad/informes/src/Filament/Resources/InformeResource/Pages/EditInforme.php',
+        'Informes\\Filament\\Resources\\InformeResource\\Pages\\ListInformes' => __DIR__ . '/..' . '/contabilidad/informes/src/Filament/Resources/InformeResource/Pages/ListInformes.php',
+        'Informes\\Filament\\Resources\\InformeResource\\Pages\\ViewInforme' => __DIR__ . '/..' . '/contabilidad/informes/src/Filament/Resources/InformeResource/Pages/ViewInforme.php',
+        'Informes\\InformesServiceProvider' => __DIR__ . '/..' . '/contabilidad/informes/src/InformesServiceProvider.php',
+        'Informes\\Livewire\\GraficaLivewire' => __DIR__ . '/..' . '/contabilidad/informes/src/Livewire/GraficaLivewire.php',
+        'Informes\\Models\\Grafica' => __DIR__ . '/..' . '/contabilidad/informes/src/Models/Grafica.php',
+        'Informes\\Models\\GraficaFuente' => __DIR__ . '/..' . '/contabilidad/informes/src/Models/GraficaFuente.php',
+        'Informes\\Models\\Informe' => __DIR__ . '/..' . '/contabilidad/informes/src/Models/Informe.php',
+        'Informes\\Services\\DataSourceRegistry' => __DIR__ . '/..' . '/contabilidad/informes/src/Services/DataSourceRegistry.php',
+        'Informes\\Services\\GraficaDataService' => __DIR__ . '/..' . '/contabilidad/informes/src/Services/GraficaDataService.php',
         'Jean85\\Exception\\ProvidedPackageException' => __DIR__ . '/..' . '/jean85/pretty-package-versions/src/Exception/ProvidedPackageException.php',
         'Jean85\\Exception\\ReplacedPackageException' => __DIR__ . '/..' . '/jean85/pretty-package-versions/src/Exception/ReplacedPackageException.php',
         'Jean85\\Exception\\VersionMissingExceptionInterface' => __DIR__ . '/..' . '/jean85/pretty-package-versions/src/Exception/VersionMissingExceptionInterface.php',

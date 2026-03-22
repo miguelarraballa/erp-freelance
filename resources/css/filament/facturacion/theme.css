@@ -4,6 +4,7 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+@source '../../../../plugins/*/resources/views/**/*.blade.php';
 
 :root {
   --readonly-bg: #f2f2f2;
