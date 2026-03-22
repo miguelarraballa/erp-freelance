@@ -116,7 +116,7 @@
                     {{-- Contenido de la gráfica --}}
                     @if($isStat)
                         {{-- Cifras resumen con estilos de Filament StatsOverviewWidget --}}
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-1">
                             @forelse($stats as $stat)
                                 <div class="fi-wi-stats-overview-stat">
                                     <div class="fi-wi-stats-overview-stat-content">
