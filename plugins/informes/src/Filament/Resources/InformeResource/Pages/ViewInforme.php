@@ -7,6 +7,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -79,13 +80,13 @@ class ViewInforme extends ViewRecord
                 if (!$grafica) return [];
 
                 return array_merge(
-                    $grafica->only(['nombre', 'tipo', 'granularidad', 'orden', 'ancho']),
+                    $grafica->only(['nombre', 'tipo', 'granularidad', 'orden', 'ancho', 'combinar', 'etiqueta_combinada']),
                     [
                         'fecha_desde' => $grafica->fecha_desde?->format('Y-m-d'),
                         'fecha_hasta' => $grafica->fecha_hasta?->format('Y-m-d'),
                         'fuentes'     => $grafica->fuentes->map(fn($f) => $f->only([
                             'modelo', 'nombre_display', 'color',
-                            'campo_x', 'campo_y', 'agregacion_y', 'orden',
+                            'campo_x', 'campo_y', 'agregacion_y', 'orden', 'signo',
                         ]))->all(),
                     ]
                 );
@@ -136,7 +137,9 @@ class ViewInforme extends ViewRecord
                 : ($graficaId
                     ? (Grafica::find($graficaId)?->orden ?? 0)
                     : ($this->record->graficas()->max('orden') ?? 0) + 1),
-            'ancho' => (int) ($data['ancho'] ?? 50),
+            'ancho'              => (int) ($data['ancho'] ?? 50),
+            'combinar'           => (bool) ($data['combinar'] ?? false),
+            'etiqueta_combinada' => $data['etiqueta_combinada'] ?? null,
         ];
 
         if ($graficaId) {
@@ -165,6 +168,7 @@ class ViewInforme extends ViewRecord
                 'campo_y'       => $fuenteData['campo_y'],
                 'agregacion_y'  => $fuenteData['agregacion_y'] ?? 'sum',
                 'orden'         => $idx,
+                'signo'         => (int) ($fuenteData['signo'] ?? 1),
             ]);
         }
 
@@ -247,6 +251,19 @@ class ViewInforme extends ViewRecord
                         ->minValue(0)
                         ->placeholder('Auto')
                         ->helperText('Deja en blanco o 0 para orden automático por ID'),
+
+                    Toggle::make('combinar')
+                        ->label('Combinar fuentes en un solo resultado')
+                        ->helperText('Suma/resta todas las fuentes en un único valor')
+                        ->hidden(fn($get) => $get('tipo') !== 'stat')
+                        ->live()
+                        ->columnSpanFull(),
+
+                    TextInput::make('etiqueta_combinada')
+                        ->label('Etiqueta del resultado combinado')
+                        ->placeholder('Ej: Balance neto')
+                        ->hidden(fn($get) => !$get('combinar') || $get('tipo') !== 'stat')
+                        ->columnSpanFull(),
                 ]),
 
             Section::make('Fuentes de datos')
@@ -273,6 +290,12 @@ class ViewInforme extends ViewRecord
 
                             ColorPicker::make('color')
                                 ->label('Color'),
+
+                            Select::make('signo')
+                                ->label('Operación')
+                                ->options([1 => '+ Sumar', -1 => '− Restar'])
+                                ->default(1)
+                                ->hidden(fn($get) => !$get('../../combinar') || $get('../../tipo') !== 'stat'),
 
                             Select::make('campo_x')
                                 ->label(fn($get) => in_array($get('../../tipo'), Grafica::TIPOS_SIN_GRANULARIDAD)

@@ -38,6 +38,22 @@ class GraficaDataService
     {
         $grafica->loadMissing('fuentes');
 
+        if ($grafica->combinar) {
+            $total = 0;
+            foreach ($grafica->fuentes as $fuente) {
+                $signo = (($fuente->signo ?? 1) >= 0) ? 1 : -1;
+                $total += $signo * $this->calculateAggregate($fuente, $grafica);
+            }
+            $firstFuente = $grafica->fuentes->first();
+            return [[
+                'nombre'    => $grafica->etiqueta_combinada ?: $grafica->nombre,
+                'color'     => $firstFuente?->color ?? '#020BFF',
+                'value'     => round((float) $total, 2),
+                'agregacion' => 'sum',
+                'campo_y'   => $firstFuente?->campo_y ?? '',
+            ]];
+        }
+
         return $grafica->fuentes->map(fn(GraficaFuente $fuente) => [
             'nombre'    => $fuente->nombre_display,
             'color'     => $fuente->color ?? '#020BFF',

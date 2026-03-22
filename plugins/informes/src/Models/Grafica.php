@@ -19,13 +19,16 @@ class Grafica extends Model
         'granularidad',
         'orden',
         'ancho',
+        'combinar',
+        'etiqueta_combinada',
     ];
 
     protected $casts = [
-        'fecha_desde' => 'date',
-        'fecha_hasta' => 'date',
-        'orden'       => 'integer',
-        'ancho'       => 'integer',
+        'fecha_desde'  => 'date',
+        'fecha_hasta'  => 'date',
+        'orden'        => 'integer',
+        'ancho'        => 'integer',
+        'combinar'     => 'boolean',
     ];
 
     // Tipos que no tienen eje X/Y (solo un valor agregado por fuente)
