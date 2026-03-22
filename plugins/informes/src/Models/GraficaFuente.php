@@ -18,10 +18,12 @@ class GraficaFuente extends Model
         'campo_y',
         'agregacion_y',
         'orden',
+        'signo',
     ];
 
     protected $casts = [
         'orden' => 'integer',
+        'signo' => 'integer',
     ];
 
     public function grafica(): BelongsTo
