@@ -881,6 +881,41 @@
             "install-path": "../chillerlan/php-settings-container"
         },
         {
+            "name": "contabilidad/anexo-rgpd",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/anexo-rgpd",
+                "reference": "eac8100fdf37a80b21a386e2ac2d21228e816886"
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AnexoRgpd\\AnexoRgpdServiceProvider"
+                    ]
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "AnexoRgpd\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Módulo de Anexo de Encargo de Tratamiento RGPD",
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../contabilidad/anexo-rgpd"
+        },
+        {
             "name": "contabilidad/gastos",
             "version": "1.0.0",
             "version_normalized": "1.0.0.0",

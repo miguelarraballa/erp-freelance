@@ -357,6 +357,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         array (
             'App\\' => 4,
             'AnourValar\\EloquentSerialize\\' => 29,
+            'AnexoRgpd\\' => 10,
         ),
     );
 
@@ -971,6 +972,10 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         array (
             0 => __DIR__ . '/..' . '/anourvalar/eloquent-serialize/src',
         ),
+        'AnexoRgpd\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src',
+        ),
     );
 
     public static $prefixesPsr0 = array (
@@ -988,6 +993,16 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
     );
 
     public static $classMap = array (
+        'AnexoRgpd\\AnexoRgpdServiceProvider' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/AnexoRgpdServiceProvider.php',
+        'AnexoRgpd\\Filament\\AnexoRgpdPlugin' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Filament/AnexoRgpdPlugin.php',
+        'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\AnexoRgpdResource' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/AnexoRgpdResource.php',
+        'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Pages\\CreateAnexoRgpd' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Pages/CreateAnexoRgpd.php',
+        'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Pages\\EditAnexoRgpd' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Pages/EditAnexoRgpd.php',
+        'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Pages\\ListAnexosRgpd' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Pages/ListAnexosRgpd.php',
+        'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Schemas\\AnexoRgpdForm' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Schemas/AnexoRgpdForm.php',
+        'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Tables\\AnexosRgpdTable' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Tables/AnexosRgpdTable.php',
+        'AnexoRgpd\\Http\\Controllers\\AnexoRgpdPdfController' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Http/Controllers/AnexoRgpdPdfController.php',
+        'AnexoRgpd\\Models\\AnexoRgpd' => __DIR__ . '/..' . '/contabilidad/anexo-rgpd/src/Models/AnexoRgpd.php',
         'AnourValar\\EloquentSerialize\\Facades\\EloquentSerializeFacade' => __DIR__ . '/..' . '/anourvalar/eloquent-serialize/src/Facades/EloquentSerializeFacade.php',
         'AnourValar\\EloquentSerialize\\Grammars\\EloquentBuilderGrammar' => __DIR__ . '/..' . '/anourvalar/eloquent-serialize/src/Grammars/EloquentBuilderGrammar.php',
         'AnourValar\\EloquentSerialize\\Grammars\\ModelGrammar' => __DIR__ . '/..' . '/anourvalar/eloquent-serialize/src/Grammars/ModelGrammar.php',

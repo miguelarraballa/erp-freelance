@@ -6,6 +6,16 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'AnexoRgpd\\AnexoRgpdServiceProvider' => $vendorDir . '/contabilidad/anexo-rgpd/src/AnexoRgpdServiceProvider.php',
+    'AnexoRgpd\\Filament\\AnexoRgpdPlugin' => $vendorDir . '/contabilidad/anexo-rgpd/src/Filament/AnexoRgpdPlugin.php',
+    'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\AnexoRgpdResource' => $vendorDir . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/AnexoRgpdResource.php',
+    'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Pages\\CreateAnexoRgpd' => $vendorDir . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Pages/CreateAnexoRgpd.php',
+    'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Pages\\EditAnexoRgpd' => $vendorDir . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Pages/EditAnexoRgpd.php',
+    'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Pages\\ListAnexosRgpd' => $vendorDir . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Pages/ListAnexosRgpd.php',
+    'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Schemas\\AnexoRgpdForm' => $vendorDir . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Schemas/AnexoRgpdForm.php',
+    'AnexoRgpd\\Filament\\Resources\\AnexoRgpd\\Tables\\AnexosRgpdTable' => $vendorDir . '/contabilidad/anexo-rgpd/src/Filament/Resources/AnexoRgpd/Tables/AnexosRgpdTable.php',
+    'AnexoRgpd\\Http\\Controllers\\AnexoRgpdPdfController' => $vendorDir . '/contabilidad/anexo-rgpd/src/Http/Controllers/AnexoRgpdPdfController.php',
+    'AnexoRgpd\\Models\\AnexoRgpd' => $vendorDir . '/contabilidad/anexo-rgpd/src/Models/AnexoRgpd.php',
     'AnourValar\\EloquentSerialize\\Facades\\EloquentSerializeFacade' => $vendorDir . '/anourvalar/eloquent-serialize/src/Facades/EloquentSerializeFacade.php',
     'AnourValar\\EloquentSerialize\\Grammars\\EloquentBuilderGrammar' => $vendorDir . '/anourvalar/eloquent-serialize/src/Grammars/EloquentBuilderGrammar.php',
     'AnourValar\\EloquentSerialize\\Grammars\\ModelGrammar' => $vendorDir . '/anourvalar/eloquent-serialize/src/Grammars/ModelGrammar.php',
