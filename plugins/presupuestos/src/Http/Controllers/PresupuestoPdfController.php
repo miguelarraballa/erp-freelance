@@ -12,7 +12,7 @@ class PresupuestoPdfController extends Controller
 {
     public function show(Request $request, Presupuesto $presupuesto)
     {
-        $presupuesto->load(['cliente','serie','lineas.impuesto']);
+        $presupuesto->load(['cliente', 'serie', 'lineas' => fn ($q) => $q->orderBy('orden'), 'lineas.impuesto']);
         $emisor = Emisor::activo()->first();
 
         // Logo en base64 (opcional)
