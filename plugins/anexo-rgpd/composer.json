@@ -1,0 +1,24 @@
+{
+  "name": "contabilidad/anexo-rgpd",
+  "description": "Módulo de Anexo de Encargo de Tratamiento RGPD",
+  "type": "library",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "AnexoRgpd\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "AnexoRgpd\\AnexoRgpdServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

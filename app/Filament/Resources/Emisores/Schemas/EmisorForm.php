@@ -23,6 +23,11 @@ class EmisorForm
                     ->maxLength(255)
                     ->columnSpan(8),
 
+                TextInput::make('nombre_comercial')
+                    ->label('Nombre comercial')
+                    ->maxLength(255)
+                    ->columnSpan(4),
+
                 Toggle::make('activo')
                     ->label('Activo')
                     ->inline(false)

@@ -10,7 +10,7 @@ class Emisor extends Model
     protected $table = 'emisores';
     
     protected $fillable = [
-        'nombre','nif','direccion','cp','ciudad','provincia','pais',
+        'nombre','nombre_comercial','nif','direccion','cp','ciudad','provincia','pais',
         'email','telefono','web','iban','swift_bic','logo_path',
         'pie_factura','notas_legales','activo',
     ];

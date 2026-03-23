@@ -29,6 +29,7 @@ use Presupuestos\Filament\PresupuestosPlugin;
 use Proyectos\Filament\ProyectosPlugin;
 use Informes\Filament\InformesPlugin;
 use Woocommerce\Filament\WoocommercePlugin;
+use AnexoRgpd\Filament\AnexoRgpdPlugin;
 
 class FacturacionPanelProvider extends PanelProvider
 {
@@ -95,6 +96,7 @@ class FacturacionPanelProvider extends PanelProvider
                 ProyectosPlugin::make(),
                 WoocommercePlugin::make(),
                 InformesPlugin::make(),
+                AnexoRgpdPlugin::make(),
             ])
             ->navigationGroups([
                 NavigationGroup::make()
