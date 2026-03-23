@@ -12,6 +12,7 @@ use Filament\Forms\Components\{
     Repeater,
     Placeholder,
     ToggleButtons,
+    Hidden,
 };
 use Filament\Schemas\Components\Utilities\{Get, Set};
 use App\Filament\Resources\Facturas\FacturaResource;
@@ -166,12 +167,19 @@ class PresupuestoForm
                         }
                         self::recalcularTotalesPresupuesto($get, $set);
                     }) 
-                    ->afterStateUpdated(fn (Get $get, Set $set)
-                        => self::recalcularTotalesPresupuesto($get, $set)
-                    )
+                    ->afterStateUpdated(function (Get $get, Set $set) {
+                        $lineas = $get('lineas') ?? [];
+                        $pos = 1;
+                        foreach (array_keys($lineas) as $key) {
+                            $set("lineas.$key.orden", $pos++);
+                        }
+                        self::recalcularTotalesPresupuesto($get, $set);
+                    })
                     ->disabled($lock)
                     ->dehydrated(fn (?Presupuesto $record) => blank($record?->numero))
                     ->schema([
+
+                        Hidden::make('orden'),
 
                         ToggleButtons::make('producto')
                             ->options([0 => 'Servicio', 1 => 'Producto'])
