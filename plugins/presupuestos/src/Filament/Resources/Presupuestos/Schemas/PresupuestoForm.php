@@ -150,7 +150,8 @@ class PresupuestoForm
 
                 Repeater::make('lineas')
                     ->label('Líneas')
-                    ->relationship('lineas')      
+                    ->relationship('lineas')
+                    ->reorderable('orden')
                     ->defaultItems(1)
                     ->minItems(1)
                     ->rules(['required','array','min:1'])
