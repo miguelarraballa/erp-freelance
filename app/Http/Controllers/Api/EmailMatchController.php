@@ -35,6 +35,19 @@ class EmailMatchController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        // Normalize email like: "LinkedIn <notifications-noreply@linkedin.com>" -> notifications-noreply@linkedin.com
+        $rawEmail = $request->input('email');
+        if (! empty($rawEmail) && is_string($rawEmail)) {
+            if (preg_match('/<([^>]+)>/', $rawEmail, $m)) {
+                $clean = $m[1];
+            } else {
+                $clean = $rawEmail;
+            }
+            // trim and remove surrounding quotes
+            $clean = trim($clean, " \"'\t\n\r");
+            $request->merge(['email' => $clean]);
+        }
+
         $data = $request->validate([
             'email' => 'nullable|email',
             'subject' => 'required|string',
