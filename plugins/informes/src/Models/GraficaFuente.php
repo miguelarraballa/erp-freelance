@@ -19,6 +19,7 @@ class GraficaFuente extends Model
         'agregacion_y',
         'orden',
         'signo',
+        'query_personalizada',
     ];
 
     protected $casts = [

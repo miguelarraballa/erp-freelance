@@ -111,10 +111,24 @@ class DataSourceRegistry
         return $sources;
     }
 
+    /** Sentinel para fuentes de query personalizada. */
+    public const CUSTOM_QUERY = '__custom_query__';
+
     /** Devuelve ['ModeloKey' => 'Label'] para usar en Select de Filament. */
-    public static function getModelOptions(): array
+    public static function getModelOptions(bool $includeCustomQuery = false): array
     {
-        return array_map(fn($s) => $s['label'], static::getAvailable());
+        $options = array_map(fn($s) => $s['label'], static::getAvailable());
+
+        if ($includeCustomQuery) {
+            $options[self::CUSTOM_QUERY] = 'Query SQL personalizada (solo admins)';
+        }
+
+        return $options;
+    }
+
+    public static function isCustomQuery(string $modelo): bool
+    {
+        return $modelo === self::CUSTOM_QUERY;
     }
 
     /** Campos de fecha del modelo (para el eje X o filtro de fecha). */
