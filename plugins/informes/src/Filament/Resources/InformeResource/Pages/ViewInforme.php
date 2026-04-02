@@ -7,6 +7,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
@@ -86,7 +87,7 @@ class ViewInforme extends ViewRecord
                         'fecha_hasta' => $grafica->fecha_hasta?->format('Y-m-d'),
                         'fuentes'     => $grafica->fuentes->map(fn($f) => $f->only([
                             'modelo', 'nombre_display', 'color',
-                            'campo_x', 'campo_y', 'agregacion_y', 'orden', 'signo',
+                            'campo_x', 'campo_y', 'agregacion_y', 'orden', 'signo', 'query_personalizada',
                         ]))->all(),
                     ]
                 );
@@ -151,6 +152,8 @@ class ViewInforme extends ViewRecord
         }
 
         foreach ($data['fuentes'] ?? [] as $idx => $fuenteData) {
+            $isCustomQuery = ($fuenteData['modelo'] ?? '') === DataSourceRegistry::CUSTOM_QUERY;
+
             if (($fuenteData['campo_y'] ?? '') === '__count__') {
                 $fuenteData['agregacion_y'] = 'count';
             }
@@ -160,15 +163,16 @@ class ViewInforme extends ViewRecord
             }
 
             GraficaFuente::create([
-                'grafica_id'    => $grafica->id,
-                'modelo'        => $fuenteData['modelo'],
-                'nombre_display' => $fuenteData['nombre_display'],
-                'color'         => $fuenteData['color'] ?? null,
-                'campo_x'       => $fuenteData['campo_x'] ?? null,
-                'campo_y'       => $fuenteData['campo_y'],
-                'agregacion_y'  => $fuenteData['agregacion_y'] ?? 'sum',
-                'orden'         => $idx,
-                'signo'         => (int) ($fuenteData['signo'] ?? 1),
+                'grafica_id'         => $grafica->id,
+                'modelo'             => $fuenteData['modelo'],
+                'nombre_display'     => $fuenteData['nombre_display'],
+                'color'              => $fuenteData['color'] ?? null,
+                'campo_x'            => $isCustomQuery ? null : ($fuenteData['campo_x'] ?? null),
+                'campo_y'            => $isCustomQuery ? '__custom__' : $fuenteData['campo_y'],
+                'agregacion_y'       => $isCustomQuery ? 'sum' : ($fuenteData['agregacion_y'] ?? 'sum'),
+                'orden'              => $idx,
+                'signo'              => (int) ($fuenteData['signo'] ?? 1),
+                'query_personalizada' => $isCustomQuery ? trim($fuenteData['query_personalizada'] ?? '') : null,
             ]);
         }
 
@@ -275,12 +279,15 @@ class ViewInforme extends ViewRecord
                         ->schema([
                             Select::make('modelo')
                                 ->label('Modelo')
-                                ->options(DataSourceRegistry::getModelOptions())
+                                ->options(DataSourceRegistry::getModelOptions(
+                                    auth()->user()?->hasRole('super_admin') || auth()->user()?->hasRole('administrador')
+                                ))
                                 ->required()
                                 ->live()
                                 ->afterStateUpdated(function ($state, callable $set) {
                                     $set('campo_x', null);
                                     $set('campo_y', null);
+                                    $set('query_personalizada', null);
                                 }),
 
                             TextInput::make('nombre_display')
@@ -297,12 +304,21 @@ class ViewInforme extends ViewRecord
                                 ->default(1)
                                 ->hidden(fn($get) => !$get('../../combinar') || $get('../../tipo') !== 'stat'),
 
+                            Textarea::make('query_personalizada')
+                                ->label('Query SQL (solo SELECT)')
+                                ->placeholder("SELECT DATE_FORMAT(fecha, '%Y-%m') as period, SUM(total) as value\nFROM facturas\nWHERE estado = 'cobrada'\nGROUP BY period\nORDER BY period")
+                                ->helperText('Para gráficas de series: columnas "period" y "value". Para stat/pie/donut: columna "value".')
+                                ->rows(6)
+                                ->hidden(fn($get) => $get('modelo') !== DataSourceRegistry::CUSTOM_QUERY)
+                                ->required(fn($get) => $get('modelo') === DataSourceRegistry::CUSTOM_QUERY)
+                                ->columnSpanFull(),
+
                             Select::make('campo_x')
                                 ->label(fn($get) => in_array($get('../../tipo'), Grafica::TIPOS_SIN_GRANULARIDAD)
                                     ? 'Campo de fecha (filtro)'
                                     : 'Eje X (campo de fecha)')
                                 ->options(fn($get) => DataSourceRegistry::getDateFields($get('modelo') ?? ''))
-                                ->hidden(fn($get) => empty($get('modelo')))
+                                ->hidden(fn($get) => empty($get('modelo')) || $get('modelo') === DataSourceRegistry::CUSTOM_QUERY)
                                 ->live(),
 
                             Select::make('campo_y')
@@ -310,8 +326,8 @@ class ViewInforme extends ViewRecord
                                     ? 'Valor a calcular'
                                     : 'Eje Y (valor)')
                                 ->options(fn($get) => DataSourceRegistry::getNumericFields($get('modelo') ?? ''))
-                                ->required()
-                                ->hidden(fn($get) => empty($get('modelo')))
+                                ->required(fn($get) => !empty($get('modelo')) && $get('modelo') !== DataSourceRegistry::CUSTOM_QUERY)
+                                ->hidden(fn($get) => empty($get('modelo')) || $get('modelo') === DataSourceRegistry::CUSTOM_QUERY)
                                 ->live(),
 
                             Select::make('agregacion_y')
@@ -323,8 +339,8 @@ class ViewInforme extends ViewRecord
                                     'median' => 'Mediana',
                                 ])
                                 ->default('sum')
-                                ->required()
-                                ->hidden(fn($get) => $get('campo_y') === '__count__' || empty($get('modelo'))),
+                                ->required(fn($get) => !empty($get('modelo')) && $get('modelo') !== DataSourceRegistry::CUSTOM_QUERY && $get('campo_y') !== '__count__')
+                                ->hidden(fn($get) => $get('campo_y') === '__count__' || empty($get('modelo')) || $get('modelo') === DataSourceRegistry::CUSTOM_QUERY),
                         ])
                         ->columns(2)
                         ->reorderable()

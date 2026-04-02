@@ -5,6 +5,7 @@ namespace Informes\Services;
 use Informes\Models\Grafica;
 use Informes\Models\GraficaFuente;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Genera los datos y opciones de Chart.js para una Gráfica.
@@ -197,8 +198,85 @@ class GraficaDataService
      * Consulta los datos de una fuente agrupados por período temporal.
      * Devuelve ['2026-01' => 1234.56, '2026-02' => 987.00, ...]
      */
+    /**
+     * Valida que una query sea un SELECT puro y seguro.
+     * Lanza \InvalidArgumentException si no es válida.
+     */
+    private function validateSelectQuery(string $sql): void
+    {
+        // Eliminar comentarios SQL de una línea (-- ...) y bloques (/* ... */)
+        $stripped = preg_replace('/--[^\n]*/', '', $sql);
+        $stripped = preg_replace('/\/\*.*?\*\//s', '', $stripped);
+        $stripped = trim($stripped);
+
+        if (!preg_match('/^\s*SELECT\s/i', $stripped)) {
+            throw new \InvalidArgumentException('La query debe comenzar con SELECT.');
+        }
+
+        // Palabras clave prohibidas que indican escritura o DDL
+        $forbidden = ['INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 'CREATE', 'TRUNCATE', 'REPLACE', 'EXEC', 'EXECUTE', 'CALL', 'GRANT', 'REVOKE', 'LOCK', 'UNLOCK'];
+        foreach ($forbidden as $keyword) {
+            if (preg_match('/\b' . $keyword . '\b/i', $stripped)) {
+                throw new \InvalidArgumentException("La query no puede contener '{$keyword}'.");
+            }
+        }
+    }
+
+    /**
+     * Ejecuta una query personalizada para series (espera columnas 'period' y 'value').
+     */
+    private function querySeriesCustom(GraficaFuente $fuente, Grafica $grafica): array
+    {
+        $sql = trim($fuente->query_personalizada ?? '');
+        if (!$sql) {
+            return [];
+        }
+
+        $this->validateSelectQuery($sql);
+
+        DB::statement("SET SESSION sql_mode = (SELECT REPLACE(@@SESSION.sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
+        $rows = DB::select($sql);
+        $result = [];
+        foreach ($rows as $row) {
+            $row = (array) $row;
+            $period = $row['period'] ?? ($row[array_key_first($row)] ?? null);
+            $value  = $row['value']  ?? ($row[array_key_last($row)] ?? 0);
+            if ($period !== null) {
+                $result[$period] = round((float) $value, 2);
+            }
+        }
+        ksort($result);
+        return $result;
+    }
+
+    /**
+     * Calcula el valor agregado de una query personalizada (espera columna 'value').
+     */
+    private function aggregateCustomQuery(GraficaFuente $fuente): float|int
+    {
+        $sql = trim($fuente->query_personalizada ?? '');
+        if (!$sql) {
+            return 0;
+        }
+
+        $this->validateSelectQuery($sql);
+
+        DB::statement("SET SESSION sql_mode = (SELECT REPLACE(@@SESSION.sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
+        $rows = DB::select($sql);
+        $total = 0;
+        foreach ($rows as $row) {
+            $row = (array) $row;
+            $total += (float) ($row['value'] ?? $row[array_key_first($row)] ?? 0);
+        }
+        return round($total, 2);
+    }
+
     private function querySeriesData(GraficaFuente $fuente, Grafica $grafica): array
     {
+        if (DataSourceRegistry::isCustomQuery($fuente->modelo)) {
+            return $this->querySeriesCustom($fuente, $grafica);
+        }
+
         $class = DataSourceRegistry::getModelClass($fuente->modelo);
         if (!$class || !$fuente->campo_x) {
             return [];
@@ -238,6 +316,10 @@ class GraficaDataService
      */
     private function calculateAggregate(GraficaFuente $fuente, Grafica $grafica): float|int
     {
+        if (DataSourceRegistry::isCustomQuery($fuente->modelo)) {
+            return $this->aggregateCustomQuery($fuente);
+        }
+
         $class = DataSourceRegistry::getModelClass($fuente->modelo);
         if (!$class) {
             return 0;

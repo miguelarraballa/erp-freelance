@@ -47,9 +47,16 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
             @foreach($graficasOrdenadas as $grafica)
                 @php
-                    $isStat      = $grafica->isStat();
-                    $stats       = $isStat ? $dataService->buildStatData($grafica) : [];
-                    $chartOptions = !$isStat ? $dataService->buildApexOptions($grafica) : [];
+                    $isStat       = $grafica->isStat();
+                    $graficaError = null;
+                    $stats        = [];
+                    $chartOptions = [];
+                    try {
+                        $stats        = $isStat ? $dataService->buildStatData($grafica) : [];
+                        $chartOptions = !$isStat ? $dataService->buildApexOptions($grafica) : [];
+                    } catch (\Throwable $e) {
+                        $graficaError = $e->getMessage();
+                    }
                     $colSpan = match((int)($grafica->ancho ?? 50)) {
                         100 => 'lg:col-span-4',
                         75  => 'lg:col-span-3',
@@ -114,7 +121,17 @@
                     </div>
 
                     {{-- Contenido de la gráfica --}}
-                    @if($isStat)
+                    @if($graficaError)
+                        <div class="rounded-lg bg-danger-50 dark:bg-danger-950 border border-danger-200 dark:border-danger-800 p-4">
+                            <div class="flex items-start gap-3">
+                                <x-filament::icon icon="heroicon-o-exclamation-triangle" class="h-5 w-5 text-danger-500 shrink-0 mt-0.5" />
+                                <div>
+                                    <p class="text-sm font-medium text-danger-700 dark:text-danger-300">Error al cargar la gráfica</p>
+                                    <p class="mt-1 text-xs text-danger-600 dark:text-danger-400 font-mono break-all">{{ $graficaError }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($isStat)
                         {{-- Cifras resumen con estilos de Filament StatsOverviewWidget --}}
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-1">
                             @forelse($stats as $stat)
