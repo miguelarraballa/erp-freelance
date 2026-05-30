@@ -12,6 +12,10 @@ class ProyectosServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if (!config('plugins.proyectos', true)) {
+            return;
+        }
+
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 }

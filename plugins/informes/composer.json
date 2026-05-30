@@ -3,7 +3,7 @@
     "description": "Plugin de informes y estadísticas con gráficas",
     "type": "library",
     "version": "1.0.0",
-    "license": "proprietary",
+    "license": "MIT",
     "require": {
         "php": "^8.2"
     },

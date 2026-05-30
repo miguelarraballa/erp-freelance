@@ -5,6 +5,8 @@ namespace Presupuestos\Filament;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Presupuestos\Filament\Resources\Presupuestos\PresupuestoResource;
+use Presupuestos\Filament\Widgets\PresupuestosAceptadosTableWidget;
+use Presupuestos\Filament\Widgets\PresupuestosEmitidosTableWidget;
 
 class PresupuestosPlugin implements Plugin
 {
@@ -20,9 +22,14 @@ class PresupuestosPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
-            PresupuestoResource::class,
-        ]);
+        $panel
+            ->resources([
+                PresupuestoResource::class,
+            ])
+            ->widgets([
+                PresupuestosEmitidosTableWidget::class,
+                PresupuestosAceptadosTableWidget::class,
+            ]);
     }
 
     public function boot(Panel $panel): void

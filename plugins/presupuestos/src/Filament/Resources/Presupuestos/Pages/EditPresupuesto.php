@@ -9,7 +9,6 @@ use App\Models\Serie;
 use Presupuestos\Services\PresupuestoService;
 use Presupuestos\Services\PresupuestoCalc;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class EditPresupuesto extends EditRecord
 {
@@ -54,10 +53,6 @@ class EditPresupuesto extends EditRecord
     {
         $enBorrador = fn () => $this->record?->estado === 'borrador';
         $aceptado = fn () => $this->record?->estado === 'aceptado';
-        $yaFacturado = fn () => $this->record
-            && DB::table('presupuestos_facturas')
-                ->where('presupuesto_id', $this->record->id)
-                ->exists();
 
         return [
 
@@ -65,7 +60,7 @@ class EditPresupuesto extends EditRecord
                 ->label('Crear factura')
                 ->icon('heroicon-o-document-text')
                 ->color('success')
-                ->hidden(fn () => ! $aceptado() || $yaFacturado())
+                ->hidden(fn () => ! $aceptado())
                 ->url(fn () => route('presupuesto.facturar', $this->record)),
 
              Action::make('pdf')
@@ -85,6 +80,9 @@ class EditPresupuesto extends EditRecord
         }
 
         if (! $this->shouldEmit) {
+            $this->record = $this->record->fresh(['lineas.impuesto']);
+            $this->fillForm();
+
             return;
         }
 

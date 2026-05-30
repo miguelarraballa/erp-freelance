@@ -5,6 +5,7 @@ namespace Gastos\Filament;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Gastos\Filament\Resources\Gastos\GastoResource;
+use Gastos\Filament\Widgets\IngresosGastosMesWidget;
 
 class GastosPlugin implements Plugin
 {
@@ -20,9 +21,13 @@ class GastosPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
-            GastoResource::class,
-        ]);
+        $panel
+            ->resources([
+                GastoResource::class,
+            ])
+            ->widgets([
+                IngresosGastosMesWidget::class,
+            ]);
     }
 
     public function boot(Panel $panel): void

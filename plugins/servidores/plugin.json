@@ -1,0 +1,5 @@
+{
+    "id": "servidores",
+    "name": "Servidores",
+    "description": "Gestión de servidores y dominios asociados a clientes, con alertas de renovación próxima. Cron de alertas: php artisan servidores:renovacion-alertas (programado diariamente a las 08:00). Requiere el plugin Notificaciones activo."
+}

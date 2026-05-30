@@ -3,7 +3,7 @@
   "description": "Portal de acceso para clientes: facturas, proyectos y perfil",
   "type": "library",
   "version": "1.0.0",
-  "license": "proprietary",
+  "license": "MIT",
   "require": {
     "php": "^8.2"
   },

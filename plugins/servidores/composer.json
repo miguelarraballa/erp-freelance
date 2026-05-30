@@ -1,0 +1,24 @@
+{
+  "name": "contabilidad/servidores",
+  "description": "Módulo de gestión de servidores y dominios para revendedores",
+  "type": "library",
+  "version": "1.0.0",
+  "license": "MIT",
+  "require": {
+    "php": "^8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Servidores\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Servidores\\ServidoresServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

@@ -5,6 +5,7 @@ namespace Presupuestos\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Cliente;
 use App\Models\Serie;
+use Illuminate\Support\Facades\DB;
 
 
 class Presupuesto extends Model
@@ -30,32 +31,32 @@ class Presupuesto extends Model
         return $this->hasMany(PresupuestoLinea::class)->orderBy('orden');
     }
 
+    public function facturas()
+    {
+        return $this->belongsToMany(\App\Models\Factura::class, 'presupuestos_facturas');
+    }
+
+    public function tieneFacturaAsociada(): bool
+    {
+        return $this->exists && DB::table('presupuestos_facturas')
+            ->where('presupuesto_id', $this->id)
+            ->exists();
+    }
+
+    public function estaFacturado(): bool
+    {
+        return $this->estado === 'facturado' || $this->tieneFacturaAsociada();
+    }
+
     protected static function booted(): void
     {
         static::updating(function (Presupuesto $presupuesto) {
-            $origEstado = $presupuesto->getOriginal('estado');
-            $origNumero = $presupuesto->getOriginal('numero');
+            $estadoOriginal = $presupuesto->getOriginal('estado');
+            $tieneFactura = $presupuesto->tieneFacturaAsociada();
 
-            // Si aún es borrador, no imponemos restricciones aquí.
-            if ($origEstado === 'borrador') {
-                return;
-            }
-
-            // Caso 1: transición de emisión (ya está en 'emitida' pero AÚN sin número):
-            // permitimos fijar numeración y serie/fecha en esta pasada.
-            if ($origEstado === 'emitida' && is_null($origNumero)) {
-                $permitidos = [
-                    'estado',
-                    'serie_id',
-                    'numero',
-                    'numero_completo',
-                    'fecha',
-                    $presupuesto->getUpdatedAtColumn(),
-                ];
-
+            if ($estadoOriginal === 'facturado' && $tieneFactura) {
                 foreach (array_keys($presupuesto->getDirty()) as $campo) {
-                    if (! in_array($campo, $permitidos, true)) {
-                        // revertimos silenciosamente cualquier otro cambio
+                    if ($campo !== $presupuesto->getUpdatedAtColumn()) {
                         $presupuesto->{$campo} = $presupuesto->getOriginal($campo);
                     }
                 }
@@ -63,15 +64,27 @@ class Presupuesto extends Model
                 return;
             }
 
-            // Caso 2: ya emitida Y numerada → solo se puede cambiar 'estado'
-            if ($origEstado === 'emitida' && ! is_null($origNumero)) {
-                $permitidos = ['estado', $presupuesto->getUpdatedAtColumn()];
+            if ($estadoOriginal === 'borrador') {
+                return;
+            }
 
-                foreach (array_keys($presupuesto->getDirty()) as $campo) {
-                    if (! in_array($campo, $permitidos, true)) {
-                        // revertimos silenciosamente cualquier otro cambio
-                        $presupuesto->{$campo} = $presupuesto->getOriginal($campo);
-                    }
+            if ($estadoOriginal === 'facturado'
+                && $presupuesto->isDirty('estado')
+                && $presupuesto->estado !== 'emitido'
+            ) {
+                $presupuesto->estado = $estadoOriginal;
+            }
+
+            if ($estadoOriginal === 'aceptado'
+                && $presupuesto->isDirty('estado')
+                && ! in_array($presupuesto->estado, ['emitido', 'aceptado', 'facturado'], true)
+            ) {
+                $presupuesto->estado = $estadoOriginal;
+            }
+
+            foreach (array_keys($presupuesto->getDirty()) as $campo) {
+                if (! in_array($campo, ['estado', $presupuesto->getUpdatedAtColumn()], true)) {
+                    $presupuesto->{$campo} = $presupuesto->getOriginal($campo);
                 }
             }
         });

@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
 class PresupuestoEmisionService
 {
     /**
-     * Emite una factura ya guardada con estado=emitida, asignando serie y número.
+     * Emite un presupuesto ya guardado con estado=emitido, asignando serie y número.
      * Idempotente: si ya tiene número, no hace nada.
      */
     public static function emitir(Presupuesto $presupuesto): Presupuesto
@@ -19,7 +19,7 @@ class PresupuestoEmisionService
         return DB::transaction(function () use ($presupuesto) {
             $presupuesto->refresh();
 
-            if ($presupuesto->estado !== 'emitida') {
+            if ($presupuesto->estado !== 'emitido') {
                 throw new \DomainException('El presupuesto no está en estado "emitido".');
             }
 
@@ -41,7 +41,7 @@ class PresupuestoEmisionService
 
             $numeroCompleto = SerieNumeracionService::renderNumeroCompleto($serie, $seq);
 
-            // Asignar datos en factura
+            // Asignar datos en presupuesto
             $presupuesto->serie_id        = $serie->id;
             $presupuesto->numero          = $seq;
             $presupuesto->numero_completo = $numeroCompleto;

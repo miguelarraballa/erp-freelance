@@ -30,6 +30,7 @@ use Proyectos\Filament\ProyectosPlugin;
 use Informes\Filament\InformesPlugin;
 use Woocommerce\Filament\WoocommercePlugin;
 use AnexoRgpd\Filament\AnexoRgpdPlugin;
+use Servidores\Filament\ServidoresPlugin;
 
 class FacturacionPanelProvider extends PanelProvider
 {
@@ -88,16 +89,17 @@ class FacturacionPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->plugins([
+            ->plugins(array_filter([
                 FilamentShieldPlugin::make(),
-                GastosPlugin::make(),
-                NotificacionesPlugin::make(),
-                PresupuestosPlugin::make(),
-                ProyectosPlugin::make(),
-                WoocommercePlugin::make(),
-                InformesPlugin::make(),
-                AnexoRgpdPlugin::make(),
-            ])
+                config('plugins.gastos', true)          ? GastosPlugin::make()          : null,
+                config('plugins.notificaciones', true)  ? NotificacionesPlugin::make()  : null,
+                config('plugins.presupuestos', true)    ? PresupuestosPlugin::make()    : null,
+                config('plugins.proyectos', true)       ? ProyectosPlugin::make()       : null,
+                config('plugins.woocommerce', true)     ? WoocommercePlugin::make()     : null,
+                config('plugins.informes', true)        ? InformesPlugin::make()        : null,
+                config('plugins.anexo-rgpd', true)      ? AnexoRgpdPlugin::make()       : null,
+                config('plugins.servidores', true)      ? ServidoresPlugin::make()      : null,
+            ]))
             ->navigationGroups([
                 NavigationGroup::make()
                     ->label('Empresa'),

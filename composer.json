@@ -15,6 +15,7 @@
         "contabilidad/notificaciones": "^1.0",
         "contabilidad/presupuestos": "^1.0",
         "contabilidad/proyectos": "^1.0",
+        "contabilidad/servidores": "^1.0",
         "contabilidad/woocommerce": "^1.0",
         "filament/actions": "^4.1",
         "filament/filament": "^4.1",
@@ -43,7 +44,8 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Proyectos\\": "plugins/proyectos/src/",
-            "PortalClientes\\": "plugins/portal-clientes/src/"
+            "PortalClientes\\": "plugins/portal-clientes/src/",
+            "Servidores\\": "plugins/servidores/src/"
         }
     },
     "autoload-dev": {
@@ -135,6 +137,10 @@
         {
             "type": "path",
             "url": "plugins/anexo-rgpd"
+        },
+        {
+            "type": "path",
+            "url": "plugins/servidores"
         }
     ]
 }

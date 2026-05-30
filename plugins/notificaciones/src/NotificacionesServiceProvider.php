@@ -15,6 +15,10 @@ class NotificacionesServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if (!config('plugins.notificaciones', true)) {
+            return;
+        }
+
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 

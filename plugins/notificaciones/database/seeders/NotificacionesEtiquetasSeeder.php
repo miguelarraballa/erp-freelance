@@ -16,10 +16,10 @@ class NotificacionesEtiquetasSeeder extends Seeder
         'clientes',
         'emisores',
         'facturas',
-        'facturas_proveedores',
-        'facturas_lineas',
+        'facturas_proveedor',
+        'factura_lineas',
         'presupuestos',
-        'presupuestos_lineas',
+        'presupuesto_lineas',
     ];
 
     /**

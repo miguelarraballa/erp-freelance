@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace Gastos\Filament\Widgets;
 
 use App\Models\Factura;
 use App\Models\FacturasProveedor;
-use gastos\Models\Gasto;
+use Gastos\Models\Gasto;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -39,7 +39,6 @@ class IngresosGastosMesWidget extends StatsOverviewWidget
         $gastos_nf = (float) Gasto::query()
             ->whereBetween('fecha', [$inicio, $fin])
             ->sum('importe');
-        
 
         return [
             Stat::make('Ingresos del mes', $this->formatMoney($ingresos))
@@ -68,5 +67,4 @@ class IngresosGastosMesWidget extends StatsOverviewWidget
 
         return $signo . number_format($valor, 2, ',', '.') . ' €';
     }
-
 }

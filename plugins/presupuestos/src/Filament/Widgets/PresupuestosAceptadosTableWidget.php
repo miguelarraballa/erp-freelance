@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace Presupuestos\Filament\Widgets;
 
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,6 +22,7 @@ class PresupuestosAceptadosTableWidget extends TableWidget
         return $table
             ->query(
                 Presupuesto::query()
+                    ->with('facturas')
                     ->where('estado', 'aceptado')
                     ->orderByDesc('updated_at')
                     ->limit(10)
@@ -35,9 +36,10 @@ class PresupuestosAceptadosTableWidget extends TableWidget
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Aprobado')
                     ->date('Y-m-d'),
-                Tables\Columns\TextColumn::make('total')
-                    ->label('Total')
+                Tables\Columns\TextColumn::make('pendiente')
+                    ->label('Pendiente')
                     ->money('EUR')
+                    ->getStateUsing(fn (Presupuesto $record) => max(0, $record->total - $record->facturas->where('estado', 'cobrada')->sum('total'))),
             ])
             ->defaultSort('updated_at', 'desc')
             ->paginated(false);

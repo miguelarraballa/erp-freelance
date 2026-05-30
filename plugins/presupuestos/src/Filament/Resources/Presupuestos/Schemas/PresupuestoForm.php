@@ -28,8 +28,14 @@ class PresupuestoForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $lock        = fn (?Presupuesto $record) => ! is_null($record?->numero);
-        $lockLinea   = fn (Get $get)         => filled($get('../../numero'));  
+        $tieneFactura = fn (?Presupuesto $record) => $record?->exists
+            && DB::table('presupuestos_facturas')
+                ->where('presupuesto_id', $record->id)
+                ->exists();
+        $editable = fn (?Presupuesto $record) => blank($record) || $record->estado === 'borrador';
+        $lock = fn (?Presupuesto $record) => ! $editable($record);
+        $lockEstado = fn (?Presupuesto $record) => $record?->estado === 'facturado' && $tieneFactura($record);
+        $lockLinea = fn (Get $get) => $get('../../estado') !== 'borrador';
 
         return $schema
             ->columns(12)
@@ -50,19 +56,38 @@ class PresupuestoForm
 
                 Select::make('estado')
                     ->label("Estado")
-                    ->options(fn (?Presupuesto $record) => ($record && $record->numero !== null)
-                        ? [
-                            'emitido'       => 'Emitido',
-                            'aceptado'      => 'Aceptado',
-                            'no-aceptado'   => 'No Aceptado',
-                            'facturado'     => 'Facturado',
+                    ->options(function (?Presupuesto $record) {
+                        if ($record?->estado === 'facturado') {
+                            return [
+                                'emitido' => 'Emitido',
+                                'facturado' => 'Facturado',
+                            ];
+                        }
 
-                        ]
-                        : [
-                            'borrador'  => 'Borrador',
-                            'emitido'   => 'Emitido',
-                        ]
-                    )
+                        if ($record?->estado === 'aceptado') {
+                            return [
+                                'emitido' => 'Emitido',
+                                'aceptado' => 'Aceptado',
+                                'facturado' => 'Facturado',
+                            ];
+                        }
+
+                        return ($record && $record->numero !== null)
+                            ? [
+                                'borrador'      => 'Borrador',
+                                'emitido'       => 'Emitido',
+                                'aceptado'      => 'Aceptado',
+                                'no-aceptado'   => 'No Aceptado',
+                                'facturado'     => 'Facturado',
+
+                            ]
+                            : [
+                                'borrador'  => 'Borrador',
+                                'emitido'   => 'Emitido',
+                            ];
+                    })
+                    ->disabled($lockEstado)
+                    ->dehydrated(fn (?Presupuesto $record) => ! $lockEstado($record))
                     ->required()
                     ->default("borrador")
                     ->hiddenOn('create')
@@ -112,20 +137,20 @@ class PresupuestoForm
                         self::recalcularTotalesPresupuesto($get, $set);   
                     })
                     ->disabled($lock)
-                    ->dehydrated(fn (?Presupuesto $record) => is_null($record?->numero)),
+                    ->dehydrated($editable),
                     
                 Textarea::make('datos_facturacion')
                     ->rows(5)
                     ->readonly()
                     ->columnSpan(12)
                     ->disabled($lock)
-                    ->dehydrated(fn (?Presupuesto $record) => is_null($record?->numero)),
+                    ->dehydrated($editable),
 
                 DatePicker::make('fecha')
                     ->label('Fecha de emisión')
                     ->default(fn () => now()->toDateString())
-                    ->minDate(fn (?Presupuesto $record) => $lock($record) ? null : now()->toDateString())
-                    ->rule(fn (?Presupuesto $record) => $lock($record) ? null : 'after_or_equal:today')
+                    ->minDate(fn (?Presupuesto $record) => (filled($record?->numero) || $lock($record)) ? null : now()->toDateString())
+                    ->rule(fn (?Presupuesto $record) => (filled($record?->numero) || $lock($record)) ? null : 'after_or_equal:today')
                     ->live(onBlur: false)                        
                     ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         if (!$state) {
@@ -138,7 +163,7 @@ class PresupuestoForm
                     ->required(fn (?Presupuesto $record) => ! $lock($record))
                     ->columnSpan(4)
                     ->disabled($lock)
-                    ->dehydrated(fn (?Presupuesto $record) => is_null($record?->numero)),
+                    ->dehydrated($editable),
 
                 DatePicker::make('vencimiento')
                     ->label('Fecha de vencimiento')
@@ -147,7 +172,7 @@ class PresupuestoForm
                     ->required()
                     ->columnSpan(4)
                     ->disabled($lock)
-                    ->dehydrated(fn (?Presupuesto $record) => is_null($record?->numero)),
+                    ->dehydrated($editable),
 
                 Repeater::make('lineas')
                     ->label('Líneas')
@@ -176,7 +201,7 @@ class PresupuestoForm
                         self::recalcularTotalesPresupuesto($get, $set);
                     })
                     ->disabled($lock)
-                    ->dehydrated(fn (?Presupuesto $record) => blank($record?->numero))
+                    ->dehydrated($editable)
                     ->schema([
 
                         Hidden::make('orden'),
@@ -192,7 +217,7 @@ class PresupuestoForm
                             ->live()
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
-                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
+                            ->dehydrated(fn (Get $get) => $get('../../estado') === 'borrador'),
 
                         Textarea::make('concepto')
                             ->label('Concepto')
@@ -200,7 +225,7 @@ class PresupuestoForm
                             ->rows(6)
                             ->columnSpan(6)
                             ->disabled($lockLinea)
-                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
+                            ->dehydrated(fn (Get $get) => $get('../../estado') === 'borrador'),
 
                         TextInput::make('cantidad')
                             ->numeric()->minValue(0.1)->step('0.1')
@@ -211,7 +236,7 @@ class PresupuestoForm
                             ->live()
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
-                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
+                            ->dehydrated(fn (Get $get) => $get('../../estado') === 'borrador'),
 
                         TextInput::make('precio_unitario')
                             ->type('number')
@@ -224,7 +249,7 @@ class PresupuestoForm
                             ->live()
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
-                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
+                            ->dehydrated(fn (Get $get) => $get('../../estado') === 'borrador'),
 
                         TextInput::make('descuento_pct')
                             ->numeric()->minValue(0)->maxValue(100)->step('0.01')
@@ -234,7 +259,7 @@ class PresupuestoForm
                             ->live()
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
-                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
+                            ->dehydrated(fn (Get $get) => $get('../../estado') === 'borrador'),
 
                         Select::make('impuesto_id')
                             ->label('Impuesto')
@@ -252,7 +277,7 @@ class PresupuestoForm
                             ->afterStateHydrated(fn (Get $get, Set $set) => self::recalcularLineaYTotales($get, $set))
                             ->afterStateUpdated(fn ($get, $set) => self::recalcularLineaYTotales($get, $set))
                             ->disabled($lockLinea)
-                            ->dehydrated(fn (Get $get) => blank($get('../../numero'))),
+                            ->dehydrated(fn (Get $get) => $get('../../estado') === 'borrador'),
 
                         // (Opcional) campos calculados persistidos; se recomiendan sólo lectura:
                         TextInput::make('base_linea')
@@ -338,39 +363,39 @@ class PresupuestoForm
                     ->required()
                     ->columnSpan(3)
                     ->disabled($lock)
-                    ->dehydrated(fn (?Presupuesto $record) => is_null($record?->numero)),
+                    ->dehydrated($editable),
                 Textarea::make('notas')->rows(3)->columnSpanFull()
                     ->disabled($lock)
-                    ->dehydrated(fn (?Presupuesto $record) => is_null($record?->numero)),
+                    ->dehydrated($editable),
 
                 Placeholder::make('factura_link')
-                    ->label('Factura')
+                    ->label('Facturas')
                     ->content(function (?Presupuesto $record) {
                         if (! $record) {
                             return null;
                         }
 
-                        $facturaId = DB::table('presupuestos_facturas')
-                            ->where('presupuesto_id', $record->id)
-                            ->value('factura_id');
+                        $facturas = Factura::query()
+                            ->whereIn('id', DB::table('presupuestos_facturas')
+                                ->where('presupuesto_id', $record->id)
+                                ->select('factura_id'))
+                            ->orderByDesc('id')
+                            ->get();
 
-                        if (! $facturaId) {
-                            return new HtmlString('<div class="text-sm text-gray-500">Sin factura asociada</div>');
+                        if ($facturas->isEmpty()) {
+                            return new HtmlString('<div class="text-sm text-gray-500">Sin facturas asociadas</div>');
                         }
 
-                        $factura = Factura::find($facturaId);
-                        if (! $factura) {
-                            return new HtmlString('<div class="text-sm text-gray-500">Factura no disponible</div>');
-                        }
-
-                        $label = $factura->numero_completo ? $factura->numero_completo 
+                        $links = $facturas->map(function (Factura $factura): string {
+                            $label = $factura->numero_completo ? $factura->numero_completo
                                 : "Provisional #" . str_pad((string) $factura->id, 5, '0', STR_PAD_LEFT);
 
-                        $url = FacturaResource::getUrl('edit', ['record' => $factura]);
+                            $url = FacturaResource::getUrl('edit', ['record' => $factura]);
 
-                        return new HtmlString(
-                            '<a class="text-primary-600 hover:text-primary-700 font-semibold" href="' . e($url) . '">' . e($label) . '</a>'
-                        );
+                            return '<li><a class="text-primary-600 hover:text-primary-700 font-semibold" href="' . e($url) . '">' . e($label) . '</a></li>';
+                        })->implode('');
+
+                        return new HtmlString('<ul class="space-y-1">' . $links . '</ul>');
                     })
                     ->visibleOn('edit')
                     ->columnSpanFull(),
